@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 
 // ── Routes that require any login ──────────────────────────────
 const PROTECTED_ROUTES = [
-  "/dashboard",
+  "/academy/dashboard",
   "/profile",
   "/courses",
   "/grades",
@@ -36,7 +36,7 @@ export function middleware(request: NextRequest) {
   if (
     token &&
     (userRole === "ADMIN" || userRole === "SUPER_ADMIN") &&
-    pathname.startsWith("/dashboard") &&
+    pathname.startsWith("/academy/dashboard") &&
     pathname !== "/admin/dashboard"
   ) {
     return NextResponse.redirect(new URL("/admin/dashboard", request.url));
@@ -44,7 +44,7 @@ export function middleware(request: NextRequest) {
 
   // ── Logged in but not admin → redirect to dashboard ────────
   if (isAdminRoute && userRole !== "ADMIN" && userRole !== "SUPER_ADMIN") {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(new URL("/academy/dashboard", request.url));
   }
 
   // ── Already logged in → skip /login page (but allow /academy) ─────
@@ -52,7 +52,7 @@ export function middleware(request: NextRequest) {
     const dest =
       userRole === "ADMIN" || userRole === "SUPER_ADMIN"
         ? "/admin/dashboard"
-        : "/dashboard";
+        : "/academy/dashboard";
     return NextResponse.redirect(new URL(dest, request.url));
   }
 

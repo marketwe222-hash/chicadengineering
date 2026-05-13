@@ -193,7 +193,7 @@ export default function Header({ onSignIn }: HeaderProps) {
     const dest =
       user?.role === "ADMIN" || user?.role === "SUPER_ADMIN"
         ? "/admin/dashboard"
-        : "/student/dashboard";
+        : "/academy/dashboard";
     router.push(dest);
     setDropdownOpen(false);
     setMobileMenu(false);
