@@ -13,7 +13,7 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!isLoading) {
       if (!isAuthenticated) {
-        router.replace("/login");
+        router.replace("/academy/login");
       } else if (!isAdmin) {
         router.replace("/dashboard");
       }

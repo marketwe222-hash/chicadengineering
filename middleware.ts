@@ -48,7 +48,7 @@ export function middleware(request: NextRequest) {
   }
 
   // ── Already logged in → skip /login page (but allow /academy) ─────
-  if (pathname === "/login" && token) {
+  if (pathname === "/academy/login" && token) {
     const dest =
       userRole === "ADMIN" || userRole === "SUPER_ADMIN"
         ? "/admin/dashboard"

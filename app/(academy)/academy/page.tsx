@@ -11,7 +11,7 @@ export default function AcademyLandingPage() {
   const router = useRouter();
 
   const handleSignIn = () => {
-    router.push("/login");
+    router.push("/academy/login");
   };
 
   return (
@@ -22,9 +22,7 @@ export default function AcademyLandingPage() {
           fontFamily: "var(--font-geist-sans, system-ui, sans-serif)",
         }}
       >
-        <Header onSignIn={handleSignIn} />
         <Home onSignIn={handleSignIn} onBackToHome={() => router.push("/")} />
-        <Footer />
       </div>
 
       <style>{`

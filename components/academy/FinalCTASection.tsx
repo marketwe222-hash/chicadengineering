@@ -75,7 +75,7 @@ export function FinalCTASection({
           }}
         >
           <button
-            onClick={() => router.push("/login")}
+            onClick={() => router.push("/academy/login")}
             className="btn-primary animate-pulse-glow"
             style={{
               padding: "0.95rem 2.8rem",

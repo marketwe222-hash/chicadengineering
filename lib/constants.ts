@@ -1,3 +1,4 @@
+import { AcademicTerm } from "./../types/course.types";
 export const APP_NAME = "Chicad Engineering";
 export const APP_SHORT = "CE";
 export const APP_DESCRIPTION =
@@ -5,7 +6,7 @@ export const APP_DESCRIPTION =
 
 export const ROUTES = {
   HOME: "/",
-  LOGIN: "/login",
+  LOGIN: "/Academy/login",
   DASHBOARD: "/dashboard",
   PROFILE: "/profile",
   COURSES: "/courses",

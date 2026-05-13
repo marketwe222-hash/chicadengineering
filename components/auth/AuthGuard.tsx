@@ -15,7 +15,7 @@ export function AuthGuard({ children, fallback }: AuthGuardProps) {
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      router.replace("/login");
+      router.replace("/academy/login");
     }
   }, [isAuthenticated, isLoading, router]);
 

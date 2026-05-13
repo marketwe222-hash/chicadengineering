@@ -4,11 +4,151 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Header, Footer } from "@/components/academy";
 
+/* ─── Software Courses with individual pricing & images ──── */
+const SOFTWARE_COURSES = [
+  {
+    id: "autocad",
+    name: "AutoCAD Fundamentals",
+    software: "AutoCAD",
+    price: "85,000 CFA",
+    hours: "120 hours",
+    level: "Beginner",
+    duration: "4 weeks",
+    description:
+      "Master 2D drafting, annotation tools, and technical drawing standards used across every engineering discipline.",
+    image:
+      "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=600&q=80",
+    gradientFrom: "#ff6b35",
+    gradientTo: "#f7931e",
+    icon: "📐",
+    badge: null,
+  },
+  {
+    id: "revit",
+    name: "Revit Architecture Essentials",
+    software: "Revit Architecture",
+    price: "110,000 CFA",
+    hours: "180 hours",
+    level: "Intermediate",
+    duration: "6 weeks",
+    description:
+      "Build intelligent BIM models, automate construction documentation, and collaborate with multi-disciplinary teams.",
+    image:
+      "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=600&q=80",
+    gradientFrom: "#3b82f6",
+    gradientTo: "#1d4ed8",
+    icon: "🏗️",
+    badge: "Popular",
+  },
+  {
+    id: "sap2000",
+    name: "SAP2000 Structural Analysis",
+    software: "SAP2000",
+    price: "130,000 CFA",
+    hours: "200 hours",
+    level: "Advanced",
+    duration: "8 weeks",
+    description:
+      "Model, analyze, and design complex structures with static, dynamic, seismic, and bridge analysis modules.",
+    image:
+      "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=600&q=80",
+    gradientFrom: "#059669",
+    gradientTo: "#047857",
+    icon: "⚡",
+    badge: null,
+  },
+  {
+    id: "etabs",
+    name: "ETABS Building Design",
+    software: "ETABS",
+    price: "130,000 CFA",
+    hours: "200 hours",
+    level: "Advanced",
+    duration: "8 weeks",
+    description:
+      "Specialized multi-story building analysis including performance-based design, wind loading, and concrete detailing.",
+    image:
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&q=80",
+    gradientFrom: "#7c3aed",
+    gradientTo: "#5b21b6",
+    icon: "🏢",
+    badge: null,
+  },
+  {
+    id: "safe",
+    name: "SAFE Foundation Design",
+    software: "SAFE",
+    price: "120,000 CFA",
+    hours: "160 hours",
+    level: "Advanced",
+    duration: "6 weeks",
+    description:
+      "Design concrete slabs, mat foundations, and post-tensioned systems with full soil-structure interaction.",
+    image:
+      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80",
+    gradientFrom: "#dc2626",
+    gradientTo: "#b91c1c",
+    icon: "🪨",
+    badge: null,
+  },
+  {
+    id: "lumion",
+    name: "Lumion Visualization Lab",
+    software: "Lumion",
+    price: "75,000 CFA",
+    hours: "100 hours",
+    level: "Intermediate",
+    duration: "4 weeks",
+    description:
+      "Create photorealistic renders, walkthroughs, and VR experiences that win clients and communicate design intent.",
+    image:
+      "https://images.unsplash.com/photo-1545167622-3a6ac756afa4?w=600&q=80",
+    gradientFrom: "#ec4899",
+    gradientTo: "#be185d",
+    icon: "🎨",
+    badge: "Creative",
+  },
+  {
+    id: "archicad",
+    name: "ArchiCAD BIM Workflow",
+    software: "ArchiCAD",
+    price: "105,000 CFA",
+    hours: "160 hours",
+    level: "Intermediate",
+    duration: "6 weeks",
+    description:
+      "Full architectural BIM workflow from concept through construction documentation with energy analysis integration.",
+    image:
+      "https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=600&q=80",
+    gradientFrom: "#f59e0b",
+    gradientTo: "#d97706",
+    icon: "🏛️",
+    badge: null,
+  },
+  {
+    id: "sketchup",
+    name: "SketchUp Pro Modeling",
+    software: "SketchUp Pro",
+    price: "65,000 CFA",
+    hours: "90 hours",
+    level: "Beginner",
+    duration: "3 weeks",
+    description:
+      "Fast 3D conceptual modeling for architects and designers — from site massing to detailed interior layouts.",
+    image:
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&q=80",
+    gradientFrom: "#10b981",
+    gradientTo: "#059669",
+    icon: "📦",
+    badge: "Best Start",
+  },
+];
+
 /* ─── Programme Data ──────────────────────────────────────── */
 const PROGRAMMES = [
   {
     id: "3-month",
-    name: "3-Month Intensive Programme",
+    name: "3-Month Intensive",
     duration: "3 Months",
     price: "750,000 CFA",
     originalPrice: "900,000 CFA",
@@ -51,21 +191,19 @@ const PROGRAMMES = [
       "Certificate of completion",
       "3-month internship placement",
     ],
-    accentColor: "text-sky-500",
-    badgeBg: "from-sky-500 to-indigo-500",
-    headerBg: "from-sky-500/5 to-indigo-500/5",
-    dotBg: "from-sky-500 to-indigo-500",
+    gradientFrom: "#0ea5e9",
+    gradientTo: "#6366f1",
     icon: "⚡",
   },
   {
     id: "6-month",
-    name: "6-Month Comprehensive Programme",
+    name: "6-Month Comprehensive",
     duration: "6 Months",
     price: "1,200,000 CFA",
     originalPrice: "1,500,000 CFA",
     badge: "Complete Mastery",
     description:
-      "The ultimate training experience for those seeking complete mastery of civil engineering design tools and professional certification.",
+      "The ultimate training experience for complete mastery of civil engineering design tools and professional certification.",
     highlights: [
       "All 8 Software Tools + Advanced Modules",
       "Real Construction Site Visits",
@@ -76,20 +214,20 @@ const PROGRAMMES = [
     ],
     curriculum: [
       {
-        month: "Months 1-2",
+        month: "Months 1–2",
         title: "Core Foundation",
         tools: ["AutoCAD", "SketchUp Pro", "Revit Architecture"],
         focus: "Complete 2D/3D design workflow, parametric modeling",
       },
       {
-        month: "Months 3-4",
+        month: "Months 3–4",
         title: "Specialized Design",
         tools: ["ArchiCAD", "Lumion", "SAFE"],
         focus: "Architectural BIM, visualization, foundation design",
       },
       {
-        month: "Months 5-6",
-        title: "Advanced Analysis & Integration",
+        month: "Months 5–6",
+        title: "Advanced Analysis",
         tools: ["SAP2000", "ETABS"],
         focus: "Complex structural analysis, multi-disciplinary projects",
       },
@@ -104,15 +242,12 @@ const PROGRAMMES = [
       "Industry networking events",
       "Personal mentorship program",
     ],
-    accentColor: "text-orange-500",
-    badgeBg: "from-orange-500 to-yellow-400",
-    headerBg: "from-orange-500/5 to-yellow-400/5",
-    dotBg: "from-orange-500 to-yellow-400",
+    gradientFrom: "#f59e0b",
+    gradientTo: "#ef4444",
     icon: "🏆",
   },
 ];
 
-/* ─── Programme Comparison ────────────────────────────────── */
 const COMPARISON_DATA = [
   {
     feature: "Software Tools Covered",
@@ -148,77 +283,38 @@ const COMPARISON_DATA = [
   },
 ];
 
-/* ─── Single Software Courses ───────────────────────────────── */
-const SOFTWARE_COURSES = [
-  {
-    id: "autocad",
-    name: "AutoCAD Fundamentals",
-    software: "AutoCAD",
-    price: "70,000 CFA",
-    hours: "150 hours",
-    description:
-      "A focused software course to build your 2D drafting, annotation, and technical drawing skills.",
-    accentColor: "text-sky-500",
-    selectedBorder: "border-sky-500",
-  },
-  {
-    id: "revit",
-    name: "Revit Architecture Essentials",
-    software: "Revit Architecture",
-    price: "70,000 CFA",
-    hours: "150 hours",
-    description:
-      "Learn BIM modeling, architectural documentation, and collaborative design workflows.",
-    accentColor: "text-blue-600",
-    selectedBorder: "border-blue-600",
-  },
-  {
-    id: "sap2000",
-    name: "SAP2000 Structural Analysis",
-    software: "SAP2000",
-    price: "70,000 CFA",
-    hours: "150 hours",
-    description:
-      "Master structural modeling, load analysis, and design checks for real-world structures.",
-    accentColor: "text-emerald-600",
-    selectedBorder: "border-emerald-600",
-  },
-  {
-    id: "lumion",
-    name: "Lumion Visualization Lab",
-    software: "Lumion",
-    price: "70,000 CFA",
-    hours: "150 hours",
-    description:
-      "Build renderings and visual storytelling skills with real-time visualization workflows.",
-    accentColor: "text-pink-600",
-    selectedBorder: "border-pink-600",
-  },
-];
+/* ─── Glass helper (matches software page) ─────────────────── */
+const glassStyle = (bg = "rgba(14,111,168,0.12)"): React.CSSProperties => ({
+  background: bg,
+  backdropFilter: "blur(20px) saturate(180%)",
+  WebkitBackdropFilter: "blur(20px) saturate(180%)",
+  border: "1px solid rgba(125,211,252,0.18)",
+  boxShadow:
+    "0 4px 24px rgba(5,20,40,0.55), 0 1px 0 rgba(255,255,255,0.06) inset",
+});
 
-/* ─── Icons ───────────────────────────────────────────────── */
-function CheckIcon({ className = "stroke-current" }: { className?: string }) {
+/* ─── Icons ─────────────────────────────────────────────────── */
+function CheckIcon({ color = "#7dd3fc" }: { color?: string }) {
   return (
     <svg
-      width="14"
-      height="14"
+      width="10"
+      height="10"
       viewBox="0 0 24 24"
       fill="none"
+      stroke={color}
       strokeWidth="3"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={className}
     >
       <polyline points="20 6 9 17 4 12" />
     </svg>
   );
 }
-
 function ClockIcon() {
   return (
     <svg
-      width="16"
-      height="16"
+      width="13"
+      height="13"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -231,12 +327,11 @@ function ClockIcon() {
     </svg>
   );
 }
-
-function UsersIcon() {
+function LevelIcon() {
   return (
     <svg
-      width="16"
-      height="16"
+      width="13"
+      height="13"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -244,16 +339,13 @@ function UsersIcon() {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
     </svg>
   );
 }
 
-/* ─── Course Card ─────────────────────────────────────────── */
-function CourseCard({
+/* ─── Software Course Card ───────────────────────────────────── */
+function SoftwareCourseCard({
   course,
   selected,
   onSelect,
@@ -262,490 +354,1290 @@ function CourseCard({
   selected: boolean;
   onSelect: () => void;
 }) {
+  const [hovered, setHovered] = useState(false);
+
   return (
-    <button
+    <div
       onClick={onSelect}
-      type="button"
-      className={[
-        "w-full text-left rounded-2xl p-6 flex flex-col gap-4 transition-all duration-200 cursor-pointer hover:-translate-y-0.5",
-        selected
-          ? `bg-sky-500/5 border-2 ${course.selectedBorder}`
-          : "bg-[var(--card-bg)] border border-[var(--card-border)]",
-      ].join(" ")}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        borderRadius: "1.25rem",
+        overflow: "hidden",
+        cursor: "pointer",
+        transition: "all 0.3s ease",
+        transform: hovered || selected ? "translateY(-4px)" : "translateY(0)",
+        border: selected
+          ? `2px solid ${course.gradientFrom}`
+          : "1px solid rgba(125,211,252,0.18)",
+        boxShadow: selected
+          ? `0 0 0 3px ${course.gradientFrom}28, 0 16px 56px rgba(5,20,40,0.70)`
+          : hovered
+            ? "0 16px 56px rgba(5,20,40,0.70)"
+            : "0 4px 24px rgba(5,20,40,0.55)",
+        background: "rgba(7,24,40,0.55)",
+        backdropFilter: "blur(20px) saturate(180%)",
+        WebkitBackdropFilter: "blur(20px) saturate(180%)",
+        position: "relative",
+      }}
     >
-      <div className="flex justify-between gap-4">
-        <div>
-          <p
-            className={`m-0 text-xs font-bold uppercase tracking-widest ${course.accentColor}`}
-          >
-            {course.software}
-          </p>
-          <h3 className="mt-1.5 text-[1.05rem] font-extrabold text-[var(--text-primary)] leading-tight">
-            {course.name}
-          </h3>
-        </div>
-        <span
-          className={`text-sm font-black whitespace-nowrap ${course.accentColor}`}
-        >
-          {course.price}
-        </span>
-      </div>
-
-      <p className="m-0 text-[0.82rem] text-[var(--text-secondary)] leading-relaxed">
-        {course.description}
-      </p>
-
-      <div className="flex justify-between items-center gap-3 text-[0.8rem] text-[var(--text-secondary)]">
-        <span>{course.hours}</span>
-        <span
-          className={`font-bold ${selected ? "text-sky-500" : "text-[var(--text-primary)]"}`}
-        >
-          {selected ? "Selected" : "Select Course"}
-        </span>
-      </div>
-    </button>
-  );
-}
-
-/* ─── Programme Card ──────────────────────────────────────── */
-function ProgrammeCard({ programme }: { programme: (typeof PROGRAMMES)[0] }) {
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  return (
-    <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl overflow-hidden relative transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-      {/* Badge */}
-      {programme.badge && (
-        <div
-          className={`absolute top-6 right-6 bg-gradient-to-br ${programme.badgeBg} text-white px-3 py-1.5 rounded-full text-[0.7rem] font-extrabold tracking-wide uppercase z-10`}
-        >
-          {programme.badge}
-        </div>
-      )}
-
-      {/* Header */}
+      {/* Background image */}
       <div
-        className={`p-8 pb-6 bg-gradient-to-br ${programme.headerBg} border-b border-[var(--card-border)]`}
+        style={{ position: "relative", height: "160px", overflow: "hidden" }}
       >
-        <div className="flex items-center gap-4 mb-4">
+        <img
+          src={course.image}
+          alt={course.software}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            transition: "transform 0.4s ease",
+            transform: hovered ? "scale(1.06)" : "scale(1)",
+          }}
+        />
+        {/* Overlay gradient */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: `linear-gradient(to bottom, ${course.gradientFrom}44 0%, rgba(7,24,40,0.75) 100%)`,
+          }}
+        />
+        {/* Icon bubble top-left */}
+        <div
+          style={{
+            position: "absolute",
+            top: "1rem",
+            left: "1rem",
+            width: "2.75rem",
+            height: "2.75rem",
+            borderRadius: "0.75rem",
+            background: `linear-gradient(135deg, ${course.gradientFrom} 0%, ${course.gradientTo} 100%)`,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "1.3rem",
+            boxShadow: `0 4px 16px ${course.gradientFrom}55`,
+          }}
+        >
+          {course.icon}
+        </div>
+        {/* Badge top-right */}
+        {course.badge && (
           <div
-            className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${programme.dotBg} flex items-center justify-center text-3xl shrink-0`}
+            style={{
+              position: "absolute",
+              top: "1rem",
+              right: "1rem",
+              padding: "0.25rem 0.7rem",
+              borderRadius: "999px",
+              background: `linear-gradient(135deg, ${course.gradientFrom} 0%, ${course.gradientTo} 100%)`,
+              fontSize: "0.62rem",
+              fontWeight: 800,
+              color: "#fff",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+            }}
           >
-            {programme.icon}
+            {course.badge}
           </div>
-          <div className="flex-1">
-            <h3 className="m-0 mb-1 text-[1.3rem] font-black text-[var(--text-primary)] tracking-tight leading-tight">
-              {programme.name}
-            </h3>
-            <div className="flex items-center gap-4">
-              <div
-                className={`flex items-center gap-1.5 text-[0.8rem] font-bold ${programme.accentColor}`}
-              >
-                <ClockIcon />
-                {programme.duration}
-              </div>
-              <div className="flex items-center gap-1.5 text-[0.8rem] font-semibold text-[var(--text-secondary)]">
-                <UsersIcon />
-                Small classes
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Pricing */}
-        <div className="mb-4">
-          <div className="flex items-baseline gap-2 mb-1">
-            <span
-              className={`text-[1.8rem] font-black tracking-tight ${programme.accentColor}`}
+        )}
+        {/* Selected check */}
+        {selected && (
+          <div
+            style={{
+              position: "absolute",
+              bottom: "1rem",
+              right: "1rem",
+              width: "2rem",
+              height: "2rem",
+              borderRadius: "50%",
+              background: `linear-gradient(135deg, ${course.gradientFrom} 0%, ${course.gradientTo} 100%)`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: `0 0 16px ${course.gradientFrom}88`,
+            }}
+          >
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#fff"
+              strokeWidth="3.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              {programme.price}
-            </span>
-            <span className="text-[0.9rem] text-[var(--text-muted)] line-through font-semibold">
-              {programme.originalPrice}
-            </span>
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
           </div>
-          <p
-            className={`text-[0.75rem] font-bold m-0 ${programme.accentColor}`}
-          >
-            Early bird discount applied
-          </p>
-        </div>
+        )}
+      </div>
 
-        <p className="m-0 mb-6 text-[0.9rem] text-[var(--text-secondary)] leading-relaxed">
-          {programme.description}
+      {/* Card body */}
+      <div style={{ padding: "1.25rem" }}>
+        <p
+          style={{
+            margin: "0 0 0.25rem",
+            fontSize: "0.65rem",
+            fontWeight: 800,
+            textTransform: "uppercase",
+            letterSpacing: "0.1em",
+            color: course.gradientFrom,
+          }}
+        >
+          {course.software}
+        </p>
+        <h3
+          style={{
+            margin: "0 0 0.6rem",
+            fontSize: "0.98rem",
+            fontWeight: 800,
+            color: "var(--text-primary)",
+            letterSpacing: "-0.02em",
+            lineHeight: 1.25,
+          }}
+        >
+          {course.name}
+        </h3>
+        <p
+          style={{
+            margin: "0 0 1rem",
+            fontSize: "0.75rem",
+            color: "var(--text-secondary)",
+            lineHeight: 1.65,
+          }}
+        >
+          {course.description}
         </p>
 
-        {/* Highlights */}
-        <div className="mb-6">
-          <p className="text-[0.7rem] font-bold tracking-widest uppercase text-[var(--text-muted)] m-0 mb-2">
-            What's Included
-          </p>
-          <div className="grid grid-cols-2 gap-2">
-            {programme.highlights.map((highlight, j) => (
-              <div
-                key={j}
-                className="flex items-center gap-2 text-[0.75rem] text-[var(--text-secondary)]"
-              >
-                <span
-                  className={`w-4 h-4 rounded-full bg-gradient-to-br ${programme.dotBg} bg-opacity-10 border border-white/20 flex items-center justify-center shrink-0`}
-                >
-                  <CheckIcon className="stroke-white" />
-                </span>
-                {highlight}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Expand Button */}
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="w-full py-3 px-4 rounded-xl border border-[var(--card-border)] bg-[var(--glass-bg)] hover:bg-[var(--glass-bg-subtle)] text-[var(--text-primary)] text-[0.85rem] font-bold cursor-pointer transition-all duration-200 flex items-center justify-center gap-2"
+        {/* Meta row */}
+        <div
+          style={{
+            display: "flex",
+            gap: "1rem",
+            paddingTop: "0.85rem",
+            borderTop: "1px solid rgba(125,211,252,0.10)",
+            marginBottom: "1rem",
+          }}
         >
-          {isExpanded ? "Show Less" : "View Full Curriculum"}
-          <span className="text-xs opacity-70">{isExpanded ? "−" : "+"}</span>
-        </button>
-      </div>
-
-      {/* Expanded Content */}
-      <div
-        className={`transition-all duration-400 overflow-hidden ${
-          isExpanded ? "max-h-[800px] p-6" : "max-h-0 p-0"
-        }`}
-      >
-        {/* Curriculum */}
-        <div className="mb-8">
-          <h4 className="text-[0.9rem] font-extrabold text-[var(--text-primary)] m-0 mb-4 tracking-tight">
-            Curriculum Overview
-          </h4>
-          <div className="flex flex-col gap-4">
-            {programme.curriculum.map((month, i) => (
-              <div
-                key={i}
-                className="p-4 rounded-xl bg-[var(--glass-bg-subtle)] border border-[var(--card-border)]"
-              >
-                <div className="flex items-center gap-3 mb-2">
-                  <span
-                    className={`w-8 h-8 rounded-full bg-gradient-to-br ${programme.dotBg} text-white flex items-center justify-center text-[0.7rem] font-black shrink-0`}
-                  >
-                    {i + 1}
-                  </span>
-                  <div>
-                    <p className="text-[0.8rem] font-extrabold text-[var(--text-primary)] m-0 mb-0.5">
-                      {month.month}: {month.title}
-                    </p>
-                    <p
-                      className={`text-[0.7rem] font-semibold m-0 ${programme.accentColor}`}
-                    >
-                      {month.tools.join(", ")}
-                    </p>
-                  </div>
-                </div>
-                <p className="text-[0.75rem] text-[var(--text-secondary)] m-0 leading-relaxed">
-                  {month.focus}
-                </p>
-              </div>
-            ))}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.35rem",
+              fontSize: "0.72rem",
+              color: "var(--text-secondary)",
+            }}
+          >
+            <LevelIcon />
+            <span style={{ fontWeight: 600 }}>{course.level}</span>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.35rem",
+              fontSize: "0.72rem",
+              color: "var(--text-secondary)",
+            }}
+          >
+            <ClockIcon />
+            <span style={{ fontWeight: 600 }}>{course.duration}</span>
+          </div>
+          <div
+            style={{
+              fontSize: "0.72rem",
+              color: "var(--text-secondary)",
+              fontWeight: 600,
+            }}
+          >
+            {course.hours}
           </div>
         </div>
 
-        {/* Features */}
-        <div className="mb-8">
-          <h4 className="text-[0.9rem] font-extrabold text-[var(--text-primary)] m-0 mb-4 tracking-tight">
-            Programme Features
-          </h4>
-          <div className="grid grid-cols-2 gap-2.5">
-            {programme.features.map((feature, j) => (
-              <div
-                key={j}
-                className="flex items-center gap-2 text-[0.75rem] text-[var(--text-secondary)]"
-              >
-                <CheckIcon
-                  className={programme.accentColor.replace("text-", "stroke-")}
-                />
-                {feature}
-              </div>
-            ))}
+        {/* Price + CTA */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <span
+            style={{
+              fontSize: "1.15rem",
+              fontWeight: 900,
+              color: course.gradientFrom,
+              letterSpacing: "-0.02em",
+            }}
+          >
+            {course.price}
+          </span>
+          <div
+            style={{
+              padding: "0.45rem 1rem",
+              borderRadius: "0.6rem",
+              background: selected
+                ? `linear-gradient(135deg, ${course.gradientFrom} 0%, ${course.gradientTo} 100%)`
+                : "rgba(14,111,168,0.18)",
+              border: selected ? "none" : "1px solid rgba(125,211,252,0.22)",
+              color: selected ? "#fff" : "var(--text-primary)",
+              fontSize: "0.73rem",
+              fontWeight: 700,
+              transition: "all 0.2s ease",
+            }}
+          >
+            {selected ? "✓ Selected" : "Select"}
           </div>
-        </div>
-
-        {/* CTA */}
-        <div className="pt-6 border-t border-[var(--card-border)] text-center">
-          <p className="text-[0.8rem] text-[var(--text-muted)] m-0 mb-4 font-semibold">
-            ⚠️ Students may only enroll in one programme at a time
-          </p>
-          <button className="btn-primary py-3.5 px-8 text-[0.9rem] font-bold rounded-xl cursor-pointer w-full">
-            Enroll Now - {programme.price}
-          </button>
         </div>
       </div>
     </div>
   );
 }
 
-/* ─── Page ───────────────────────────────────────────────── */
+/* ─── Programme Card ─────────────────────────────────────────── */
+function ProgrammeCard({ programme }: { programme: (typeof PROGRAMMES)[0] }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <div
+      style={{
+        ...glassStyle("rgba(14,111,168,0.10)"),
+        borderRadius: "1.5rem",
+        overflow: "hidden",
+        transition: "all 0.3s ease",
+      }}
+    >
+      {/* Coloured top bar */}
+      <div
+        style={{
+          height: "4px",
+          background: `linear-gradient(90deg, ${programme.gradientFrom} 0%, ${programme.gradientTo} 100%)`,
+        }}
+      />
+
+      <div style={{ padding: "2rem" }}>
+        {/* Badge */}
+        {programme.badge && (
+          <div
+            style={{
+              display: "inline-block",
+              padding: "0.3rem 0.9rem",
+              borderRadius: "999px",
+              background: `linear-gradient(135deg, ${programme.gradientFrom} 0%, ${programme.gradientTo} 100%)`,
+              fontSize: "0.65rem",
+              fontWeight: 800,
+              color: "#fff",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              marginBottom: "1.25rem",
+            }}
+          >
+            {programme.badge}
+          </div>
+        )}
+
+        {/* Title + icon row */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "1rem",
+            marginBottom: "1.25rem",
+          }}
+        >
+          <div
+            style={{
+              width: "3.25rem",
+              height: "3.25rem",
+              borderRadius: "1rem",
+              background: `linear-gradient(135deg, ${programme.gradientFrom} 0%, ${programme.gradientTo} 100%)`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "1.5rem",
+              flexShrink: 0,
+              boxShadow: `0 4px 20px ${programme.gradientFrom}44`,
+            }}
+          >
+            {programme.icon}
+          </div>
+          <div>
+            <h3
+              style={{
+                margin: "0 0 0.2rem",
+                fontSize: "1.2rem",
+                fontWeight: 900,
+                color: "var(--text-primary)",
+                letterSpacing: "-0.025em",
+              }}
+            >
+              {programme.name}
+            </h3>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                fontSize: "0.75rem",
+                fontWeight: 700,
+                color: programme.gradientFrom,
+              }}
+            >
+              <ClockIcon />
+              {programme.duration}
+            </div>
+          </div>
+        </div>
+
+        {/* Pricing */}
+        <div style={{ marginBottom: "1.5rem" }}>
+          <div
+            style={{ display: "flex", alignItems: "baseline", gap: "0.75rem" }}
+          >
+            <span
+              style={{
+                fontSize: "2rem",
+                fontWeight: 900,
+                letterSpacing: "-0.04em",
+                color: programme.gradientFrom,
+              }}
+            >
+              {programme.price}
+            </span>
+            <span
+              style={{
+                fontSize: "0.9rem",
+                color: "var(--text-muted)",
+                textDecoration: "line-through",
+                fontWeight: 600,
+              }}
+            >
+              {programme.originalPrice}
+            </span>
+          </div>
+          <p
+            style={{
+              margin: "0.2rem 0 0",
+              fontSize: "0.7rem",
+              fontWeight: 700,
+              color: programme.gradientFrom,
+            }}
+          >
+            Early bird discount applied
+          </p>
+        </div>
+
+        <p
+          style={{
+            margin: "0 0 1.5rem",
+            fontSize: "0.87rem",
+            color: "var(--text-secondary)",
+            lineHeight: 1.75,
+          }}
+        >
+          {programme.description}
+        </p>
+
+        {/* Highlights grid */}
+        <div style={{ marginBottom: "1.5rem" }}>
+          <p
+            style={{
+              margin: "0 0 0.6rem",
+              fontSize: "0.65rem",
+              fontWeight: 800,
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              color: "var(--text-muted)",
+            }}
+          >
+            What's Included
+          </p>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "0.5rem",
+            }}
+          >
+            {programme.highlights.map((h, j) => (
+              <div
+                key={j}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  fontSize: "0.75rem",
+                  color: "var(--text-secondary)",
+                }}
+              >
+                <span
+                  style={{
+                    width: "1.1rem",
+                    height: "1.1rem",
+                    borderRadius: "50%",
+                    background: `${programme.gradientFrom}18`,
+                    border: `1px solid ${programme.gradientFrom}40`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  <CheckIcon color={programme.gradientFrom} />
+                </span>
+                {h}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Expand toggle */}
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          style={{
+            width: "100%",
+            padding: "0.85rem",
+            borderRadius: "0.75rem",
+            border: "1px solid rgba(125,211,252,0.18)",
+            background: "rgba(14,111,168,0.15)",
+            backdropFilter: "blur(10px)",
+            WebkitBackdropFilter: "blur(10px)",
+            color: "var(--text-primary)",
+            fontSize: "0.82rem",
+            fontWeight: 700,
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "0.5rem",
+            transition: "all 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = `${programme.gradientFrom}20`;
+            e.currentTarget.style.borderColor = `${programme.gradientFrom}44`;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "rgba(14,111,168,0.15)";
+            e.currentTarget.style.borderColor = "rgba(125,211,252,0.18)";
+          }}
+        >
+          {isExpanded ? "Show Less" : "View Full Curriculum"}
+          <span style={{ opacity: 0.65 }}>{isExpanded ? "−" : "+"}</span>
+        </button>
+
+        {/* Expanded curriculum */}
+        <div
+          style={{
+            maxHeight: isExpanded ? "700px" : "0",
+            overflow: "hidden",
+            transition: "max-height 0.4s ease",
+            opacity: isExpanded ? 1 : 0,
+          }}
+        >
+          <div style={{ paddingTop: "1.5rem" }}>
+            <p
+              style={{
+                margin: "0 0 1rem",
+                fontSize: "0.82rem",
+                fontWeight: 800,
+                color: "var(--text-primary)",
+                letterSpacing: "-0.01em",
+              }}
+            >
+              Curriculum Overview
+            </p>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.75rem",
+              }}
+            >
+              {programme.curriculum.map((month, i) => (
+                <div
+                  key={i}
+                  style={{
+                    padding: "1rem",
+                    borderRadius: "0.85rem",
+                    background: "rgba(7,24,40,0.45)",
+                    border: "1px solid rgba(125,211,252,0.10)",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.75rem",
+                      marginBottom: "0.5rem",
+                    }}
+                  >
+                    <span
+                      style={{
+                        width: "1.75rem",
+                        height: "1.75rem",
+                        borderRadius: "50%",
+                        background: `linear-gradient(135deg, ${programme.gradientFrom} 0%, ${programme.gradientTo} 100%)`,
+                        color: "#fff",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "0.65rem",
+                        fontWeight: 900,
+                        flexShrink: 0,
+                      }}
+                    >
+                      {i + 1}
+                    </span>
+                    <div>
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: "0.78rem",
+                          fontWeight: 800,
+                          color: "var(--text-primary)",
+                        }}
+                      >
+                        {month.month}: {month.title}
+                      </p>
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: "0.68rem",
+                          fontWeight: 700,
+                          color: programme.gradientFrom,
+                        }}
+                      >
+                        {month.tools.join(", ")}
+                      </p>
+                    </div>
+                  </div>
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: "0.73rem",
+                      color: "var(--text-secondary)",
+                      lineHeight: 1.65,
+                    }}
+                  >
+                    {month.focus}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {/* Features */}
+            <div style={{ marginTop: "1.25rem" }}>
+              <p
+                style={{
+                  margin: "0 0 0.75rem",
+                  fontSize: "0.82rem",
+                  fontWeight: 800,
+                  color: "var(--text-primary)",
+                }}
+              >
+                Programme Features
+              </p>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: "0.5rem",
+                }}
+              >
+                {programme.features.map((f, j) => (
+                  <div
+                    key={j}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                      fontSize: "0.73rem",
+                      color: "var(--text-secondary)",
+                    }}
+                  >
+                    <CheckIcon color={programme.gradientFrom} />
+                    {f}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div
+              style={{
+                marginTop: "1.5rem",
+                paddingTop: "1.25rem",
+                borderTop: "1px solid rgba(125,211,252,0.10)",
+                textAlign: "center",
+              }}
+            >
+              <p
+                style={{
+                  margin: "0 0 0.85rem",
+                  fontSize: "0.75rem",
+                  color: "var(--text-muted)",
+                  fontWeight: 600,
+                }}
+              >
+                ⚠️ Students may only enroll in one programme at a time
+              </p>
+              <button
+                style={{
+                  width: "100%",
+                  padding: "1rem",
+                  borderRadius: "0.85rem",
+                  border: "none",
+                  background: `linear-gradient(135deg, ${programme.gradientFrom} 0%, ${programme.gradientTo} 100%)`,
+                  color: "#fff",
+                  fontSize: "0.9rem",
+                  fontWeight: 800,
+                  cursor: "pointer",
+                  boxShadow: `0 4px 20px ${programme.gradientFrom}44`,
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "scale(1.01)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "scale(1)";
+                }}
+              >
+                Enroll Now — {programme.price}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Page ───────────────────────────────────────────────────── */
 export default function ProgrammesPage() {
   const router = useRouter();
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
-
   const selectedCourse = SOFTWARE_COURSES.find(
     (c) => c.id === selectedCourseId,
   );
 
   return (
     <>
-      <div className="min-h-screen font-sans">
+      <div
+        style={{
+          minHeight: "100vh",
+          fontFamily: "var(--font-sans, system-ui, sans-serif)",
+        }}
+      >
+        {/* ── Background scene (identical to Software page) ── */}
+        <div
+          aria-hidden="true"
+          style={{
+            position: "fixed",
+            inset: 0,
+            backgroundImage: "url(/images/hero-bg.jpg)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity: 0.38,
+            zIndex: -2,
+          }}
+        />
+        <div
+          aria-hidden="true"
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: `
+              radial-gradient(ellipse 60% 50% at 20% 30%, rgba(14,111,168,0.20) 0%, transparent 60%),
+              radial-gradient(ellipse 50% 40% at 80% 70%, rgba(99,102,241,0.14) 0%, transparent 55%),
+              radial-gradient(ellipse 40% 35% at 60% 15%, rgba(14,111,168,0.12) 0%, transparent 50%),
+              linear-gradient(145deg, rgba(7,24,40,0.75) 0%, rgba(10,34,54,0.70) 40%, rgba(6,14,24,0.80) 100%)
+            `,
+            zIndex: -1,
+          }}
+        />
+
         <Header onSignIn={() => router.push("/login")} />
 
         {/* ── HERO ── */}
-        <section className="pt-28 pb-16 px-[clamp(1.5rem,5vw,3rem)] bg-[var(--bg-base)] border-b border-[var(--card-border)]">
-          <div className="max-w-4xl mx-auto">
-            <p className="text-[0.72rem] font-bold tracking-[0.14em] text-sky-500 uppercase m-0 mb-3">
-              Our Programmes
+        <section
+          style={{
+            padding: "7rem clamp(1.5rem, 5vw, 3rem) 4rem",
+            borderBottom: "1px solid rgba(125,211,252,0.10)",
+          }}
+        >
+          <div style={{ maxWidth: "960px", margin: "0 auto" }}>
+            <p
+              style={{
+                fontSize: "0.72rem",
+                fontWeight: 700,
+                letterSpacing: "0.14em",
+                color: "var(--sky, #7dd3fc)",
+                textTransform: "uppercase",
+                margin: "0 0 0.85rem",
+              }}
+            >
+              Training & Programmes
             </p>
 
-            <h1 className="text-[clamp(2rem,5vw,3.2rem)] font-black m-0 mb-6 text-[var(--text-primary)] tracking-tight leading-none max-w-2xl">
+            <h1
+              style={{
+                fontSize: "clamp(2rem, 5vw, 3.2rem)",
+                fontWeight: 900,
+                margin: "0 0 1.5rem",
+                color: "var(--text-primary)",
+                letterSpacing: "-0.035em",
+                lineHeight: 1.05,
+                maxWidth: "700px",
+              }}
+            >
               Choose Your{" "}
-              <span className="bg-gradient-to-r from-sky-500 to-indigo-500 bg-clip-text text-transparent">
+              <span
+                style={{
+                  background:
+                    "linear-gradient(135deg, #7dd3fc 0%, #6366f1 50%, #0ea5e9 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                }}
+              >
                 Learning Path
               </span>
             </h1>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+            <div
+              className="hero-grid"
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "3rem",
+                alignItems: "start",
+              }}
+            >
               <div>
-                <p className="text-[0.92rem] text-[var(--text-secondary)] leading-[1.8] m-0 mb-5">
-                  Whether you're looking to quickly gain essential CAD skills or
-                  pursue complete mastery, we offer flexible programmes designed
-                  for different career goals and time commitments.
+                <p
+                  style={{
+                    fontSize: "0.92rem",
+                    color: "var(--text-secondary)",
+                    lineHeight: 1.8,
+                    margin: "0 0 1.25rem",
+                  }}
+                >
+                  Whether you want complete mastery or a focused course on one
+                  tool, we have a path for you. All programmes include hands-on
+                  project work and job placement support.
                 </p>
-                <p className="text-[0.92rem] text-[var(--text-secondary)] leading-[1.8] m-0 mb-8">
-                  <strong className="text-[var(--text-primary)]">
+                <p
+                  style={{
+                    fontSize: "0.92rem",
+                    color: "var(--text-secondary)",
+                    lineHeight: 1.8,
+                    margin: "0 0 2rem",
+                  }}
+                >
+                  <strong style={{ color: "var(--text-primary)" }}>
                     Important:
                   </strong>{" "}
-                  Students may only enroll in{" "}
-                  <strong className="text-[var(--text-primary)]">
-                    one programme or one software course at a time
-                  </strong>{" "}
-                  to ensure focused learning and optimal results.
+                  Students may only enroll in one programme or one software
+                  course at a time to ensure focused, practical results.
                 </p>
-                <div className="flex gap-3 flex-wrap">
+                <div
+                  style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}
+                >
                   <button
                     onClick={() => router.push("/academy")}
-                    className="btn-primary py-3 px-7 text-[0.9rem] font-bold cursor-pointer rounded-xl"
+                    className="btn-primary"
+                    style={{
+                      padding: "0.8rem 1.8rem",
+                      fontSize: "0.9rem",
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      borderRadius: "0.6rem",
+                    }}
                   >
                     Get Started Today
                   </button>
                   <a
-                    href="#programmes"
-                    className="btn-secondary py-3 px-7 text-[0.9rem] font-semibold no-underline rounded-xl flex items-center"
+                    href="#courses"
+                    className="btn-secondary"
+                    style={{
+                      padding: "0.8rem 1.8rem",
+                      fontSize: "0.9rem",
+                      fontWeight: 600,
+                      textDecoration: "none",
+                      borderRadius: "0.6rem",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
                   >
-                    Compare Programmes
+                    Browse Courses
                   </a>
                 </div>
               </div>
 
-              <div className="flex flex-col gap-4">
-                {/* 3-month card */}
-                <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl p-6 text-center">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-sky-500 to-indigo-500 flex items-center justify-center text-2xl mx-auto mb-4">
-                    ⚡
+              {/* Right: pricing summary cards */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: "0.75rem",
+                }}
+              >
+                {[
+                  {
+                    icon: "⚡",
+                    label: "3-Month Programme",
+                    price: "750,000 CFA",
+                    from: "#0ea5e9",
+                    to: "#6366f1",
+                  },
+                  {
+                    icon: "🏆",
+                    label: "6-Month Programme",
+                    price: "1,200,000 CFA",
+                    from: "#f59e0b",
+                    to: "#ef4444",
+                  },
+                  {
+                    icon: "📐",
+                    label: "Single Courses",
+                    price: "65K–130K CFA",
+                    from: "#10b981",
+                    to: "#059669",
+                  },
+                  {
+                    icon: "🎓",
+                    label: "8 Tools Available",
+                    price: "Choose any one",
+                    from: "#ec4899",
+                    to: "#be185d",
+                  },
+                ].map((item, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      ...glassStyle("rgba(14,111,168,0.12)"),
+                      borderRadius: "0.85rem",
+                      padding: "1rem 1.1rem",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: "2.25rem",
+                        height: "2.25rem",
+                        borderRadius: "0.6rem",
+                        background: `linear-gradient(135deg, ${item.from} 0%, ${item.to} 100%)`,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "1rem",
+                        marginBottom: "0.6rem",
+                      }}
+                    >
+                      {item.icon}
+                    </div>
+                    <span
+                      style={{
+                        fontSize: "0.72rem",
+                        fontWeight: 700,
+                        color: "var(--text-primary)",
+                        display: "block",
+                        lineHeight: 1.3,
+                        marginBottom: "0.2rem",
+                      }}
+                    >
+                      {item.label}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: "0.68rem",
+                        color: item.from,
+                        fontWeight: 700,
+                      }}
+                    >
+                      {item.price}
+                    </span>
                   </div>
-                  <h3 className="text-base font-extrabold text-[var(--text-primary)] m-0 mb-2">
-                    3-Month Programme
-                  </h3>
-                  <p className="text-2xl font-black text-sky-500 m-0 mb-1">
-                    750,000 CFA
-                  </p>
-                  <p className="text-[0.75rem] text-[var(--text-muted)] m-0">
-                    From 900,000 CFA
-                  </p>
-                </div>
-
-                {/* 6-month card */}
-                <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl p-6 text-center relative">
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-sky-500 to-indigo-500 text-white px-3 py-0.5 rounded-full text-[0.65rem] font-extrabold uppercase tracking-wider">
-                    Most Popular
-                  </div>
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-yellow-400 flex items-center justify-center text-2xl mx-auto mb-4">
-                    🏆
-                  </div>
-                  <h3 className="text-base font-extrabold text-[var(--text-primary)] m-0 mb-2">
-                    6-Month Programme
-                  </h3>
-                  <p className="text-2xl font-black text-sky-500 m-0 mb-1">
-                    1,200,000 CFA
-                  </p>
-                  <p className="text-[0.75rem] text-[var(--text-muted)] m-0">
-                    From 1,500,000 CFA
-                  </p>
-                </div>
+                ))}
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* ── LEARNING PATH STRIP (identical style to software page) ── */}
+        <section
+          style={{
+            padding: "3rem clamp(1.5rem, 5vw, 3rem)",
+            background: "rgba(14,111,168,0.18)",
+            backdropFilter: "blur(20px) saturate(180%)",
+            WebkitBackdropFilter: "blur(20px) saturate(180%)",
+            borderTop: "1px solid rgba(125,211,252,0.15)",
+            borderBottom: "1px solid rgba(125,211,252,0.10)",
+            boxShadow: "0 1px 0 rgba(255,255,255,0.05) inset",
+          }}
+        >
+          <div
+            style={{
+              maxWidth: "960px",
+              margin: "0 auto",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              textAlign: "center",
+              gap: "0.75rem",
+            }}
+          >
+            <p
+              style={{
+                fontSize: "0.72rem",
+                fontWeight: 700,
+                letterSpacing: "0.14em",
+                textTransform: "uppercase",
+                color: "rgba(125,211,252,0.7)",
+                margin: 0,
+              }}
+            >
+              Our Approach
+            </p>
+            <p
+              style={{
+                fontSize: "clamp(1.1rem, 2.5vw, 1.45rem)",
+                fontWeight: 800,
+                color: "var(--text-primary)",
+                margin: 0,
+                lineHeight: 1.45,
+                maxWidth: "680px",
+                letterSpacing: "-0.02em",
+              }}
+            >
+              "We tailor every course to your pace — whether you join an
+              intensive programme or pick a single software, you graduate
+              career-ready."
+            </p>
           </div>
         </section>
 
         {/* ── PROGRAMMES ── */}
         <section
           id="programmes"
-          className="py-20 px-[clamp(1.5rem,5vw,3rem)] bg-[var(--bg-base)]"
+          style={{ padding: "5rem clamp(1.5rem, 5vw, 3rem)" }}
         >
-          <div className="max-w-6xl mx-auto">
-            <div className="mb-12 text-center">
-              <p className="text-[0.72rem] font-bold tracking-[0.14em] text-sky-500 uppercase m-0 mb-2.5">
-                Choose Your Programme
+          <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+            <div style={{ marginBottom: "3rem", textAlign: "center" }}>
+              <p
+                style={{
+                  fontSize: "0.72rem",
+                  fontWeight: 700,
+                  letterSpacing: "0.14em",
+                  color: "var(--sky, #7dd3fc)",
+                  textTransform: "uppercase",
+                  margin: "0 0 0.6rem",
+                }}
+              >
+                Bundled Programmes
               </p>
-              <h2 className="text-[clamp(1.6rem,3.5vw,2.4rem)] font-black m-0 mb-3 text-[var(--text-primary)] tracking-tight leading-tight">
+              <h2
+                style={{
+                  fontSize: "clamp(1.6rem, 3.5vw, 2.4rem)",
+                  fontWeight: 900,
+                  margin: "0 0 0.75rem",
+                  color: "var(--text-primary)",
+                  letterSpacing: "-0.03em",
+                  lineHeight: 1.1,
+                }}
+              >
                 Intensive CAD Training Programmes
               </h2>
-              <p className="text-[0.9rem] text-[var(--text-secondary)] m-0 mx-auto max-w-lg leading-[1.7]">
-                Both programmes include comprehensive software training,
-                hands-on projects, and career support. Click on any programme to
-                explore the detailed curriculum.
+              <p
+                style={{
+                  fontSize: "0.9rem",
+                  color: "var(--text-secondary)",
+                  margin: "0 auto",
+                  maxWidth: "540px",
+                  lineHeight: 1.7,
+                }}
+              >
+                Both programmes cover all 8 tools with hands-on projects and
+                career support. Click any card to view the full curriculum.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {PROGRAMMES.map((programme, i) => (
-                <ProgrammeCard key={i} programme={programme} />
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(420px, 1fr))",
+                gap: "1.5rem",
+              }}
+            >
+              {PROGRAMMES.map((p, i) => (
+                <ProgrammeCard key={i} programme={p} />
               ))}
             </div>
           </div>
         </section>
 
-        {/* ── COMPARISON ── */}
-        <section className="py-20 px-[clamp(1.5rem,5vw,3rem)] bg-[var(--bg-gradient)] border-t border-[var(--card-border)]">
-          <div className="max-w-4xl mx-auto">
-            <div className="mb-12 text-center">
-              <p className="text-[0.72rem] font-bold tracking-[0.14em] text-sky-500 uppercase m-0 mb-2.5">
-                Compare Programmes
+        {/* ── INDIVIDUAL SOFTWARE COURSES ── */}
+        <section
+          id="courses"
+          style={{
+            padding: "5rem clamp(1.5rem, 5vw, 3rem)",
+            borderTop: "1px solid rgba(125,211,252,0.10)",
+          }}
+        >
+          <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
+            <div style={{ marginBottom: "3rem", textAlign: "center" }}>
+              <p
+                style={{
+                  fontSize: "0.72rem",
+                  fontWeight: 700,
+                  letterSpacing: "0.14em",
+                  color: "var(--sky, #7dd3fc)",
+                  textTransform: "uppercase",
+                  margin: "0 0 0.6rem",
+                }}
+              >
+                Individual Courses
               </p>
-              <h2 className="text-[clamp(1.5rem,3vw,2.2rem)] font-black m-0 text-[var(--text-primary)] tracking-tight">
-                Find the Right Fit for You
+              <h2
+                style={{
+                  fontSize: "clamp(1.6rem, 3.5vw, 2.4rem)",
+                  fontWeight: 900,
+                  margin: "0 0 0.75rem",
+                  color: "var(--text-primary)",
+                  letterSpacing: "-0.03em",
+                  lineHeight: 1.1,
+                }}
+              >
+                One Software at a Time
               </h2>
-            </div>
-
-            <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl overflow-hidden">
-              {/* Table Header */}
-              <div className="grid grid-cols-[2fr_1fr_1fr] bg-[var(--glass-bg-subtle)] border-b border-[var(--card-border)]">
-                <div className="p-6 font-extrabold text-[var(--text-primary)]">
-                  Features
-                </div>
-                <div className="p-6 text-center font-extrabold text-[var(--text-primary)] border-l border-[var(--card-border)]">
-                  3-Month
-                  <div className="text-[0.8rem] font-semibold text-sky-500 mt-1">
-                    750,000 CFA
-                  </div>
-                </div>
-                <div className="p-6 text-center font-extrabold text-[var(--text-primary)] border-l border-[var(--card-border)] relative">
-                  <div className="absolute top-2 right-2 bg-gradient-to-r from-sky-500 to-indigo-500 text-white px-2 py-0.5 rounded-lg text-[0.6rem] font-extrabold uppercase">
-                    Popular
-                  </div>
-                  6-Month
-                  <div className="text-[0.8rem] font-semibold text-sky-500 mt-1">
-                    1,200,000 CFA
-                  </div>
-                </div>
-              </div>
-
-              {/* Table Rows */}
-              {COMPARISON_DATA.map((row, i) => (
-                <div
-                  key={i}
-                  className={`grid grid-cols-[2fr_1fr_1fr] ${
-                    i < COMPARISON_DATA.length - 1
-                      ? "border-b border-[var(--card-border)]"
-                      : ""
-                  }`}
-                >
-                  <div className="py-4 px-6 font-semibold text-[var(--text-primary)]">
-                    {row.feature}
-                  </div>
-                  <div className="py-4 px-6 text-center text-[var(--text-secondary)] border-l border-[var(--card-border)]">
-                    {row.basic}
-                  </div>
-                  <div className="py-4 px-6 text-center text-[var(--text-secondary)] border-l border-[var(--card-border)]">
-                    {row.premium}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── SINGLE SOFTWARE COURSES ── */}
-        <section className="py-20 px-[clamp(1.5rem,5vw,3rem)] bg-[var(--bg-gradient)] border-t border-[var(--card-border)]">
-          <div className="max-w-6xl mx-auto">
-            <div className="mb-12 text-center">
-              <p className="text-[0.72rem] font-bold tracking-[0.14em] text-sky-500 uppercase m-0 mb-2.5">
-                Select a Course
-              </p>
-              <h2 className="text-[clamp(1.6rem,3.5vw,2.4rem)] font-black m-0 mb-3 text-[var(--text-primary)] tracking-tight leading-tight">
-                One Software Course at a Time
-              </h2>
-              <p className="text-[0.9rem] text-[var(--text-secondary)] m-0 mx-auto max-w-2xl leading-[1.7]">
-                Every course is priced at 70,000 CFA for 150 hours. Students may
-                only enroll in one software course at a time to keep learning
-                focused and practical.
+              <p
+                style={{
+                  fontSize: "0.9rem",
+                  color: "var(--text-secondary)",
+                  margin: "0 auto",
+                  maxWidth: "560px",
+                  lineHeight: 1.7,
+                }}
+              >
+                Each course is individually priced based on depth and
+                complexity. Select one to see your payment summary below.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+                gap: "1.25rem",
+                marginBottom: "2.5rem",
+              }}
+            >
               {SOFTWARE_COURSES.map((course) => (
-                <CourseCard
+                <SoftwareCourseCard
                   key={course.id}
                   course={course}
                   selected={selectedCourseId === course.id}
-                  onSelect={() => setSelectedCourseId(course.id)}
+                  onSelect={() =>
+                    setSelectedCourseId(
+                      selectedCourseId === course.id ? null : course.id,
+                    )
+                  }
                 />
               ))}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] gap-6">
-              <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl p-7">
-                <h3 className="m-0 text-[1.15rem] font-black text-[var(--text-primary)] mb-4">
+            {/* Payment panel */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 340px",
+                gap: "1.25rem",
+                alignItems: "stretch",
+              }}
+              className="payment-grid"
+            >
+              <div
+                style={{
+                  ...glassStyle("rgba(14,111,168,0.10)"),
+                  borderRadius: "1.25rem",
+                  padding: "1.75rem 2rem",
+                }}
+              >
+                <h3
+                  style={{
+                    margin: "0 0 1rem",
+                    fontSize: "1.05rem",
+                    fontWeight: 900,
+                    color: "var(--text-primary)",
+                    letterSpacing: "-0.02em",
+                  }}
+                >
                   Course Selection Summary
                 </h3>
-                <p className="m-0 text-[0.9rem] text-[var(--text-secondary)] leading-[1.75]">
-                  Pick a single software course to proceed. Once selected, you
-                  can pay the fixed course fee of 70,000 CFA and reserve your
-                  training slot.
-                </p>
+                {selectedCourse ? (
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "1rem",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: "3rem",
+                        height: "3rem",
+                        borderRadius: "0.75rem",
+                        background: `linear-gradient(135deg, ${selectedCourse.gradientFrom} 0%, ${selectedCourse.gradientTo} 100%)`,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "1.3rem",
+                        flexShrink: 0,
+                      }}
+                    >
+                      {selectedCourse.icon}
+                    </div>
+                    <div>
+                      <p
+                        style={{
+                          margin: "0 0 0.2rem",
+                          fontSize: "0.95rem",
+                          fontWeight: 800,
+                          color: "var(--text-primary)",
+                        }}
+                      >
+                        {selectedCourse.name}
+                      </p>
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: "0.8rem",
+                          color: "var(--text-secondary)",
+                        }}
+                      >
+                        {selectedCourse.price} · {selectedCourse.hours} ·{" "}
+                        {selectedCourse.duration}
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: "0.85rem",
+                      color: "var(--text-secondary)",
+                      lineHeight: 1.7,
+                    }}
+                  >
+                    Select a course above to see its details here and unlock the
+                    payment button.
+                  </p>
+                )}
               </div>
 
-              <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl p-7 flex flex-col justify-between">
+              <div
+                style={{
+                  ...glassStyle("rgba(14,111,168,0.10)"),
+                  borderRadius: "1.25rem",
+                  padding: "1.75rem",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                }}
+              >
                 <div>
-                  <p className="m-0 text-[0.75rem] font-bold tracking-widest uppercase text-sky-500 mb-3">
+                  <p
+                    style={{
+                      margin: "0 0 0.85rem",
+                      fontSize: "0.65rem",
+                      fontWeight: 800,
+                      letterSpacing: "0.1em",
+                      textTransform: "uppercase",
+                      color: "var(--sky, #7dd3fc)",
+                    }}
+                  >
                     Payment Panel
                   </p>
                   {selectedCourse ? (
                     <>
-                      <p className="text-[0.95rem] font-extrabold text-[var(--text-primary)] m-0 mb-2">
+                      <p
+                        style={{
+                          margin: "0 0 0.35rem",
+                          fontSize: "0.9rem",
+                          fontWeight: 800,
+                          color: "var(--text-primary)",
+                        }}
+                      >
                         {selectedCourse.name}
                       </p>
-                      <p className="m-0 mb-4 text-[0.85rem] text-[var(--text-secondary)] leading-relaxed">
-                        70,000 CFA · 150 hours · {selectedCourse.software}
+                      <p
+                        style={{
+                          margin: "0 0 0.85rem",
+                          fontSize: "0.78rem",
+                          color: "var(--text-secondary)",
+                          lineHeight: 1.6,
+                        }}
+                      >
+                        {selectedCourse.software} · {selectedCourse.hours} ·{" "}
+                        {selectedCourse.level}
+                      </p>
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: "1.6rem",
+                          fontWeight: 900,
+                          color: selectedCourse.gradientFrom,
+                          letterSpacing: "-0.03em",
+                        }}
+                      >
+                        {selectedCourse.price}
                       </p>
                     </>
                   ) : (
-                    <p className="m-0 text-[0.85rem] text-[var(--text-secondary)] leading-relaxed">
-                      Select a course to reveal the payment button and secure
-                      your seat.
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: "0.82rem",
+                        color: "var(--text-secondary)",
+                        lineHeight: 1.65,
+                      }}
+                    >
+                      Choose a course above to reveal the payment button and
+                      reserve your seat.
                     </p>
                   )}
                 </div>
 
                 <button
                   onClick={() => {
-                    if (!selectedCourseId) return;
-                    router.push("/login");
+                    if (selectedCourseId) router.push("/academy/login");
                   }}
                   disabled={!selectedCourseId}
-                  className={`btn-primary w-full py-4 px-4 rounded-2xl text-[0.95rem] font-extrabold mt-4 transition-opacity ${
-                    selectedCourseId
-                      ? "cursor-pointer opacity-100"
-                      : "cursor-not-allowed opacity-55"
-                  }`}
+                  style={{
+                    marginTop: "1.25rem",
+                    width: "100%",
+                    padding: "1rem",
+                    borderRadius: "0.85rem",
+                    border: "none",
+                    background: selectedCourse
+                      ? `linear-gradient(135deg, ${selectedCourse.gradientFrom} 0%, ${selectedCourse.gradientTo} 100%)`
+                      : "rgba(125,211,252,0.12)",
+                    color: selectedCourse ? "#fff" : "var(--text-muted)",
+                    fontSize: "0.9rem",
+                    fontWeight: 800,
+                    cursor: selectedCourse ? "pointer" : "not-allowed",
+                    boxShadow: selectedCourse
+                      ? `0 4px 20px ${selectedCourse.gradientFrom}44`
+                      : "none",
+                    transition: "all 0.2s ease",
+                    opacity: selectedCourse ? 1 : 0.55,
+                  }}
                 >
-                  {selectedCourse ? `Pay 70,000 CFA` : "Select a course first"}
+                  {selectedCourse
+                    ? `Pay ${selectedCourse.price}`
+                    : "Select a course first"}
                 </button>
               </div>
             </div>
@@ -753,60 +1645,127 @@ export default function ProgrammesPage() {
         </section>
 
         {/* ── WHY CHOOSE US ── */}
-        <section className="py-20 px-[clamp(1.5rem,5vw,3rem)] bg-[var(--bg-base)] border-t border-[var(--card-border)]">
-          <div className="max-w-4xl mx-auto">
-            <div className="mb-12 text-center">
-              <p className="text-[0.72rem] font-bold tracking-[0.14em] text-sky-500 uppercase m-0 mb-2.5">
+        <section
+          style={{
+            padding: "5rem clamp(1.5rem, 5vw, 3rem)",
+            borderTop: "1px solid rgba(125,211,252,0.10)",
+          }}
+        >
+          <div style={{ maxWidth: "960px", margin: "0 auto" }}>
+            <div style={{ marginBottom: "3rem", textAlign: "center" }}>
+              <p
+                style={{
+                  fontSize: "0.72rem",
+                  fontWeight: 700,
+                  letterSpacing: "0.14em",
+                  color: "var(--sky, #7dd3fc)",
+                  textTransform: "uppercase",
+                  margin: "0 0 0.6rem",
+                }}
+              >
                 Why Choose CHICAD
               </p>
-              <h2 className="text-[clamp(1.5rem,3vw,2.2rem)] font-black m-0 text-[var(--text-primary)] tracking-tight">
+              <h2
+                style={{
+                  fontSize: "clamp(1.5rem, 3vw, 2.2rem)",
+                  fontWeight: 900,
+                  margin: 0,
+                  color: "var(--text-primary)",
+                  letterSpacing: "-0.03em",
+                }}
+              >
                 Your Success is Our Mission
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-[var(--card-border)] rounded-2xl overflow-hidden border border-[var(--card-border)]">
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+                gap: "1px",
+                ...glassStyle("rgba(14,111,168,0.08)"),
+                borderRadius: "1rem",
+                overflow: "hidden",
+              }}
+            >
               {[
                 {
                   icon: "🎓",
                   title: "Expert Faculty",
-                  desc: "Learn from certified professionals with decades of industry experience in civil engineering and architecture.",
+                  desc: "Learn from certified professionals with decades of civil engineering and architecture experience.",
                 },
                 {
                   icon: "🏗️",
                   title: "Real-World Projects",
-                  desc: "Work on actual construction projects and case studies from Cameroonian infrastructure developments.",
+                  desc: "Work on actual construction case studies from Cameroonian infrastructure developments.",
                 },
                 {
                   icon: "💼",
                   title: "Career Support",
-                  desc: "Comprehensive job placement assistance with connections to leading construction firms across Cameroon.",
+                  desc: "Job placement assistance with connections to leading construction firms across Cameroon.",
                 },
                 {
                   icon: "🌟",
                   title: "Industry Recognition",
-                  desc: "Our certifications are recognized by engineering councils and construction companies nationwide.",
+                  desc: "Certifications recognised by engineering councils and construction companies nationwide.",
                 },
                 {
                   icon: "🤝",
                   title: "Small Class Sizes",
-                  desc: "Maximum 15 students per class ensures personalized attention and hands-on learning experience.",
+                  desc: "Maximum 15 students per class ensures personalised attention and practical experience.",
                 },
                 {
                   icon: "🚀",
                   title: "Modern Facilities",
-                  desc: "State-of-the-art computer labs with licensed software and high-speed internet connectivity.",
+                  desc: "State-of-the-art computer labs with licensed software and high-speed internet.",
                 },
-              ].map((benefit, i) => (
+              ].map((item, i) => (
                 <div
                   key={i}
-                  className="bg-[var(--card-bg)] p-7 flex flex-col gap-3"
+                  style={{
+                    background: "rgba(7,24,40,0.45)",
+                    backdropFilter: "blur(20px) saturate(160%)",
+                    WebkitBackdropFilter: "blur(20px) saturate(160%)",
+                    padding: "1.75rem 1.5rem",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "0.75rem",
+                    borderRight:
+                      i % 3 < 2 ? "1px solid rgba(125,211,252,0.08)" : "none",
+                    borderBottom:
+                      i < 3 ? "1px solid rgba(125,211,252,0.08)" : "none",
+                    transition: "background 0.2s",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLDivElement).style.background =
+                      "rgba(14,111,168,0.18)";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLDivElement).style.background =
+                      "rgba(7,24,40,0.45)";
+                  }}
                 >
-                  <span className="text-[1.4rem]">{benefit.icon}</span>
-                  <p className="m-0 text-[0.95rem] font-extrabold text-[var(--text-primary)] tracking-tight">
-                    {benefit.title}
+                  <span style={{ fontSize: "1.4rem" }}>{item.icon}</span>
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: "0.95rem",
+                      fontWeight: 800,
+                      color: "var(--text-primary)",
+                      letterSpacing: "-0.01em",
+                    }}
+                  >
+                    {item.title}
                   </p>
-                  <p className="m-0 text-[0.8rem] text-[var(--text-secondary)] leading-relaxed">
-                    {benefit.desc}
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: "0.8rem",
+                      color: "var(--text-secondary)",
+                      lineHeight: 1.6,
+                    }}
+                  >
+                    {item.desc}
                   </p>
                 </div>
               ))}
@@ -820,6 +1779,10 @@ export default function ProgrammesPage() {
       <style>{`
         * { box-sizing: border-box; }
         html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+        @media (max-width: 640px) {
+          .hero-grid { grid-template-columns: 1fr !important; }
+          .payment-grid { grid-template-columns: 1fr !important; }
+        }
       `}</style>
     </>
   );
