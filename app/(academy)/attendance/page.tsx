@@ -3,6 +3,7 @@ export default function AttendancePage() {
     <main>
       <h1>Attendance</h1>
       <p>Coming soon.</p>
+      <p>commingup</p>
     </main>
   );
 }
