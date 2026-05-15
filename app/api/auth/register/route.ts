@@ -31,18 +31,24 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Hash password
-    const hashedPassword = await hashPassword(password);
+    const passwordHash = await hashPassword(password);
 
-    // Create user
+    // Create User + Student in one transaction
     const user = await prisma.user.create({
       data: {
-        firstName,
-        lastName,
         email,
-        studentId,
-        password: hashedPassword,
-        role: "STUDENT", // Default role
+        passwordHash, // ← schema field is passwordHash, not password
+        studentId, // ← foreign key shortcut on User
+        role: "STUDENT",
+        student: {
+          create: {
+            studentId, // ← required unique field on Student
+            firstName,
+            lastName,
+            dateOfBirth: new Date("2000-01-01"), // placeholder
+            gender: "OTHER", // placeholder
+          },
+        },
       },
     });
 

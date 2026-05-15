@@ -86,6 +86,8 @@ model User {
   updatedAt      DateTime  @updatedAt
 
   // Relations
+    studentId String? @unique
+
   student        Student?
   admin          Admin?
   sessions       Session[]
