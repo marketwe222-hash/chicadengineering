@@ -1,9 +1,9 @@
+//app/(academy)/academy/dashboard/page.tsx
+
 "use client";
-import { useState, useEffect, ReactNode } from "react";
+import { useState, ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useAuthContext } from "@/context/AuthContext";
 /* ══════════════════════════════════════════════
    MOCK DATA  — replace with real API calls
 ══════════════════════════════════════════════ */
@@ -260,9 +260,6 @@ const GLOBAL_CSS = `
   .resume-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
   .card-hover:hover { border-color: rgba(125,211,252,0.22) !important; transform: translateY(-2px); }
   .card-hover { transition: all 0.22s ease; }
-  @media (max-width: 768px) {
-    .dashboard-content { padding-bottom: 72px !important; }
-  }
 `;
 
 /* ══════════════════════════════════════════════
@@ -373,23 +370,10 @@ function Tag({ label, color }: { label: string; color: string }) {
 function Sidebar({
   view,
   setView,
-  onLogout,
 }: {
   view: View;
   setView: (v: View) => void;
-  onLogout: () => void;
 }) {
-  const [open, setOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 768px)");
-    setIsMobile(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
-
   const nav: { id: View; label: string; icon: string; badge?: number }[] = [
     { id: "overview", label: "Overview", icon: "⊞" },
     {
@@ -403,107 +387,6 @@ function Sidebar({
     { id: "resources", label: "Resources", icon: "📁" },
   ];
 
-  const handleNav = (id: View) => { setView(id); setOpen(false); };
-
-  /* ── Mobile: bottom tab bar + slide-in drawer ── */
-  if (isMobile) {
-    return (
-      <>
-        {/* Backdrop */}
-        {open && (
-          <div
-            onClick={() => setOpen(false)}
-            style={{
-              position: "fixed", inset: 0, zIndex: 40,
-              background: "rgba(0,0,0,0.55)",
-              backdropFilter: "blur(4px)",
-            }}
-          />
-        )}
-
-        {/* Drawer */}
-        <div style={{
-          position: "fixed", top: 0, left: 0, bottom: 0, zIndex: 50,
-          width: 240,
-          background: "var(--surface)",
-          borderRight: "1px solid var(--border)",
-          display: "flex", flexDirection: "column",
-          transform: open ? "translateX(0)" : "translateX(-100%)",
-          transition: "transform 0.28s cubic-bezier(0.4,0,0.2,1)",
-        }}>
-          {/* Logo */}
-          <div style={{ padding: "1rem", borderBottom: "1px solid var(--border2)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <Link href="/academy">
-              <Image src="/images/logowhite.png" alt="logo" width={80} height={40} style={{ height: "auto" }} />
-            </Link>
-            <button onClick={() => setOpen(false)} style={{ background: "none", border: "none", color: "var(--text2)", fontSize: "1.2rem", cursor: "pointer" }}>✕</button>
-          </div>
-          {/* Profile */}
-          <div style={{ padding: "0.85rem 1rem", borderBottom: "1px solid var(--border2)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-              <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(59,130,246,0.18)", border: "1.5px solid rgba(59,130,246,0.45)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.72rem", fontWeight: 800, color: "#3b82f6", flexShrink: 0 }}>JN</div>
-              <div>
-                <div style={{ fontSize: "0.78rem", fontWeight: 700, color: "var(--text)" }}>{STUDENT.name}</div>
-                <div style={{ fontSize: "0.6rem", color: "var(--text3)" }}>{STUDENT.software} · BATCH {STUDENT.batch}</div>
-              </div>
-            </div>
-          </div>
-          {/* Nav */}
-          <nav style={{ flex: 1, overflowY: "auto", padding: "0.65rem 0.7rem" }}>
-            {nav.map((item) => {
-              const active = view === item.id;
-              return (
-                <div key={item.id} className="nav-item" onClick={() => handleNav(item.id)}
-                  style={{ display: "flex", alignItems: "center", gap: "0.6rem", padding: "0.65rem 0.7rem", borderRadius: 8, marginBottom: "0.12rem", background: active ? "rgba(59,130,246,0.15)" : "transparent", border: active ? "1px solid rgba(59,130,246,0.28)" : "1px solid transparent" }}>
-                  <span style={{ fontSize: "1rem", width: 20, textAlign: "center" }}>{item.icon}</span>
-                  <span style={{ fontSize: "0.82rem", fontWeight: active ? 700 : 500, color: active ? "var(--text)" : "var(--text2)", flex: 1 }}>{item.label}</span>
-                </div>
-              );
-            })}
-            <div className="nav-item" onClick={() => handleNav("profile")}
-              style={{ display: "flex", alignItems: "center", gap: "0.6rem", padding: "0.65rem 0.7rem", borderRadius: 8, marginBottom: "0.12rem", background: view === "profile" ? "rgba(59,130,246,0.15)" : "transparent", border: view === "profile" ? "1px solid rgba(59,130,246,0.28)" : "1px solid transparent" }}>
-              <span style={{ fontSize: "1rem", width: 20, textAlign: "center" }}>👤</span>
-              <span style={{ fontSize: "0.82rem", fontWeight: view === "profile" ? 700 : 500, color: view === "profile" ? "var(--text)" : "var(--text2)" }}>My Profile</span>
-            </div>
-          </nav>
-          {/* Logout */}
-          <div style={{ padding: "0.7rem", borderTop: "1px solid var(--border2)" }}>
-            <div className="nav-item" onClick={onLogout} style={{ display: "flex", alignItems: "center", gap: "0.6rem", padding: "0.55rem 0.7rem", borderRadius: 8, cursor: "pointer" }}>
-              <span style={{ fontSize: "0.85rem" }}>🚪</span>
-              <span style={{ fontSize: "0.78rem", color: "var(--text2)" }}>Logout</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom tab bar */}
-        <div style={{
-          position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 30,
-          height: 56,
-          background: "var(--surface)",
-          borderTop: "1px solid var(--border)",
-          display: "flex", alignItems: "center", justifyContent: "space-around",
-        }}>
-          <button onClick={() => setOpen(true)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 2, color: "var(--text2)" }}>
-            <span style={{ fontSize: "1.1rem" }}>☰</span>
-            <span style={{ fontSize: "0.5rem", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase" }}>Menu</span>
-          </button>
-          {nav.slice(0, 4).map((item) => {
-            const active = view === item.id;
-            return (
-              <button key={item.id} onClick={() => setView(item.id)}
-                style={{ background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 2, color: active ? "var(--sky)" : "var(--text2)", position: "relative" }}>
-                <span style={{ fontSize: "1.1rem" }}>{item.icon}</span>
-                <span style={{ fontSize: "0.5rem", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase" }}>{item.label.split(" ")[0]}</span>
-                {active && <div style={{ position: "absolute", top: -8, left: "50%", transform: "translateX(-50%)", width: 20, height: 2, borderRadius: 1, background: "var(--sky)" }} />}
-              </button>
-            );
-          })}
-        </div>
-      </>
-    );
-  }
-
-  /* ── Desktop sidebar ── */
   return (
     <aside
       style={{
@@ -532,7 +415,6 @@ function Sidebar({
             alt="logo"
             width={100}
             height={50}
-            style={{ height: "auto" }}
           />
         </Link>
       </div>
@@ -749,14 +631,12 @@ function Sidebar({
       <div style={{ padding: "0.7rem", borderTop: "1px solid var(--border2)" }}>
         <div
           className="nav-item"
-          onClick={onLogout}
           style={{
             display: "flex",
             alignItems: "center",
             gap: "0.6rem",
             padding: "0.55rem 0.7rem",
             borderRadius: 8,
-            cursor: "pointer",
           }}
         >
           <span style={{ fontSize: "0.85rem" }}>🚪</span>
@@ -1917,13 +1797,6 @@ const PAGE_META: Record<View, { title: string; sub: string }> = {
 export default function StudentPortal() {
   const [view, setView] = useState<View>("overview");
   const meta = PAGE_META[view];
-  const { logout } = useAuthContext();
-  const router = useRouter();
-
-  const handleLogout = async () => {
-    await logout();
-    router.push("/academy/login");
-  };
 
   return (
     <>
@@ -1931,7 +1804,7 @@ export default function StudentPortal() {
       <div
         style={{ display: "flex", minHeight: "100vh", background: "var(--bg)" }}
       >
-        <Sidebar view={view} setView={setView} onLogout={handleLogout} />
+        <Sidebar view={view} setView={setView} />
 
         {/* Main content */}
         <div
@@ -2034,7 +1907,7 @@ export default function StudentPortal() {
           </div>
 
           {/* Page content */}
-          <div className="dashboard-content" style={{ flex: 1, padding: "1.4rem 1.6rem", overflowY: "auto" }}>
+          <div style={{ flex: 1, padding: "1.4rem 1.6rem", overflowY: "auto" }}>
             {view === "overview" && <Overview setView={setView} />}
             {view === "courses" && <CoursesView />}
             {view === "lessons" && <LessonsView />}
