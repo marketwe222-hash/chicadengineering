@@ -7,158 +7,105 @@ import { Header, Footer } from "@/components/academy";
 /* ─── Software Data ───────────────────────────────────────── */
 const SOFTWARE_TOOLS = [
   {
-    name: "AutoCAD",
-    category: "2D Drafting & Design",
-    icon: "📐",
-    description:
-      "Industry-standard 2D drafting software for creating precise technical drawings, floor plans, and construction documents.",
-    features: [
-      "2D drafting and annotation",
-      "Parametric drawing tools",
-      "Layer management",
-      "Block libraries",
-      "PDF export capabilities",
-    ],
-    level: "Beginner to Advanced",
-    duration: "4 weeks",
-    gradientFrom: "#ff6b35",
-    gradientTo: "#f7931e",
-  },
-  {
-    name: "Revit Architecture",
-    category: "BIM Software",
-    icon: "🏗️",
-    description:
-      "Building Information Modeling software for creating intelligent 3D models of buildings with parametric components.",
-    features: [
-      "3D parametric modeling",
-      "Building systems integration",
-      "Construction documentation",
-      "Quantity takeoffs",
-      "Collaboration tools",
-    ],
-    level: "Intermediate to Advanced",
-    duration: "6 weeks",
-    gradientFrom: "#3b82f6",
-    gradientTo: "#1d4ed8",
-  },
-  {
-    name: "SAP2000",
-    category: "Structural Analysis",
-    icon: "⚡",
-    description:
-      "Advanced structural analysis and design software for modeling, analyzing, and designing any type of civil engineering project.",
-    features: [
-      "Static and dynamic analysis",
-      "Steel and concrete design",
-      "Foundation design",
-      "Bridge analysis",
-      "Seismic analysis",
-    ],
-    level: "Advanced",
-    duration: "8 weeks",
-    gradientFrom: "#059669",
-    gradientTo: "#047857",
-  },
-  {
-    name: "ETABS",
-    category: "Building Analysis",
-    icon: "🏢",
-    description:
-      "Integrated software package for the analysis and design of building systems, specializing in multi-story building structures.",
-    features: [
-      "3D building modeling",
-      "Automated load generation",
-      "Steel and concrete design",
-      "Performance-based design",
-      "Wind and seismic analysis",
-    ],
-    level: "Advanced",
-    duration: "8 weeks",
-    gradientFrom: "#7c3aed",
-    gradientTo: "#5b21b6",
-  },
-  {
-    name: "SAFE",
-    category: "Foundation Design",
-    icon: "🪨",
-    description:
-      "Specialized software for the analysis and design of concrete floor and foundation systems, including post-tensioning.",
-    features: [
-      "Slab analysis and design",
-      "Foundation design",
-      "Post-tensioned concrete",
-      "Mat foundation analysis",
-      "Soil-structure interaction",
-    ],
-    level: "Advanced",
-    duration: "6 weeks",
-    gradientFrom: "#dc2626",
-    gradientTo: "#b91c1c",
-  },
-  {
     name: "Lumion",
-    category: "3D Visualization",
-    icon: "🎨",
-    description:
-      "Real-time 3D visualization software for creating stunning renderings, animations, and virtual reality experiences.",
-    features: [
-      "Real-time rendering",
-      "Animation tools",
-      "Material libraries",
-      "Lighting effects",
-      "VR export capabilities",
-    ],
-    level: "Intermediate",
-    duration: "4 weeks",
-    gradientFrom: "#ec4899",
-    gradientTo: "#be185d",
-  },
-  {
-    name: "ArchiCAD",
-    category: "Architectural BIM",
-    icon: "🏛️",
-    description:
-      "Architectural BIM software that supports the entire design workflow from concept to construction documentation.",
-    features: [
-      "Virtual building modeling",
-      "Energy analysis",
-      "Construction documentation",
-      "Team collaboration",
-      "Open BIM workflow",
-    ],
-    level: "Intermediate to Advanced",
-    duration: "6 weeks",
+    category: "Visualization",
+    icon: "🌅",
+    description: "3D rendering & real-time visualization for architecture. Create stunning photorealistic renders and immersive virtual walkthroughs that bring designs to life.",
+    features: ["Real-time rendering", "Animation tools", "Material libraries", "Lighting effects", "VR export capabilities"],
+    level: "Beginner to Intermediate",
+    duration: "1 Month",
+    registrationFee: 5000,
+    trainingFee: 30000,
     gradientFrom: "#f59e0b",
     gradientTo: "#d97706",
   },
   {
-    name: "SketchUp Pro",
-    category: "3D Modeling",
-    icon: "📦",
-    description:
-      "Intuitive 3D modeling software perfect for conceptual design, prototyping, and visualization of architectural projects.",
-    features: [
-      "3D modeling tools",
-      "Component libraries",
-      "Terrain modeling",
-      "Extension ecosystem",
-      "DWG/DXF import/export",
-    ],
-    level: "Beginner to Intermediate",
-    duration: "3 weeks",
-    gradientFrom: "#10b981",
-    gradientTo: "#059669",
+    name: "Ms Excel",
+    category: "Productivity",
+    icon: "📊",
+    description: "Advanced spreadsheets, data analysis & project management. From pivot tables to VBA macros used daily in engineering firms and construction management.",
+    features: ["Pivot tables & charts", "VBA macros", "Data analysis tools", "Project scheduling", "Engineering calculations"],
+    level: "Beginner to Advanced",
+    duration: "1 Month",
+    registrationFee: 5000,
+    trainingFee: 30000,
+    gradientFrom: "#22c55e",
+    gradientTo: "#16a34a",
+  },
+  {
+    name: "SAP2000",
+    category: "Structural Analysis",
+    icon: "🔩",
+    description: "Structural analysis & design for buildings & bridges. Perform linear and nonlinear analysis of complex structures to international codes.",
+    features: ["Static & dynamic analysis", "Steel & concrete design", "Foundation design", "Bridge analysis", "Seismic analysis"],
+    level: "Intermediate to Advanced",
+    duration: "2 Months",
+    registrationFee: 5000,
+    trainingFee: 50000,
+    gradientFrom: "#fb923c",
+    gradientTo: "#ea580c",
+  },
+  {
+    name: "ABAQUS",
+    category: "FEA",
+    icon: "⚙️",
+    description: "Finite element analysis for complex structural simulations including nonlinear mechanics, dynamic analysis, thermal coupling, and fatigue prediction.",
+    features: ["Nonlinear FEA", "Dynamic analysis", "Thermal coupling", "Fatigue prediction", "Advanced material models"],
+    level: "Advanced",
+    duration: "2 Months",
+    registrationFee: 5000,
+    trainingFee: 50000,
+    gradientFrom: "#e879f9",
+    gradientTo: "#a21caf",
+  },
+  {
+    name: "Revit",
+    category: "BIM",
+    icon: "🏗️",
+    description: "Building Information Modeling for architects & engineers. Model complete buildings, generate construction documents, and coordinate MEP systems.",
+    features: ["3D parametric modeling", "Building systems integration", "Construction documentation", "Quantity takeoffs", "Collaboration tools"],
+    level: "Intermediate to Advanced",
+    duration: "3 Months",
+    registrationFee: 5000,
+    trainingFee: 70000,
+    gradientFrom: "#7dd3fc",
+    gradientTo: "#0ea5e9",
+  },
+  {
+    name: "AutoCAD",
+    category: "CAD",
+    icon: "📐",
+    description: "Industry-standard 2D/3D drafting & design software. Master precision drafting, 3D modeling, annotation, and sheet sets used worldwide.",
+    features: ["2D drafting & annotation", "3D modeling", "Layer management", "Block libraries", "PDF & DWG export"],
+    level: "Beginner to Advanced",
+    duration: "3 Months",
+    registrationFee: 5000,
+    trainingFee: 70000,
+    gradientFrom: "#ef4444",
+    gradientTo: "#b91c1c",
+  },
+  {
+    name: "ArchiCAD",
+    category: "BIM",
+    icon: "🏛️",
+    description: "BIM software focused on architectural design & documentation. Architect-first workflow with parametric objects, teamwork collaboration, and open BIM.",
+    features: ["Virtual building modeling", "Energy analysis", "Construction documentation", "Team collaboration", "Open BIM workflow"],
+    level: "Intermediate to Advanced",
+    duration: "3 Months",
+    registrationFee: 5000,
+    trainingFee: 70000,
+    gradientFrom: "#a78bfa",
+    gradientTo: "#7c3aed",
   },
 ];
 
 const CATEGORIES = [
-  { name: "2D Drafting", count: 1, icon: "📐" },
-  { name: "BIM Software", count: 2, icon: "🏗️" },
-  { name: "Structural Analysis", count: 2, icon: "⚡" },
-  { name: "Foundation Design", count: 1, icon: "🪨" },
-  { name: "Visualization", count: 1, icon: "🎨" },
-  { name: "3D Modeling", count: 1, icon: "📦" },
+  { name: "Visualization", count: 1, icon: "🌅" },
+  { name: "Productivity", count: 1, icon: "📊" },
+  { name: "Structural Analysis", count: 1, icon: "🔩" },
+  { name: "FEA", count: 1, icon: "⚙️" },
+  { name: "BIM", count: 2, icon: "🏗️" },
+  { name: "CAD", count: 1, icon: "📐" },
 ];
 
 const WHY_ITEMS = [
@@ -487,6 +434,9 @@ function SoftwareCard({ software }: { software: (typeof SOFTWARE_TOOLS)[0] }) {
             <ClockIcon />
             <span style={{ fontWeight: 600 }}>{software.duration}</span>
           </div>
+          <div style={{ marginLeft: "auto", fontSize: "0.75rem", fontWeight: 700, color: software.gradientFrom }}>
+            {software.trainingFee.toLocaleString()} FRS
+          </div>
         </div>
       </div>
     </div>
@@ -603,7 +553,7 @@ export default function SoftwarePage() {
                 >
                   Our comprehensive curriculum covers{" "}
                   <strong style={{ color: "var(--text-primary)" }}>
-                    8+ professional software tools
+                    7 professional software tools
                   </strong>{" "}
                   used by engineers and architects worldwide. From 2D drafting
                   to advanced structural analysis, you'll gain hands-on

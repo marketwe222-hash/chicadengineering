@@ -4,162 +4,125 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Header, Footer } from "@/components/academy";
 
-/* ─── Software Courses with individual pricing & images ──── */
+/* ─── Software Courses — matches register page exactly ──── */
 const SOFTWARE_COURSES = [
   {
-    id: "autocad",
-    name: "AutoCAD Fundamentals",
-    software: "AutoCAD",
-    price: "85,000 CFA",
-    hours: "120 hours",
-    level: "Beginner",
-    duration: "4 weeks",
-    description:
-      "Master 2D drafting, annotation tools, and technical drawing standards used across every engineering discipline.",
-    image:
-      "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=600&q=80",
-    gradientFrom: "#ff6b35",
-    gradientTo: "#f7931e",
-    icon: "📐",
+    id: "lumion",
+    name: "Lumion",
+    software: "Lumion",
+    registrationFee: 5000,
+    trainingFee: 30000,
+    duration: "1 Month",
+    category: "Visualization",
+    description: "3D rendering & real-time visualization for architecture. Master photorealistic rendering and immersive virtual walkthroughs.",
+    gradientFrom: "#f59e0b",
+    gradientTo: "#d97706",
+    icon: "🌅",
+    badge: null,
+  },
+  {
+    id: "excel",
+    name: "Ms Excel",
+    software: "Ms Excel",
+    registrationFee: 5000,
+    trainingFee: 30000,
+    duration: "1 Month",
+    category: "Productivity",
+    description: "Advanced spreadsheets, data analysis & project management. From pivot tables to VBA macros used daily in engineering firms.",
+    gradientFrom: "#22c55e",
+    gradientTo: "#16a34a",
+    icon: "📊",
+    badge: null,
+  },
+  {
+    id: "sap2000",
+    name: "SAP2000",
+    software: "SAP2000",
+    registrationFee: 5000,
+    trainingFee: 50000,
+    duration: "2 Months",
+    category: "Structural Analysis",
+    description: "Structural analysis & design for buildings & bridges. Perform linear and nonlinear analysis of complex structures.",
+    gradientFrom: "#fb923c",
+    gradientTo: "#ea580c",
+    icon: "🔩",
+    badge: null,
+  },
+  {
+    id: "abaqus",
+    name: "ABAQUS",
+    software: "ABAQUS",
+    registrationFee: 5000,
+    trainingFee: 50000,
+    duration: "2 Months",
+    category: "FEA",
+    description: "Finite element analysis for complex structural simulations including nonlinear mechanics, dynamic analysis and fatigue prediction.",
+    gradientFrom: "#e879f9",
+    gradientTo: "#a21caf",
+    icon: "⚙️",
     badge: null,
   },
   {
     id: "revit",
-    name: "Revit Architecture Essentials",
-    software: "Revit Architecture",
-    price: "110,000 CFA",
-    hours: "180 hours",
-    level: "Intermediate",
-    duration: "6 weeks",
-    description:
-      "Build intelligent BIM models, automate construction documentation, and collaborate with multi-disciplinary teams.",
-    image:
-      "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=600&q=80",
-    gradientFrom: "#3b82f6",
-    gradientTo: "#1d4ed8",
+    name: "Revit",
+    software: "Revit",
+    registrationFee: 5000,
+    trainingFee: 70000,
+    duration: "3 Months",
+    category: "BIM",
+    description: "Building Information Modeling for architects & engineers. Model complete buildings, generate construction documents and coordinate MEP systems.",
+    gradientFrom: "#7dd3fc",
+    gradientTo: "#0ea5e9",
     icon: "🏗️",
     badge: "Popular",
   },
   {
-    id: "sap2000",
-    name: "SAP2000 Structural Analysis",
-    software: "SAP2000",
-    price: "130,000 CFA",
-    hours: "200 hours",
-    level: "Advanced",
-    duration: "8 weeks",
-    description:
-      "Model, analyze, and design complex structures with static, dynamic, seismic, and bridge analysis modules.",
-    image:
-      "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=600&q=80",
-    gradientFrom: "#059669",
-    gradientTo: "#047857",
-    icon: "⚡",
-    badge: null,
-  },
-  {
-    id: "etabs",
-    name: "ETABS Building Design",
-    software: "ETABS",
-    price: "130,000 CFA",
-    hours: "200 hours",
-    level: "Advanced",
-    duration: "8 weeks",
-    description:
-      "Specialized multi-story building analysis including performance-based design, wind loading, and concrete detailing.",
-    image:
-      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&q=80",
-    gradientFrom: "#7c3aed",
-    gradientTo: "#5b21b6",
-    icon: "🏢",
-    badge: null,
-  },
-  {
-    id: "safe",
-    name: "SAFE Foundation Design",
-    software: "SAFE",
-    price: "120,000 CFA",
-    hours: "160 hours",
-    level: "Advanced",
-    duration: "6 weeks",
-    description:
-      "Design concrete slabs, mat foundations, and post-tensioned systems with full soil-structure interaction.",
-    image:
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80",
-    gradientFrom: "#dc2626",
+    id: "autocad",
+    name: "AutoCAD",
+    software: "AutoCAD",
+    registrationFee: 5000,
+    trainingFee: 70000,
+    duration: "3 Months",
+    category: "CAD",
+    description: "Industry-standard 2D/3D drafting & design software. Master precision drafting, 3D modeling, annotation, and sheet sets.",
+    gradientFrom: "#ef4444",
     gradientTo: "#b91c1c",
-    icon: "🪨",
+    icon: "📐",
     badge: null,
-  },
-  {
-    id: "lumion",
-    name: "Lumion Visualization Lab",
-    software: "Lumion",
-    price: "75,000 CFA",
-    hours: "100 hours",
-    level: "Intermediate",
-    duration: "4 weeks",
-    description:
-      "Create photorealistic renders, walkthroughs, and VR experiences that win clients and communicate design intent.",
-    image:
-      "https://images.unsplash.com/photo-1545167622-3a6ac756afa4?w=600&q=80",
-    gradientFrom: "#ec4899",
-    gradientTo: "#be185d",
-    icon: "🎨",
-    badge: "Creative",
   },
   {
     id: "archicad",
-    name: "ArchiCAD BIM Workflow",
+    name: "ArchiCAD",
     software: "ArchiCAD",
-    price: "105,000 CFA",
-    hours: "160 hours",
-    level: "Intermediate",
-    duration: "6 weeks",
-    description:
-      "Full architectural BIM workflow from concept through construction documentation with energy analysis integration.",
-    image:
-      "https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=600&q=80",
-    gradientFrom: "#f59e0b",
-    gradientTo: "#d97706",
+    registrationFee: 5000,
+    trainingFee: 70000,
+    duration: "3 Months",
+    category: "BIM",
+    description: "BIM software focused on architectural design & documentation. Architect-first workflow with parametric objects and teamwork collaboration.",
+    gradientFrom: "#a78bfa",
+    gradientTo: "#7c3aed",
     icon: "🏛️",
     badge: null,
   },
-  {
-    id: "sketchup",
-    name: "SketchUp Pro Modeling",
-    software: "SketchUp Pro",
-    price: "65,000 CFA",
-    hours: "90 hours",
-    level: "Beginner",
-    duration: "3 weeks",
-    description:
-      "Fast 3D conceptual modeling for architects and designers — from site massing to detailed interior layouts.",
-    image:
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&q=80",
-    gradientFrom: "#10b981",
-    gradientTo: "#059669",
-    icon: "📦",
-    badge: "Best Start",
-  },
 ];
 
-/* ─── Programme Data ──────────────────────────────────────── */
+/* ─── Glass helper (matches software page) ─────────────────── */
+/* ─── Programme Data ─────────────────────────────────────────── */
 const PROGRAMMES = [
   {
     id: "3-month",
     name: "3-Month Intensive",
     duration: "3 Months",
-    price: "750,000 CFA",
-    originalPrice: "900,000 CFA",
+    price: "Contact us",
+    originalPrice: "",
     badge: "Most Popular",
     description:
       "Perfect for students and professionals looking to quickly gain essential CAD skills for immediate career application.",
     highlights: [
-      "8 Professional Software Tools",
+      "7 Professional Software Tools",
       "Hands-on Project Work",
       "Industry Case Studies",
-      "Basic Certification",
+      "Completion Certificate",
       "Portfolio Development",
       "Job Placement Support",
     ],
@@ -167,20 +130,20 @@ const PROGRAMMES = [
       {
         month: "Month 1",
         title: "Foundation Skills",
-        tools: ["AutoCAD", "SketchUp Pro"],
-        focus: "2D drafting, basic 3D modeling, technical drawing standards",
+        tools: ["AutoCAD", "Ms Excel"],
+        focus: "2D drafting, technical drawing standards, data management",
       },
       {
         month: "Month 2",
-        title: "Advanced Design",
-        tools: ["Revit Architecture", "ArchiCAD", "Lumion"],
+        title: "BIM & Visualization",
+        tools: ["Revit", "ArchiCAD", "Lumion"],
         focus: "BIM modeling, architectural design, 3D visualization",
       },
       {
         month: "Month 3",
-        title: "Project Integration",
-        tools: ["SAP2000", "ETABS"],
-        focus: "Structural analysis, building systems, final project",
+        title: "Structural Analysis",
+        tools: ["SAP2000", "ABAQUS"],
+        focus: "Structural analysis, FEA simulations, final project",
       },
     ],
     features: [
@@ -189,7 +152,7 @@ const PROGRAMMES = [
       "Practical assignments",
       "Industry guest speakers",
       "Certificate of completion",
-      "3-month internship placement",
+      "Job placement support",
     ],
     gradientFrom: "#0ea5e9",
     gradientTo: "#6366f1",
@@ -199,13 +162,13 @@ const PROGRAMMES = [
     id: "6-month",
     name: "6-Month Comprehensive",
     duration: "6 Months",
-    price: "1,200,000 CFA",
-    originalPrice: "1,500,000 CFA",
+    price: "Contact us",
+    originalPrice: "",
     badge: "Complete Mastery",
     description:
       "The ultimate training experience for complete mastery of civil engineering design tools and professional certification.",
     highlights: [
-      "All 8 Software Tools + Advanced Modules",
+      "All 7 Software Tools + Advanced Modules",
       "Real Construction Site Visits",
       "Professional Certification Prep",
       "Advanced Structural Analysis",
@@ -216,19 +179,19 @@ const PROGRAMMES = [
       {
         month: "Months 1–2",
         title: "Core Foundation",
-        tools: ["AutoCAD", "SketchUp Pro", "Revit Architecture"],
+        tools: ["AutoCAD", "Ms Excel", "Revit"],
         focus: "Complete 2D/3D design workflow, parametric modeling",
       },
       {
         month: "Months 3–4",
         title: "Specialized Design",
-        tools: ["ArchiCAD", "Lumion", "SAFE"],
-        focus: "Architectural BIM, visualization, foundation design",
+        tools: ["ArchiCAD", "Lumion"],
+        focus: "Architectural BIM, visualization, presentation",
       },
       {
         month: "Months 5–6",
         title: "Advanced Analysis",
-        tools: ["SAP2000", "ETABS"],
+        tools: ["SAP2000", "ABAQUS"],
         focus: "Complex structural analysis, multi-disciplinary projects",
       },
     ],
@@ -238,7 +201,7 @@ const PROGRAMMES = [
       "Real construction site visits",
       "Professional certification exams",
       "Business development training",
-      "6-month guaranteed internship",
+      "Guaranteed job placement",
       "Industry networking events",
       "Personal mentorship program",
     ],
@@ -248,42 +211,6 @@ const PROGRAMMES = [
   },
 ];
 
-const COMPARISON_DATA = [
-  {
-    feature: "Software Tools Covered",
-    basic: "6 Core Tools",
-    premium: "8+ Advanced Tools",
-  },
-  { feature: "Class Duration", basic: "4 hours/day", premium: "6 hours/day" },
-  {
-    feature: "Class Size",
-    basic: "Max 15 students",
-    premium: "Max 12 students",
-  },
-  { feature: "Site Visits", basic: "2 visits", premium: "Monthly visits" },
-  {
-    feature: "Certification",
-    basic: "Completion Certificate",
-    premium: "Professional Certification",
-  },
-  {
-    feature: "Job Placement",
-    basic: "Support provided",
-    premium: "Guaranteed placement",
-  },
-  {
-    feature: "Mentorship",
-    basic: "Group sessions",
-    premium: "1-on-1 mentorship",
-  },
-  {
-    feature: "Business Training",
-    basic: "Basic overview",
-    premium: "Comprehensive course",
-  },
-];
-
-/* ─── Glass helper (matches software page) ─────────────────── */
 const glassStyle = (bg = "rgba(14,111,168,0.12)"): React.CSSProperties => ({
   background: bg,
   backdropFilter: "blur(20px) saturate(180%)",
@@ -327,23 +254,6 @@ function ClockIcon() {
     </svg>
   );
 }
-function LevelIcon() {
-  return (
-    <svg
-      width="13"
-      height="13"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-    </svg>
-  );
-}
-
 /* ─── Software Course Card ───────────────────────────────────── */
 function SoftwareCourseCard({
   course,
@@ -355,6 +265,7 @@ function SoftwareCourseCard({
   onSelect: () => void;
 }) {
   const [hovered, setHovered] = useState(false);
+  const totalFee = course.registrationFee + course.trainingFee;
 
   return (
     <div
@@ -381,215 +292,48 @@ function SoftwareCourseCard({
         position: "relative",
       }}
     >
-      {/* Background image */}
-      <div
-        style={{ position: "relative", height: "160px", overflow: "hidden" }}
-      >
-        <img
-          src={course.image}
-          alt={course.software}
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            transition: "transform 0.4s ease",
-            transform: hovered ? "scale(1.06)" : "scale(1)",
-          }}
-        />
-        {/* Overlay gradient */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: `linear-gradient(to bottom, ${course.gradientFrom}44 0%, rgba(7,24,40,0.75) 100%)`,
-          }}
-        />
-        {/* Icon bubble top-left */}
-        <div
-          style={{
-            position: "absolute",
-            top: "1rem",
-            left: "1rem",
-            width: "2.75rem",
-            height: "2.75rem",
-            borderRadius: "0.75rem",
-            background: `linear-gradient(135deg, ${course.gradientFrom} 0%, ${course.gradientTo} 100%)`,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "1.3rem",
-            boxShadow: `0 4px 16px ${course.gradientFrom}55`,
-          }}
-        >
-          {course.icon}
-        </div>
-        {/* Badge top-right */}
-        {course.badge && (
-          <div
-            style={{
-              position: "absolute",
-              top: "1rem",
-              right: "1rem",
-              padding: "0.25rem 0.7rem",
-              borderRadius: "999px",
-              background: `linear-gradient(135deg, ${course.gradientFrom} 0%, ${course.gradientTo} 100%)`,
-              fontSize: "0.62rem",
-              fontWeight: 800,
-              color: "#fff",
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-            }}
-          >
-            {course.badge}
-          </div>
-        )}
-        {/* Selected check */}
-        {selected && (
-          <div
-            style={{
-              position: "absolute",
-              bottom: "1rem",
-              right: "1rem",
-              width: "2rem",
-              height: "2rem",
-              borderRadius: "50%",
-              background: `linear-gradient(135deg, ${course.gradientFrom} 0%, ${course.gradientTo} 100%)`,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              boxShadow: `0 0 16px ${course.gradientFrom}88`,
-            }}
-          >
-            <svg
-              width="12"
-              height="12"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#fff"
-              strokeWidth="3.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          </div>
-        )}
-      </div>
+      {/* Coloured top stripe */}
+      <div style={{ height: "4px", background: `linear-gradient(90deg, ${course.gradientFrom}, ${course.gradientTo})` }} />
 
       {/* Card body */}
-      <div style={{ padding: "1.25rem" }}>
-        <p
-          style={{
-            margin: "0 0 0.25rem",
-            fontSize: "0.65rem",
-            fontWeight: 800,
-            textTransform: "uppercase",
-            letterSpacing: "0.1em",
-            color: course.gradientFrom,
-          }}
-        >
-          {course.software}
-        </p>
-        <h3
-          style={{
-            margin: "0 0 0.6rem",
-            fontSize: "0.98rem",
-            fontWeight: 800,
-            color: "var(--text-primary)",
-            letterSpacing: "-0.02em",
-            lineHeight: 1.25,
-          }}
-        >
-          {course.name}
-        </h3>
-        <p
-          style={{
-            margin: "0 0 1rem",
-            fontSize: "0.75rem",
-            color: "var(--text-secondary)",
-            lineHeight: 1.65,
-          }}
-        >
-          {course.description}
-        </p>
+      <div style={{ padding: "1.4rem 1.25rem" }}>
+        {/* Icon + badge row */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.85rem" }}>
+          <div style={{ width: "2.75rem", height: "2.75rem", borderRadius: "0.75rem", background: `linear-gradient(135deg, ${course.gradientFrom} 0%, ${course.gradientTo} 100%)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.3rem", boxShadow: `0 4px 16px ${course.gradientFrom}55` }}>
+            {course.icon}
+          </div>
+          {course.badge && (
+            <div style={{ padding: "0.25rem 0.7rem", borderRadius: "999px", background: `linear-gradient(135deg, ${course.gradientFrom} 0%, ${course.gradientTo} 100%)`, fontSize: "0.62rem", fontWeight: 800, color: "#fff", letterSpacing: "0.08em", textTransform: "uppercase" as const }}>
+              {course.badge}
+            </div>
+          )}
+          {selected && (
+            <div style={{ width: "2rem", height: "2rem", borderRadius: "50%", background: `linear-gradient(135deg, ${course.gradientFrom} 0%, ${course.gradientTo} 100%)`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 16px ${course.gradientFrom}88` }}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+            </div>
+          )}
+        </div>
+
+        <p style={{ margin: "0 0 0.2rem", fontSize: "0.65rem", fontWeight: 800, textTransform: "uppercase" as const, letterSpacing: "0.1em", color: course.gradientFrom }}>{course.category}</p>
+        <h3 style={{ margin: "0 0 0.55rem", fontSize: "1rem", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.02em", lineHeight: 1.25 }}>{course.name}</h3>
+        <p style={{ margin: "0 0 1rem", fontSize: "0.75rem", color: "var(--text-secondary)", lineHeight: 1.65 }}>{course.description}</p>
 
         {/* Meta row */}
-        <div
-          style={{
-            display: "flex",
-            gap: "1rem",
-            paddingTop: "0.85rem",
-            borderTop: "1px solid rgba(125,211,252,0.10)",
-            marginBottom: "1rem",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.35rem",
-              fontSize: "0.72rem",
-              color: "var(--text-secondary)",
-            }}
-          >
-            <LevelIcon />
-            <span style={{ fontWeight: 600 }}>{course.level}</span>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.35rem",
-              fontSize: "0.72rem",
-              color: "var(--text-secondary)",
-            }}
-          >
+        <div style={{ display: "flex", gap: "0.75rem", paddingTop: "0.85rem", borderTop: "1px solid rgba(125,211,252,0.10)", marginBottom: "1rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", fontSize: "0.72rem", color: "var(--text-secondary)" }}>
             <ClockIcon />
             <span style={{ fontWeight: 600 }}>{course.duration}</span>
           </div>
-          <div
-            style={{
-              fontSize: "0.72rem",
-              color: "var(--text-secondary)",
-              fontWeight: 600,
-            }}
-          >
-            {course.hours}
-          </div>
+          <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: 600 }}>Reg: {course.registrationFee.toLocaleString()} FRS</div>
         </div>
 
         {/* Price + CTA */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <span
-            style={{
-              fontSize: "1.15rem",
-              fontWeight: 900,
-              color: course.gradientFrom,
-              letterSpacing: "-0.02em",
-            }}
-          >
-            {course.price}
-          </span>
-          <div
-            style={{
-              padding: "0.45rem 1rem",
-              borderRadius: "0.6rem",
-              background: selected
-                ? `linear-gradient(135deg, ${course.gradientFrom} 0%, ${course.gradientTo} 100%)`
-                : "rgba(14,111,168,0.18)",
-              border: selected ? "none" : "1px solid rgba(125,211,252,0.22)",
-              color: selected ? "#fff" : "var(--text-primary)",
-              fontSize: "0.73rem",
-              fontWeight: 700,
-              transition: "all 0.2s ease",
-            }}
-          >
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div>
+            <span style={{ fontSize: "1.1rem", fontWeight: 900, color: course.gradientFrom, letterSpacing: "-0.02em" }}>{course.trainingFee.toLocaleString()} FRS</span>
+            <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)", marginLeft: "0.35rem" }}>training</span>
+          </div>
+          <div style={{ padding: "0.45rem 1rem", borderRadius: "0.6rem", background: selected ? `linear-gradient(135deg, ${course.gradientFrom} 0%, ${course.gradientTo} 100%)` : "rgba(14,111,168,0.18)", border: selected ? "none" : "1px solid rgba(125,211,252,0.22)", color: selected ? "#fff" : "var(--text-primary)", fontSize: "0.73rem", fontWeight: 700, transition: "all 0.2s ease" }}>
             {selected ? "✓ Selected" : "Select"}
           </div>
         </div>
@@ -716,7 +460,7 @@ function ProgrammeCard({ programme }: { programme: (typeof PROGRAMMES)[0] }) {
                 fontWeight: 600,
               }}
             >
-              {programme.originalPrice}
+              {programme.originalPrice || ""}
             </span>
           </div>
           <p
@@ -763,7 +507,7 @@ function ProgrammeCard({ programme }: { programme: (typeof PROGRAMMES)[0] }) {
               gap: "0.5rem",
             }}
           >
-            {programme.highlights.map((h, j) => (
+            {programme.highlights.map((h: string, j: number) => (
               <div
                 key={j}
                 style={{
@@ -1189,30 +933,30 @@ export default function ProgrammesPage() {
                   {
                     icon: "⚡",
                     label: "3-Month Programme",
-                    price: "750,000 CFA",
+                    price: "Contact us",
                     from: "#0ea5e9",
                     to: "#6366f1",
                   },
                   {
                     icon: "🏆",
                     label: "6-Month Programme",
-                    price: "1,200,000 CFA",
+                    price: "Contact us",
                     from: "#f59e0b",
                     to: "#ef4444",
                   },
                   {
                     icon: "📐",
-                    label: "Single Courses",
-                    price: "65K–130K CFA",
-                    from: "#10b981",
-                    to: "#059669",
+                    label: "1-Month Courses",
+                    price: "30,000 FRS",
+                    from: "#22c55e",
+                    to: "#16a34a",
                   },
                   {
-                    icon: "🎓",
-                    label: "8 Tools Available",
-                    price: "Choose any one",
-                    from: "#ec4899",
-                    to: "#be185d",
+                    icon: "🔩",
+                    label: "2–3 Month Courses",
+                    price: "50,000–70,000 FRS",
+                    from: "#fb923c",
+                    to: "#ea580c",
                   },
                 ].map((item, i) => (
                   <div
@@ -1477,48 +1221,14 @@ export default function ProgrammesPage() {
                   Course Selection Summary
                 </h3>
                 {selectedCourse ? (
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "1rem",
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: "3rem",
-                        height: "3rem",
-                        borderRadius: "0.75rem",
-                        background: `linear-gradient(135deg, ${selectedCourse.gradientFrom} 0%, ${selectedCourse.gradientTo} 100%)`,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: "1.3rem",
-                        flexShrink: 0,
-                      }}
-                    >
+                  <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                    <div style={{ width: "3rem", height: "3rem", borderRadius: "0.75rem", background: `linear-gradient(135deg, ${selectedCourse.gradientFrom} 0%, ${selectedCourse.gradientTo} 100%)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.3rem", flexShrink: 0 }}>
                       {selectedCourse.icon}
                     </div>
                     <div>
-                      <p
-                        style={{
-                          margin: "0 0 0.2rem",
-                          fontSize: "0.95rem",
-                          fontWeight: 800,
-                          color: "var(--text-primary)",
-                        }}
-                      >
-                        {selectedCourse.name}
-                      </p>
-                      <p
-                        style={{
-                          margin: 0,
-                          fontSize: "0.8rem",
-                          color: "var(--text-secondary)",
-                        }}
-                      >
-                        {selectedCourse.price} · {selectedCourse.hours} ·{" "}
-                        {selectedCourse.duration}
+                      <p style={{ margin: "0 0 0.2rem", fontSize: "0.95rem", fontWeight: 800, color: "var(--text-primary)" }}>{selectedCourse.name}</p>
+                      <p style={{ margin: 0, fontSize: "0.8rem", color: "var(--text-secondary)" }}>
+                        {selectedCourse.trainingFee.toLocaleString()} FRS training · {selectedCourse.registrationFee.toLocaleString()} FRS reg · {selectedCourse.duration}
                       </p>
                     </div>
                   </div>
@@ -1562,38 +1272,14 @@ export default function ProgrammesPage() {
                   </p>
                   {selectedCourse ? (
                     <>
-                      <p
-                        style={{
-                          margin: "0 0 0.35rem",
-                          fontSize: "0.9rem",
-                          fontWeight: 800,
-                          color: "var(--text-primary)",
-                        }}
-                      >
-                        {selectedCourse.name}
+                      <p style={{ margin: "0 0 0.35rem", fontSize: "0.9rem", fontWeight: 800, color: "var(--text-primary)" }}>{selectedCourse.name}</p>
+                      <p style={{ margin: "0 0 0.85rem", fontSize: "0.78rem", color: "var(--text-secondary)", lineHeight: 1.6 }}>
+                        {selectedCourse.software} · {selectedCourse.category} · {selectedCourse.duration}
                       </p>
-                      <p
-                        style={{
-                          margin: "0 0 0.85rem",
-                          fontSize: "0.78rem",
-                          color: "var(--text-secondary)",
-                          lineHeight: 1.6,
-                        }}
-                      >
-                        {selectedCourse.software} · {selectedCourse.hours} ·{" "}
-                        {selectedCourse.level}
+                      <p style={{ margin: 0, fontSize: "1.6rem", fontWeight: 900, color: selectedCourse.gradientFrom, letterSpacing: "-0.03em" }}>
+                        {selectedCourse.trainingFee.toLocaleString()} FRS
                       </p>
-                      <p
-                        style={{
-                          margin: 0,
-                          fontSize: "1.6rem",
-                          fontWeight: 900,
-                          color: selectedCourse.gradientFrom,
-                          letterSpacing: "-0.03em",
-                        }}
-                      >
-                        {selectedCourse.price}
-                      </p>
+                      <p style={{ margin: "0.2rem 0 0", fontSize: "0.68rem", color: "var(--text-secondary)" }}>+ {selectedCourse.registrationFee.toLocaleString()} FRS registration fee</p>
                     </>
                   ) : (
                     <p
@@ -1611,9 +1297,7 @@ export default function ProgrammesPage() {
                 </div>
 
                 <button
-                  onClick={() => {
-                    if (selectedCourseId) router.push("/academy/login");
-                  }}
+                  onClick={() => { if (selectedCourseId) router.push("/academy/login"); }}
                   disabled={!selectedCourseId}
                   style={{
                     marginTop: "1.25rem",
@@ -1635,9 +1319,7 @@ export default function ProgrammesPage() {
                     opacity: selectedCourse ? 1 : 0.55,
                   }}
                 >
-                  {selectedCourse
-                    ? `Pay ${selectedCourse.price}`
-                    : "Select a course first"}
+                  {selectedCourse ? `Enroll — ${selectedCourse.trainingFee.toLocaleString()} FRS` : "Select a course first"}
                 </button>
               </div>
             </div>
