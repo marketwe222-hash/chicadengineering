@@ -533,7 +533,7 @@ export default function SoftwarePage() {
           }}
         />
 
-        <Header onSignIn={() => router.push("/login")} />
+        <Header onSignIn={() => router.push("/academy/login")} />
 
         {/* ── HERO ── */}
         <section

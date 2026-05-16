@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(data.user);
 
       if (data.user.role === "STUDENT") {
-        router.push("/dashboard");
+        router.push("/academy/dashboard");
       } else {
         router.push("/admin/dashboard");
       }

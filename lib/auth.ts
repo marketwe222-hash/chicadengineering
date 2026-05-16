@@ -4,9 +4,8 @@ import bcrypt from "bcryptjs";
 import { SignJWT, jwtVerify } from "jose";
 import { COOKIE_NAMES } from "./constants";
 
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET ?? "change-this-secret-in-production",
-);
+if (!process.env.JWT_SECRET) throw new Error("JWT_SECRET env var is not set");
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
@@ -69,8 +68,8 @@ export async function setAuthCookies(
 // ── Clear auth cookies ────────────────────────────────────────
 export async function clearAuthCookies(): Promise<void> {
   const cookieStore = await cookies();
-  cookieStore.delete(COOKIE_NAMES.AUTH_TOKEN);
-  cookieStore.delete(COOKIE_NAMES.USER_ROLE);
+  cookieStore.set(COOKIE_NAMES.AUTH_TOKEN, "", { ...COOKIE_OPTIONS, maxAge: 0 });
+  cookieStore.set(COOKIE_NAMES.USER_ROLE, "", { ...COOKIE_OPTIONS, httpOnly: false, maxAge: 0 });
 }
 
 // ── Get current user from cookie ──────────────────────────────

@@ -417,7 +417,7 @@ export default function AboutPage() {
           }}
         />
 
-        <Header onSignIn={() => router.push("/login")} />
+        <Header onSignIn={() => router.push("/academy/login")} />
 
         {/* ── HERO SECTION ── */}
         <section
