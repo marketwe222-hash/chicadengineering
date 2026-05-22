@@ -28,7 +28,6 @@ export async function GET(req: NextRequest) {
     const where = {
       ...(studentId && { studentId }),
       ...(courseId && { courseId }),
-      // Students can only see their own grades
       ...(user.role === "STUDENT" &&
         user.student && { studentId: user.student.id }),
     };
@@ -36,9 +35,18 @@ export async function GET(req: NextRequest) {
     const grades = await prisma.grade.findMany({
       where,
       include: {
-        course: { select: { courseCode: true, name: true, credits: true } },
+        course: {
+          select: {
+            courseCode: true,
+            name: true,
+          },
+        },
         student: {
-          select: { studentId: true, firstName: true, lastName: true },
+          select: {
+            studentId: true,
+            firstName: true,
+            lastName: true,
+          },
         },
       },
       orderBy: { gradedAt: "desc" },
@@ -49,6 +57,7 @@ export async function GET(req: NextRequest) {
     if (err instanceof Error && err.message === "UNAUTHORIZED") {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
+
     console.error("[GET_GRADES]", err);
     return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
@@ -91,7 +100,12 @@ export async function POST(req: NextRequest) {
         gradedAt: new Date(),
       },
       include: {
-        course: { select: { courseCode: true, name: true } },
+        course: {
+          select: {
+            courseCode: true,
+            name: true,
+          },
+        },
       },
     });
 
@@ -106,6 +120,7 @@ export async function POST(req: NextRequest) {
     if (err instanceof Error && err.message === "FORBIDDEN") {
       return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
+
     console.error("[POST_GRADE]", err);
     return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
