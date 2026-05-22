@@ -185,7 +185,7 @@ model Student {
   background   StudentBackground?  // student / graduate / professional
   school       String?             // school or workplace
   fieldOfStudy String?             // civil eng, architecture, etc.
-
+emergencyContact  EmergencyContact?
   // Motivation (from registration form)
   whyEnrolled  String?             // why they chose this software
   skillLevel   SkillLevel?         // beginner / intermediate / advanced
@@ -217,6 +217,17 @@ model Student {
   @@map("students")
 }
 
+
+model EmergencyContact {
+  id           String  @id @default(cuid())
+  studentId    String  @unique
+  student      Student @relation(fields: [studentId], references: [id])
+
+  name         String
+  relationship String
+  phone        String
+  email        String?
+}
 // ─────────────────────────────────────────
 // ADMIN
 // ─────────────────────────────────────────

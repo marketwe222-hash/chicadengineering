@@ -20,7 +20,11 @@ export async function GET(_req: NextRequest, { params }: Params) {
         enrollments: {
           include: {
             course: {
-              select: { courseCode: true, name: true, credits: true },
+              select: {
+                courseCode: true,
+                name: true,
+                // ❌ credits removed (not in Prisma schema)
+              },
             },
             academicTerm: { select: { name: true } },
           },
@@ -28,13 +32,25 @@ export async function GET(_req: NextRequest, { params }: Params) {
         },
         grades: {
           include: {
-            course: { select: { courseCode: true, name: true } },
+            course: {
+              select: {
+                courseCode: true,
+                name: true,
+                // ❌ credits removed
+              },
+            },
           },
           orderBy: { gradedAt: "desc" },
         },
         attendances: {
           include: {
-            course: { select: { courseCode: true, name: true } },
+            course: {
+              select: {
+                courseCode: true,
+                name: true,
+                // ❌ credits removed
+              },
+            },
           },
           orderBy: { date: "desc" },
           take: 30,
@@ -55,6 +71,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
     if (err instanceof Error && err.message === "UNAUTHORIZED") {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
+
     console.error("[GET_STUDENT]", err);
     return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
@@ -109,6 +126,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     if (err instanceof Error && err.message === "FORBIDDEN") {
       return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
+
     console.error("[UPDATE_STUDENT]", err);
     return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
@@ -120,7 +138,6 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
     await requireAdmin();
     const { studentId } = await params;
 
-    // Soft delete — set status to WITHDRAWN
     const student = await prisma.student.update({
       where: { id: studentId },
       data: { status: "WITHDRAWN" },
@@ -137,6 +154,7 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
     if (err instanceof Error && err.message === "FORBIDDEN") {
       return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
+
     console.error("[DELETE_STUDENT]", err);
     return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
