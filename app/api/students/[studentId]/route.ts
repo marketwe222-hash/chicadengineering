@@ -23,10 +23,10 @@ export async function GET(_req: NextRequest, { params }: Params) {
               select: {
                 courseCode: true,
                 name: true,
-                // ❌ credits removed (not in Prisma schema)
               },
             },
-            academicTerm: { select: { name: true } },
+            // ❌ remove these two lines:
+            // academicTerm: { select: { name: true } },
           },
           orderBy: { enrolledAt: "desc" },
         },
