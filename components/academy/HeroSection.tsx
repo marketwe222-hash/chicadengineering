@@ -307,7 +307,7 @@ export function HeroSection({ onSignIn }: { onSignIn: () => void }) {
             Access Your Portal →
           </button>
           <a
-            href="#about"
+            href="academy/about"
             className="btn-secondary"
             style={{
               padding: isSmall ? "0.75rem 1.2rem" : "0.9rem 2.2rem",
