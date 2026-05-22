@@ -6,7 +6,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 const SLIDES = [
   {
     image:
-      "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1800&q=85&fit=crop",
+      "https://res.cloudinary.com/dhx4a6guc/image/upload/v1779451180/3c2a8109-60d5-4f5c-83d1-d77fe7499fe6_1_t9t9yw.jpg",
     tag: "Registered CAD Training Centre · Yaoundé, Cameroon",
     headline: ["Shape the Future", "of Civil &", "Architectural Design."],
     sub: "CHICAD Academy is a registered CAD centre that builds and shapes the minds of civil engineering and architectural students using industry-leading design tools.",
@@ -14,7 +14,7 @@ const SLIDES = [
   },
   {
     image:
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1800&q=85&fit=crop",
+      "https://res.cloudinary.com/dhx4a6guc/image/upload/v1779451186/PXL_20240507_125031869_pnxbta.jpg",
     tag: "Autodesk Revit · AutoCAD · Lumion · SAP2000",
     headline: ["Master the Tools", "That Build", "the World."],
     sub: "Train on Autodesk Revit Architecture, Robot Structural Analysis, AutoCAD, SAP2000, ABAQUS, Lumion, ArchiCAD and more — in one intensive programme.",
@@ -22,7 +22,7 @@ const SLIDES = [
   },
   {
     image:
-      "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=1800&q=85&fit=crop",
+      "https://res.cloudinary.com/dhx4a6guc/image/upload/v1779452674/ChatGPT_Image_May_22_2026_01_24_15_PM_l7qo31.png",
     tag: "2–3 Month Intensive Programme",
     headline: ["Theory Meets", "the Construction", "Site."],
     sub: "Our 2–3 month programme is galvanised with on-site visits that blend technical CAD training with real-world structural and architectural practice.",
@@ -30,7 +30,7 @@ const SLIDES = [
   },
   {
     image:
-      "https://images.unsplash.com/photo-1460574283810-2aab119d8511?w=1800&q=85&fit=crop",
+      "https://res.cloudinary.com/dhx4a6guc/image/upload/v1779451147/PXL_20240720_113531229_hdydib.jpg",
     tag: "Leadership · Marketing · Networking",
     headline: ["Graduate Ready", "to Win", "Clients."],
     sub: "Beyond software skills, we arm you with leadership strategies, client acquisition techniques, and professional networking — so you thrive from day one.",

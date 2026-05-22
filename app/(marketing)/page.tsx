@@ -207,7 +207,7 @@ function PortalCard({
           inset: 0,
           backgroundImage: `url(${bgImage})`,
           backgroundSize: "cover",
-          backgroundPosition: "center top",
+          backgroundPosition: "center bottom",
           borderRadius: "inherit",
           zIndex: 0,
           /* Photo starts at ~20% opacity at the very top corners,
@@ -406,7 +406,8 @@ export default function LandingPage() {
       ],
       icon: "🎓",
       accentColor: "#0ea5e9",
-      bgImage: "/images/academy-bg.jpg",
+      bgImage:
+        "https://res.cloudinary.com/dhx4a6guc/image/upload/v1779451711/ChatGPT_Image_May_22_2026_01_08_10_PM_fylvx1.png",
       onClick: () => router.push("/academy"),
     },
     {

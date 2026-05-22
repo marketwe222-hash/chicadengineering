@@ -136,10 +136,10 @@ function ThemeToggle() {
 const SLIDES = [
   {
     image:
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1800&q=85&fit=crop",
-    tag: "Ghana's Premier Engineering Company · Est. 2009",
+      "https://res.cloudinary.com/dhx4a6guc/image/upload/v1779451180/3c2a8109-60d5-4f5c-83d1-d77fe7499fe6_1_t9t9yw.jpg",
+    tag: "Cameroon's Premier Engineering Company · Est. 2009",
     headline: ["Building", "Tomorrow's", "Structures."],
-    sub: "Chicad Engineering delivers world-class construction, civil engineering, and infrastructure solutions across Ghana and West Africa.",
+    sub: "Chicad Engineering delivers world-class construction, civil engineering, and infrastructure solutions across Cameroon and  Africa.",
     accent: "var(--gold)",
   },
   {
@@ -154,7 +154,7 @@ const SLIDES = [
     image:
       "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1800&q=85&fit=crop",
     tag: "Roads · Bridges · Drainage · Infrastructure",
-    headline: ["Connecting", "Communities", "Across Ghana."],
+    headline: ["Connecting", "Communities", "Across Cameroon."],
     sub: "320+ completed projects spanning highways, bridges, drainage systems and public infrastructure — built to last generations.",
     accent: "var(--gold-light)",
   },
@@ -866,7 +866,7 @@ function AboutSection() {
               lineHeight: 1.7,
             }}
           >
-            Founded in 2009, Chicad Engineering has grown into one of Ghana's
+            Founded in 2009, Chicad Engineering has grown into one of Cameroon's
             most trusted construction and civil engineering firms.
           </p>
         </Reveal>
@@ -1008,8 +1008,8 @@ function AboutSection() {
                 }}
               >
                 {[
-                  "Licensed by Ghana's Public Procurement Authority",
-                  "Member of the Ghana Institution of Engineers",
+                  "Licensed by Cameroon's Public Procurement Authority",
+                  "Member of the Cameroon Institution of Engineers",
                   "ISO 9001:2015 Quality Management Certified",
                   "ECOWAS regional construction clearance holder",
                 ].map((item, i) => (
@@ -1156,7 +1156,7 @@ const SERVICES = [
   {
     icon: "🛣️",
     title: "Road & Infrastructure",
-    desc: "Design and construction of highways, bridges, drainage systems, and public infrastructure across Ghana.",
+    desc: "Design and construction of highways, bridges, drainage systems, and public infrastructure across Cameroon.",
     features: [
       "Road construction",
       "Bridge engineering",
@@ -1984,7 +1984,7 @@ function ContactSection() {
     {
       icon: "📍",
       label: "Head Office",
-      value: "15 Independence Ave, Accra, Ghana",
+      value: "15 Independence Ave, Accra, Cameroon",
     },
     { icon: "📞", label: "Phone", value: "+233 302 000 001" },
     { icon: "✉️", label: "Email", value: "info@chicadengineering.com" },
@@ -2121,7 +2121,7 @@ function ContactSection() {
                     margin: 0,
                   }}
                 >
-                  Accra, Ghana
+                  Accra, Cameroon
                 </p>
               </div>
             </Reveal>
@@ -2657,7 +2657,7 @@ export default function ConstructionPage() {
               margin: 0,
             }}
           >
-            📍 Head Office: Accra, Ghana · 🏅 ISO 9001 Certified
+            📍 Head Office: Accra, Cameroon · 🏅 ISO 9001 Certified
           </p>
         </Reveal>
       </section>
