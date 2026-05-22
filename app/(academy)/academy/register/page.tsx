@@ -1132,6 +1132,71 @@ export default function RegisterPage() {
 
   const set: SetFn = (key, val) => setData((d) => ({ ...d, [key]: val }));
   const selectedSw = SOFTWARES.find((s) => s.id === data.software);
+  // Replace the entire handleSubmit function (around line 453–490)
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+
+      const names = data.fullName.trim().split(" ");
+      const firstName = names[0] || "";
+      const lastName = names.slice(1).join(" ") || "Student";
+
+      // Map form values to API-expected enums
+      const backgroundMap: Record<string, string> = {
+        student: "STUDENT",
+        graduate: "GRADUATE",
+        professional: "PROFESSIONAL",
+      };
+      const howHeardMap: Record<string, string> = {
+        social: "SOCIAL_MEDIA",
+        friend: "FRIEND",
+        other: "OTHER",
+      };
+      const skillLevelMap: Record<string, string> = {
+        beginner: "BEGINNER",
+        intermediate: "INTERMEDIATE",
+        advanced: "ADVANCED",
+      };
+
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email: data.email,
+          phone: data.phone,
+          city: data.city,
+          software: data.software,
+          background: backgroundMap[data.status] ?? undefined,
+          school: data.school,
+          fieldOfStudy: data.field,
+          whyEnrolled: data.whyRevit,
+          skillLevel: skillLevelMap[data.revitLevel] ?? undefined,
+          howHeard: howHeardMap[data.howHeard] ?? undefined,
+          referrer: data.referrer,
+          followsSocial: data.followsSocial === "yes",
+          joinChallenge: data.joinChallenge === "yes",
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        alert(result.message || "Registration failed");
+        return;
+      }
+
+      setSubmitted(true);
+    } catch (error) {
+      console.error(error);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const canNext = () => {
     if (step === 1)
@@ -1784,10 +1849,10 @@ export default function RegisterPage() {
                 </button>
                 <button
                   type="button"
-                  disabled={!canNext()}
+                  disabled={!canNext() || loading}
                   onClick={() => {
                     if (step < STEPS.length) setStep((s) => s + 1);
-                    else setSubmitted(true);
+                    else handleSubmit();
                   }}
                   style={{
                     flex: 1,
@@ -1819,7 +1884,9 @@ export default function RegisterPage() {
                 >
                   {step < STEPS.length
                     ? `Continue → Step ${step + 1}`
-                    : "🎉 Submit Registration"}
+                    : loading
+                      ? "Submitting…"
+                      : "🎉 Submit Registration"}
                 </button>
               </div>
             </div>

@@ -8,7 +8,7 @@ const SLIDES = [
     image:
       "https://res.cloudinary.com/dhx4a6guc/image/upload/v1779451180/3c2a8109-60d5-4f5c-83d1-d77fe7499fe6_1_t9t9yw.jpg",
     tag: "Registered CAD Training Centre · Yaoundé, Cameroon",
-    headline: ["Shape the Future", "of Civil &", "Architectural Design."],
+    headline: ["Shape the Future", "of Design."],
     sub: "CHICAD Academy is a registered CAD centre that builds and shapes the minds of civil engineering and architectural students using industry-leading design tools.",
     accentVar: "var(--sky-light)",
   },
@@ -16,7 +16,7 @@ const SLIDES = [
     image:
       "https://res.cloudinary.com/dhx4a6guc/image/upload/v1779451186/PXL_20240507_125031869_pnxbta.jpg",
     tag: "Autodesk Revit · AutoCAD · Lumion · SAP2000",
-    headline: ["Master the Tools", "That Build", "the World."],
+    headline: ["Master the Tools", "That Build Worlds."],
     sub: "Train on Autodesk Revit Architecture, Robot Structural Analysis, AutoCAD, SAP2000, ABAQUS, Lumion, ArchiCAD and more — in one intensive programme.",
     accentVar: "var(--orange-light)",
   },
@@ -24,7 +24,7 @@ const SLIDES = [
     image:
       "https://res.cloudinary.com/dhx4a6guc/image/upload/v1779452674/ChatGPT_Image_May_22_2026_01_24_15_PM_l7qo31.png",
     tag: "2–3 Month Intensive Programme",
-    headline: ["Theory Meets", "the Construction", "Site."],
+    headline: ["Theory Meets", "the Site."],
     sub: "Our 2–3 month programme is galvanised with on-site visits that blend technical CAD training with real-world structural and architectural practice.",
     accentVar: "var(--sky)",
   },
@@ -32,12 +32,11 @@ const SLIDES = [
     image:
       "https://res.cloudinary.com/dhx4a6guc/image/upload/v1779451147/PXL_20240720_113531229_hdydib.jpg",
     tag: "Leadership · Marketing · Networking",
-    headline: ["Graduate Ready", "to Win", "Clients."],
+    headline: ["Graduate Ready", "to Win Clients."],
     sub: "Beyond software skills, we arm you with leadership strategies, client acquisition techniques, and professional networking — so you thrive from day one.",
     accentVar: "var(--sky-light)",
   },
 ];
-
 /* ─── Breakpoint hook ─────────────────────────────────────── */
 function useBreakpoint() {
   const [width, setWidth] = useState(1400);
@@ -207,7 +206,7 @@ export function HeroSection({ onSignIn }: { onSignIn: () => void }) {
           paddingLeft: contentPaddingX,
           paddingRight: contentPaddingX,
           paddingBottom: isMobile ? "5.5rem" : "2rem",
-          maxWidth: isMobile ? "100%" : "950px",
+          maxWidth: isMobile ? "100%" : "70%",
           boxSizing: "border-box",
         }}
       >
@@ -219,7 +218,7 @@ export function HeroSection({ onSignIn }: { onSignIn: () => void }) {
               ? "clamp(2rem, 9vw, 2.8rem)"
               : isMobile
                 ? "clamp(2.4rem, 8vw, 3.5rem)"
-                : "clamp(2.6rem, 6.8vw, 5.8rem)",
+                : "clamp(2.2rem, 3.8vw, 4rem)",
             fontWeight: 900,
             lineHeight: 1.0,
             letterSpacing: "-0.04em",

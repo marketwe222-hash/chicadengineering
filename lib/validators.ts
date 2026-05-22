@@ -6,6 +6,7 @@ export const loginSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
+// Used internally / admin-created accounts
 export const registerSchema = z
   .object({
     firstName: z.string().min(1, "First name is required"),
@@ -19,6 +20,33 @@ export const registerSchema = z
     message: "Passwords don't match",
     path: ["confirmPassword"],
   });
+
+// Used by the public registration page (/academy/register)
+export const publicRegisterSchema = z.object({
+  // Identity (Step 1)
+  firstName: z.string().min(1, "First name is required").max(50),
+  lastName: z.string().min(1, "Last name is required").max(50),
+  email: z.string().email("Invalid email"),
+  phone: z.string().min(1, "Phone is required"),
+  city: z.string().min(1, "City is required"),
+
+  // Background (Step 2)
+  background: z.enum(["STUDENT", "GRADUATE", "PROFESSIONAL"]).optional(),
+  school: z.string().min(1, "School or workplace is required"),
+  fieldOfStudy: z.string().min(1, "Field of study is required"),
+
+  // Motivation (Step 3)
+  whyEnrolled: z.string().min(1, "Please share your motivation"),
+  skillLevel: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"]).optional(),
+  howHeard: z.enum(["SOCIAL_MEDIA", "FRIEND", "OTHER"]),
+  referrer: z.string().min(1, "Please enter a name or 'None'"),
+
+  // Commitment (Step 4)
+  followsSocial: z.boolean(),
+  joinChallenge: z.boolean(),
+});
+
+export type PublicRegisterInput = z.infer<typeof publicRegisterSchema>;
 
 // ── Student ───────────────────────────────────────────────────
 export const createStudentSchema = z.object({
@@ -75,6 +103,7 @@ export const attendanceSchema = z.object({
   notes: z.string().optional(),
 });
 
+// ── Exports ───────────────────────────────────────────────────
 export type LoginInput = z.infer<typeof loginSchema>;
 export type CreateStudentInput = z.infer<typeof createStudentSchema>;
 export type UpdateStudentInput = z.infer<typeof updateStudentSchema>;

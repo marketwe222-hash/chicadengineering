@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/auth";
-import { registerSchema } from "@/lib/validators";
+import { publicRegisterSchema } from "@/lib/validators";
+import { generateStudentId } from "@/lib/generateStudentId";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const parsed = registerSchema.safeParse(body);
 
+    const parsed = publicRegisterSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
         { message: "Invalid input", errors: parsed.error.issues },
@@ -15,45 +16,70 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { firstName, lastName, email, studentId, password } = parsed.data;
+    const {
+      firstName,
+      lastName,
+      email,
+      phone,
+      city,
+      background,
+      school,
+      fieldOfStudy,
+      whyEnrolled,
+      skillLevel,
+      howHeard,
+      referrer,
+      followsSocial,
+      joinChallenge,
+    } = parsed.data;
 
-    // Check if user already exists
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [{ email }, { studentId }],
-      },
-    });
-
+    const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return NextResponse.json(
-        { message: "User with this email or student ID already exists" },
+        { message: "Email already registered" },
         { status: 409 },
       );
     }
 
-    const passwordHash = await hashPassword(password);
+    const studentId = await generateStudentId();
+    const defaultPassword = "chicad123";
+    const passwordHash = await hashPassword(defaultPassword);
 
-    // Create User + Student in one transaction
     const user = await prisma.user.create({
       data: {
         email,
-        passwordHash, // ← schema field is passwordHash, not password
-        studentId, // ← foreign key shortcut on User
+        passwordHash,
         role: "STUDENT",
         student: {
           create: {
-            studentId, // ← required unique field on Student
+            studentId,
             firstName,
             lastName,
-            dateOfBirth: new Date("2000-01-01"), // placeholder
-            gender: "OTHER", // placeholder
+            phone,
+            city,
+            background: background ?? null,
+            school,
+            fieldOfStudy,
+            whyEnrolled,
+            skillLevel: skillLevel ?? null,
+            howHeard,
+            referrer,
+            followsSocial,
+            joinChallenge,
+            batch: 11,
           },
         },
       },
+      include: { student: true },
     });
 
     return NextResponse.json(
-      { message: "User registered successfully", userId: user.id },
+      {
+        message: "Registered successfully",
+        userId: user.id,
+        studentId,
+        defaultPassword,
+      },
       { status: 201 },
     );
   } catch (err) {

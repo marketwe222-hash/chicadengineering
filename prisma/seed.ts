@@ -1,13 +1,12 @@
+// prisma/seed.ts
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import pg from "pg";
 import bcrypt from "bcryptjs";
 
 const connectionString = `${process.env.DATABASE_URL}`;
-
 const pool = new pg.Pool({ connectionString });
 const adapter = new PrismaPg(pool as any);
-
 const prisma = new PrismaClient({ adapter });
 
 // ── Helpers ───────────────────────────────────────────────────
@@ -48,341 +47,254 @@ function daysAgo(days: number): Date {
 }
 
 // ── Seed Data ─────────────────────────────────────────────────
-const DEPARTMENTS = [
-  {
-    name: "Civil Engineering",
-    code: "CE",
-    description: "Design and construction of infrastructure",
-  },
-  {
-    name: "Electrical Engineering",
-    code: "EE",
-    description: "Electrical systems and power engineering",
-  },
-  {
-    name: "Mechanical Engineering",
-    code: "ME",
-    description: "Mechanical systems design and analysis",
-  },
-  {
-    name: "Computer Engineering",
-    code: "CPE",
-    description: "Hardware and software integration",
-  },
-  {
-    name: "Architecture",
-    code: "ARCH",
-    description: "Building design and spatial planning",
-  },
-];
-
 const COURSES_DATA = [
-  // Civil Engineering
   {
-    courseCode: "CE-101",
-    name: "Introduction to Civil Engineering",
-    description: "Fundamentals of civil engineering practice",
-    credits: 3,
-    maxStudents: 40,
-    deptCode: "CE",
-    instructorName: "Dr. Marcus Webb",
-    schedule: "Mon/Wed 8:00-9:30",
-    room: "Block A - Room 101",
+    courseCode: "AUTOCAD-B11",
+    name: "AutoCAD",
+    category: "CAD",
+    icon: "📐",
+    description: "Industry-standard 2D/3D drafting & design software",
+    registrationFee: 5000,
+    trainingFee: 70000,
+    durationMonths: 3,
+    maxStudents: 30,
+    instructorName: "Ing. Jean-Paul Mbarga",
+    schedule: "Mon/Wed/Fri 08:00–10:00",
+    batch: 11,
   },
   {
-    courseCode: "CE-201",
-    name: "Structural Analysis",
-    description: "Analysis of structural systems under load",
-    credits: 4,
+    courseCode: "REVIT-B11",
+    name: "Revit",
+    category: "BIM",
+    icon: "🏗️",
+    description: "Building Information Modeling for architects & engineers",
+    registrationFee: 5000,
+    trainingFee: 70000,
+    durationMonths: 3,
+    maxStudents: 30,
+    instructorName: "Ing. Claire Ngo Bassa",
+    schedule: "Tue/Thu 09:00–12:00",
+    batch: 11,
+  },
+  {
+    courseCode: "ARCHICAD-B11",
+    name: "ArchiCAD",
+    category: "BIM",
+    icon: "🏛️",
+    description: "BIM software focused on architectural design & documentation",
+    registrationFee: 5000,
+    trainingFee: 70000,
+    durationMonths: 3,
+    maxStudents: 25,
+    instructorName: "Arch. Samuel Fogue",
+    schedule: "Mon/Wed 14:00–17:00",
+    batch: 11,
+  },
+  {
+    courseCode: "SAP2000-B11",
+    name: "SAP2000",
+    category: "Structural Analysis",
+    icon: "🔩",
+    description: "Structural analysis & design for buildings & bridges",
+    registrationFee: 5000,
+    trainingFee: 50000,
+    durationMonths: 2,
+    maxStudents: 20,
+    instructorName: "Dr. Paul Ateba",
+    schedule: "Sat 08:00–14:00",
+    batch: 11,
+  },
+  {
+    courseCode: "LUMION-B11",
+    name: "Lumion",
+    category: "Visualization",
+    icon: "🌅",
+    description: "3D rendering & real-time visualization for architecture",
+    registrationFee: 5000,
+    trainingFee: 30000,
+    durationMonths: 1,
+    maxStudents: 25,
+    instructorName: "Ing. Boris Essomba",
+    schedule: "Fri 14:00–18:00",
+    batch: 11,
+  },
+  {
+    courseCode: "EXCEL-B11",
+    name: "Ms Excel",
+    category: "Productivity",
+    icon: "📊",
+    description: "Advanced spreadsheets, data analysis & project management",
+    registrationFee: 5000,
+    trainingFee: 30000,
+    durationMonths: 1,
     maxStudents: 35,
-    deptCode: "CE",
-    instructorName: "Prof. Linda Osei",
-    schedule: "Tue/Thu 10:00-11:30",
-    room: "Block A - Room 205",
+    instructorName: "M. Hervé Tchouangang",
+    schedule: "Tue/Thu 14:00–16:00",
+    batch: 11,
   },
   {
-    courseCode: "CE-301",
-    name: "Geotechnical Engineering",
-    description: "Soil mechanics and foundation design",
-    credits: 3,
-    maxStudents: 30,
-    deptCode: "CE",
-    instructorName: "Dr. James Amoako",
-    schedule: "Mon/Fri 14:00-15:30",
-    room: "Block A - Lab 3",
-  },
-  // Electrical Engineering
-  {
-    courseCode: "EE-101",
-    name: "Circuit Theory",
-    description: "DC and AC circuit analysis",
-    credits: 3,
-    maxStudents: 40,
-    deptCode: "EE",
-    instructorName: "Dr. Sarah Mensah",
-    schedule: "Mon/Wed 10:00-11:30",
-    room: "Block B - Room 101",
-  },
-  {
-    courseCode: "EE-201",
-    name: "Electronics I",
-    description: "Semiconductor devices and basic electronics",
-    credits: 4,
-    maxStudents: 35,
-    deptCode: "EE",
-    instructorName: "Prof. Kofi Asante",
-    schedule: "Tue/Thu 8:00-9:30",
-    room: "Block B - Lab 2",
-  },
-  {
-    courseCode: "EE-301",
-    name: "Power Systems",
-    description: "Generation, transmission and distribution of power",
-    credits: 3,
-    maxStudents: 30,
-    deptCode: "EE",
-    instructorName: "Dr. Emmanuel Tetteh",
-    schedule: "Wed/Fri 12:00-13:30",
-    room: "Block B - Room 305",
-  },
-  // Mechanical Engineering
-  {
-    courseCode: "ME-101",
-    name: "Engineering Mechanics",
-    description: "Statics and dynamics of rigid bodies",
-    credits: 3,
-    maxStudents: 40,
-    deptCode: "ME",
-    instructorName: "Dr. Rachel Owusu",
-    schedule: "Mon/Wed 12:00-13:30",
-    room: "Block C - Room 101",
-  },
-  {
-    courseCode: "ME-201",
-    name: "Thermodynamics",
-    description: "Energy, heat, and work principles",
-    credits: 4,
-    maxStudents: 35,
-    deptCode: "ME",
-    instructorName: "Prof. Daniel Boateng",
-    schedule: "Tue/Thu 14:00-15:30",
-    room: "Block C - Room 205",
-  },
-  // Computer Engineering
-  {
-    courseCode: "CPE-101",
-    name: "Programming Fundamentals",
-    description: "Introduction to programming with Python",
-    credits: 3,
-    maxStudents: 45,
-    deptCode: "CPE",
-    instructorName: "Dr. Abena Darko",
-    schedule: "Mon/Wed/Fri 9:00-10:00",
-    room: "Block D - Lab 1",
-  },
-  {
-    courseCode: "CPE-201",
-    name: "Data Structures & Algorithms",
-    description: "Fundamental data structures and algorithm design",
-    credits: 4,
-    maxStudents: 40,
-    deptCode: "CPE",
-    instructorName: "Prof. Nana Acheampong",
-    schedule: "Tue/Thu 10:00-11:30",
-    room: "Block D - Lab 2",
-  },
-  // Architecture
-  {
-    courseCode: "ARCH-101",
-    name: "Architectural Drawing",
-    description: "Technical drawing and drafting fundamentals",
-    credits: 3,
-    maxStudents: 30,
-    deptCode: "ARCH",
-    instructorName: "Dr. Ama Serwah",
-    schedule: "Mon/Wed/Fri 14:00-15:00",
-    room: "Block E - Studio 1",
-  },
-  {
-    courseCode: "ARCH-201",
-    name: "Building Technology",
-    description: "Construction methods and materials",
-    credits: 3,
-    maxStudents: 30,
-    deptCode: "ARCH",
-    instructorName: "Prof. Yaw Darko",
-    schedule: "Tue/Thu 12:00-13:30",
-    room: "Block E - Studio 2",
+    courseCode: "ABAQUS-B11",
+    name: "ABAQUS",
+    category: "FEA",
+    icon: "⚙️",
+    description: "Finite element analysis for complex structural simulations",
+    registrationFee: 5000,
+    trainingFee: 50000,
+    durationMonths: 2,
+    maxStudents: 15,
+    instructorName: "Dr. Rodrigue Nkemeni",
+    schedule: "Sat 14:00–18:00",
+    batch: 11,
   },
 ];
 
 const STUDENTS_DATA = [
-  // Civil Engineering students
   {
-    firstName: "Kwame",
-    lastName: "Asante",
-    gender: "MALE" as const,
-    dob: "2002-03-15",
-    phone: "+233244001001",
-    address: "12 Ring Road, Accra",
-    deptCode: "CE",
-    password: "student123",
-    email: "kwame.asante@chicadacademy.edu.gh",
+    firstName: "Jean-Baptiste",
+    lastName: "Ngono",
+    email: "jb.ngono@chicadacademy.cm",
+    phone: "+237 677 001 001",
+    city: "Yaoundé",
+    background: "STUDENT" as const,
+    school: "ENSP Yaoundé",
+    fieldOfStudy: "Civil Engineering",
+    whyEnrolled: "Want to improve my design skills for my final year project",
+    skillLevel: "BEGINNER" as const,
+    howHeard: "SOCIAL_MEDIA" as const,
+    referrer: "None",
+    followsSocial: true,
+    joinChallenge: true,
+    courseCode: "AUTOCAD-B11",
+    password: "chicad123",
   },
   {
-    firstName: "Ama",
-    lastName: "Boateng",
-    gender: "FEMALE" as const,
-    dob: "2003-07-22",
-    phone: "+233244001002",
-    address: "45 Liberation Road, Accra",
-    deptCode: "CE",
-    password: "student123",
-    email: "ama.boateng@chicadacademy.edu.gh",
+    firstName: "Marie",
+    lastName: "Fouda",
+    email: "marie.fouda@chicadacademy.cm",
+    phone: "+237 655 002 002",
+    city: "Douala",
+    background: "GRADUATE" as const,
+    school: "Université de Douala",
+    fieldOfStudy: "Architecture",
+    whyEnrolled: "BIM is required at my new firm",
+    skillLevel: "INTERMEDIATE" as const,
+    howHeard: "FRIEND" as const,
+    referrer: "Paul Ateba",
+    followsSocial: true,
+    joinChallenge: false,
+    courseCode: "REVIT-B11",
+    password: "chicad123",
   },
   {
-    firstName: "Kofi",
-    lastName: "Mensah",
-    gender: "MALE" as const,
-    dob: "2001-11-08",
-    phone: "+233244001003",
-    address: "78 Spintex Road, Accra",
-    deptCode: "CE",
-    password: "student123",
-    email: "kofi.mensah@chicadacademy.edu.gh",
-  },
-  // Electrical Engineering students
-  {
-    firstName: "Abena",
-    lastName: "Owusu",
-    gender: "FEMALE" as const,
-    dob: "2002-05-30",
-    phone: "+233244001004",
-    address: "23 Airport Hills, Accra",
-    deptCode: "EE",
-    password: "student123",
-    email: "abena.owusu@chicadacademy.edu.gh",
+    firstName: "Rodrigue",
+    lastName: "Elong",
+    email: "rodrigue.elong@chicadacademy.cm",
+    phone: "+237 699 003 003",
+    city: "Yaoundé",
+    background: "PROFESSIONAL" as const,
+    school: "SOTRACO",
+    fieldOfStudy: "Structural Engineering",
+    whyEnrolled: "Need FEA skills for bridge projects",
+    skillLevel: "ADVANCED" as const,
+    howHeard: "OTHER" as const,
+    referrer: "None",
+    followsSocial: false,
+    joinChallenge: false,
+    courseCode: "ABAQUS-B11",
+    password: "chicad123",
   },
   {
-    firstName: "Yaw",
-    lastName: "Darko",
-    gender: "MALE" as const,
-    dob: "2003-01-14",
-    phone: "+233244001005",
-    address: "56 East Legon, Accra",
-    deptCode: "EE",
-    password: "student123",
-    email: "yaw.darko@chicadacademy.edu.gh",
+    firstName: "Carine",
+    lastName: "Mbarga",
+    email: "carine.mbarga@chicadacademy.cm",
+    phone: "+237 670 004 004",
+    city: "Bafoussam",
+    background: "STUDENT" as const,
+    school: "IUT Fotso Victor",
+    fieldOfStudy: "Architecture",
+    whyEnrolled: "I want to create stunning architectural visuals",
+    skillLevel: "BEGINNER" as const,
+    howHeard: "SOCIAL_MEDIA" as const,
+    referrer: "None",
+    followsSocial: true,
+    joinChallenge: true,
+    courseCode: "LUMION-B11",
+    password: "chicad123",
   },
   {
-    firstName: "Akosua",
-    lastName: "Tetteh",
-    gender: "FEMALE" as const,
-    dob: "2002-09-18",
-    phone: "+233244001006",
-    address: "90 Haatso, Accra",
-    deptCode: "EE",
-    password: "student123",
-    email: "akosua.tetteh@chicadacademy.edu.gh",
-  },
-  // Mechanical Engineering students
-  {
-    firstName: "Nana",
-    lastName: "Adu",
-    gender: "MALE" as const,
-    dob: "2001-06-25",
-    phone: "+233244001007",
-    address: "34 Tema, Greater Accra",
-    deptCode: "ME",
-    password: "student123",
-    email: "nana.adu@chicadacademy.edu.gh",
+    firstName: "Hervé",
+    lastName: "Nkemdirim",
+    email: "herve.nkemdirim@chicadacademy.cm",
+    phone: "+237 691 005 005",
+    city: "Ngaoundéré",
+    background: "GRADUATE" as const,
+    school: "ENSAI Ngaoundéré",
+    fieldOfStudy: "Civil Engineering",
+    whyEnrolled: "Structural analysis for infrastructure projects",
+    skillLevel: "INTERMEDIATE" as const,
+    howHeard: "FRIEND" as const,
+    referrer: "Jean-Baptiste Ngono",
+    followsSocial: true,
+    joinChallenge: true,
+    courseCode: "SAP2000-B11",
+    password: "chicad123",
   },
   {
-    firstName: "Efua",
-    lastName: "Appiah",
-    gender: "FEMALE" as const,
-    dob: "2003-12-03",
-    phone: "+233244001008",
-    address: "67 Kumasi, Ashanti",
-    deptCode: "ME",
-    password: "student123",
-    email: "efua.appiah@chicadacademy.edu.gh",
-  },
-  // Computer Engineering students
-  {
-    firstName: "Kwesi",
-    lastName: "Amoako",
-    gender: "MALE" as const,
-    dob: "2002-08-10",
-    phone: "+233244001009",
-    address: "11 Adenta, Accra",
-    deptCode: "CPE",
-    password: "student123",
-    email: "kwesi.amoako@chicadacademy.edu.gh",
+    firstName: "Sandrine",
+    lastName: "Tchoua",
+    email: "sandrine.tchoua@chicadacademy.cm",
+    phone: "+237 677 006 006",
+    city: "Douala",
+    background: "PROFESSIONAL" as const,
+    school: "CAMRAIL",
+    fieldOfStudy: "Project Management",
+    whyEnrolled: "Excel for project tracking and reporting",
+    skillLevel: "BEGINNER" as const,
+    howHeard: "SOCIAL_MEDIA" as const,
+    referrer: "None",
+    followsSocial: false,
+    joinChallenge: false,
+    courseCode: "EXCEL-B11",
+    password: "chicad123",
   },
   {
-    firstName: "Adwoa",
-    lastName: "Sarpong",
-    gender: "FEMALE" as const,
-    dob: "2003-04-17",
-    phone: "+233244001010",
-    address: "88 Madina, Accra",
-    deptCode: "CPE",
-    password: "student123",
-    email: "adwoa.sarpong@chicadacademy.edu.gh",
-  },
-  // Architecture students
-  {
-    firstName: "Kojo",
-    lastName: "Wiredu",
-    gender: "MALE" as const,
-    dob: "2001-02-28",
-    phone: "+233244001011",
-    address: "22 Labone, Accra",
-    deptCode: "ARCH",
-    password: "student123",
-    email: "kojo.wiredu@chicadacademy.edu.gh",
-  },
-  {
-    firstName: "Akua",
-    lastName: "Asare",
-    gender: "FEMALE" as const,
-    dob: "2002-10-05",
-    phone: "+233244001012",
-    address: "44 Cantonments, Accra",
-    deptCode: "ARCH",
-    password: "student123",
-    email: "akua.asare@chicadacademy.edu.gh",
+    firstName: "Alain",
+    lastName: "Donfack",
+    email: "alain.donfack@chicadacademy.cm",
+    phone: "+237 655 007 007",
+    city: "Yaoundé",
+    background: "STUDENT" as const,
+    school: "École Polytechnique Yaoundé",
+    fieldOfStudy: "Architecture",
+    whyEnrolled: "Want to master ArchiCAD for my thesis project",
+    skillLevel: "BEGINNER" as const,
+    howHeard: "FRIEND" as const,
+    referrer: "Carine Mbarga",
+    followsSocial: true,
+    joinChallenge: true,
+    courseCode: "ARCHICAD-B11",
+    password: "chicad123",
   },
 ];
 
 const ADMINS_DATA = [
   {
-    firstName: "Osei",
-    lastName: "Bonsu",
-    email: "admin@chicadacademy.edu.gh",
+    firstName: "Gemma",
+    lastName: "Wyamba",
+    email: "admin@chicadacademy.cm",
     password: "admin123",
     department: "Academic Affairs",
-    phone: "+233244000001",
+    phone: "+237 673 422 430",
     role: "ADMIN" as const,
   },
   {
-    firstName: "Esi",
-    lastName: "Asante",
-    email: "superadmin@chicadacademy.edu.gh",
+    firstName: "Super",
+    lastName: "Admin",
+    email: "superadmin@chicadacademy.cm",
     password: "superadmin123",
     department: "System Administration",
-    phone: "+233244000002",
+    phone: "+237 699 000 001",
     role: "SUPER_ADMIN" as const,
-  },
-  {
-    firstName: "Kwame",
-    lastName: "Nyarko",
-    email: "registrar@chicadacademy.edu.gh",
-    password: "admin123",
-    department: "Registrar Office",
-    phone: "+233244000003",
-    role: "ADMIN" as const,
   },
 ];
 
@@ -398,81 +310,44 @@ async function main() {
   await prisma.payment.deleteMany();
   await prisma.attendance.deleteMany();
   await prisma.grade.deleteMany();
+  await prisma.lessonResource.deleteMany();
+  await prisma.lesson.deleteMany();
+  await prisma.courseMedia.deleteMany();
   await prisma.enrollment.deleteMany();
   await prisma.course.deleteMany();
-  await prisma.academicTerm.deleteMany();
-  await prisma.department.deleteMany();
-  await prisma.emergencyContact.deleteMany();
   await prisma.student.deleteMany();
   await prisma.admin.deleteMany();
   await prisma.session.deleteMany();
   await prisma.user.deleteMany();
   console.log("✅ Cleaned\n");
 
-  // ── 2. Departments ─────────────────────────────────────────
-  console.log("🏛️  Seeding departments...");
-  const departments = await Promise.all(
-    DEPARTMENTS.map((d) => prisma.department.create({ data: d })),
-  );
-  console.log(`✅ ${departments.length} departments created\n`);
-
-  // ── 3. Academic Terms ──────────────────────────────────────
-  console.log("📅 Seeding academic terms...");
-  const currentYear = new Date().getFullYear();
-
-  const terms = await Promise.all([
-    prisma.academicTerm.create({
-      data: {
-        name: `First Semester ${currentYear - 1}/${currentYear}`,
-        type: "SEMESTER",
-        startDate: new Date(`${currentYear - 1}-09-01`),
-        endDate: new Date(`${currentYear}-01-31`),
-        isActive: false,
-      },
-    }),
-    prisma.academicTerm.create({
-      data: {
-        name: `Second Semester ${currentYear - 1}/${currentYear}`,
-        type: "SEMESTER",
-        startDate: new Date(`${currentYear}-02-01`),
-        endDate: new Date(`${currentYear}-06-30`),
-        isActive: true,
-      },
-    }),
-    prisma.academicTerm.create({
-      data: {
-        name: `First Semester ${currentYear}/${currentYear + 1}`,
-        type: "SEMESTER",
-        startDate: new Date(`${currentYear}-09-01`),
-        endDate: new Date(`${currentYear + 1}-01-31`),
-        isActive: false,
-      },
-    }),
-  ]);
-
-  const activeTerm = terms.find((t) => t.isActive)!;
-  console.log(`✅ ${terms.length} academic terms created\n`);
-
-  // ── 4. Courses ─────────────────────────────────────────────
+  // ── 2. Courses ─────────────────────────────────────────────
   console.log("📚 Seeding courses...");
-  const deptMap = Object.fromEntries(departments.map((d) => [d.code, d]));
-
   const courses = await Promise.all(
-    COURSES_DATA.map((c) => {
-      const { deptCode, ...rest } = c;
-      return prisma.course.create({
+    COURSES_DATA.map((c) =>
+      prisma.course.create({
         data: {
-          ...rest,
+          courseCode: c.courseCode,
+          name: c.name,
+          category: c.category,
+          icon: c.icon,
+          description: c.description,
+          registrationFee: c.registrationFee,
+          trainingFee: c.trainingFee,
+          durationMonths: c.durationMonths,
+          maxStudents: c.maxStudents,
+          instructorName: c.instructorName,
+          schedule: c.schedule,
+          batch: c.batch,
           status: "ACTIVE",
-          departmentId: deptMap[deptCode].id,
-          academicTermId: activeTerm.id,
         },
-      });
-    }),
+      }),
+    ),
   );
+  const courseMap = Object.fromEntries(courses.map((c) => [c.courseCode, c]));
   console.log(`✅ ${courses.length} courses created\n`);
 
-  // ── 5. Admins ──────────────────────────────────────────────
+  // ── 3. Admins ──────────────────────────────────────────────
   console.log("🛡️  Seeding admins...");
   const admins = await Promise.all(
     ADMINS_DATA.map(async (a) => {
@@ -485,7 +360,6 @@ async function main() {
           isActive: true,
         },
       });
-
       const admin = await prisma.admin.create({
         data: {
           userId: user.id,
@@ -495,21 +369,14 @@ async function main() {
           phone: a.phone,
         },
       });
-
       return { user, admin };
     }),
   );
   console.log(`✅ ${admins.length} admins created\n`);
 
-  // ── 6. Students ────────────────────────────────────────────
+  // ── 4. Students ────────────────────────────────────────────
   console.log("🎓 Seeding students...");
-  const coursesByDept = Object.fromEntries(
-    departments.map((d) => [
-      d.code,
-      courses.filter((c) => c.departmentId === d.id),
-    ]),
-  );
-
+  const currentYear = new Date().getFullYear();
   const createdStudents = [];
 
   for (let i = 0; i < STUDENTS_DATA.length; i++) {
@@ -532,100 +399,82 @@ async function main() {
         studentId,
         firstName: s.firstName,
         lastName: s.lastName,
-        dateOfBirth: new Date(s.dob),
-        gender: s.gender,
         phone: s.phone,
-        address: s.address,
+        city: s.city,
+        background: s.background,
+        school: s.school,
+        fieldOfStudy: s.fieldOfStudy,
+        whyEnrolled: s.whyEnrolled,
+        skillLevel: s.skillLevel,
+        howHeard: s.howHeard,
+        referrer: s.referrer,
+        followsSocial: s.followsSocial,
+        joinChallenge: s.joinChallenge,
+        batch: 11,
         status: "ACTIVE",
-        emergencyContact: {
-          create: {
-            name: `${s.firstName} Parent`,
-            relationship: "Parent",
-            phone: s.phone.replace("001", "002"),
-            email: `parent.${s.lastName.toLowerCase()}@gmail.com`,
-          },
-        },
+        enrolledAt: daysAgo(randomBetween(20, 45)),
       },
     });
 
-    createdStudents.push({
-      student,
-      user,
-      deptCode: s.deptCode,
-    });
+    createdStudents.push({ student, user, courseCode: s.courseCode });
   }
-
   console.log(`✅ ${createdStudents.length} students created\n`);
 
-  // ── 7. Enrollments ─────────────────────────────────────────
+  // ── 5. Enrollments ─────────────────────────────────────────
   console.log("📋 Seeding enrollments...");
   let enrollmentCount = 0;
 
-  for (const { student, deptCode } of createdStudents) {
-    // Enroll in all courses from their department
-    const deptCourses = coursesByDept[deptCode] ?? [];
-
-    // Also add one cross-department elective
-    const otherDepts = Object.keys(coursesByDept).filter((k) => k !== deptCode);
-    const electiveDept = randomFrom(otherDepts);
-    const elective = randomFrom(coursesByDept[electiveDept] ?? []);
-
-    const coursesToEnroll = [...deptCourses];
-    if (elective) coursesToEnroll.push(elective);
-
-    for (const course of coursesToEnroll) {
+  for (const { student, courseCode } of createdStudents) {
+    const primaryCourse = courseMap[courseCode];
+    if (primaryCourse) {
       await prisma.enrollment.create({
         data: {
           studentId: student.id,
-          courseId: course.id,
-          academicTermId: activeTerm.id,
+          courseId: primaryCourse.id,
           status: "ACTIVE",
-          enrolledAt: daysAgo(randomBetween(30, 60)),
+          enrolledAt: daysAgo(randomBetween(20, 45)),
         },
       });
       enrollmentCount++;
     }
   }
-
   console.log(`✅ ${enrollmentCount} enrollments created\n`);
 
-  // ── 8. Grades ──────────────────────────────────────────────
+  // ── 6. Grades ──────────────────────────────────────────────
   console.log("📊 Seeding grades...");
   let gradeCount = 0;
 
-  for (const { student, deptCode } of createdStudents) {
-    const deptCourses = coursesByDept[deptCode] ?? [];
+  for (const { student, courseCode } of createdStudents) {
+    const course = courseMap[courseCode];
+    if (!course) continue;
 
-    for (const course of deptCourses) {
-      const score = randomBetween(55, 99);
-      const gradeScale = scoreToGrade(score);
+    const score = randomBetween(55, 99);
+    const gradeScale = scoreToGrade(score);
 
-      await prisma.grade.create({
-        data: {
-          studentId: student.id,
-          courseId: course.id,
-          score,
-          gradeScale: gradeScale as never,
-          remarks:
-            score >= 90
-              ? "Excellent performance"
-              : score >= 80
-                ? "Good work"
-                : score >= 70
-                  ? "Satisfactory"
-                  : score >= 60
-                    ? "Needs improvement"
-                    : "At risk",
-          gradedAt: daysAgo(randomBetween(1, 20)),
-        },
-      });
-      gradeCount++;
-    }
+    await prisma.grade.create({
+      data: {
+        studentId: student.id,
+        courseId: course.id,
+        score,
+        gradeScale: gradeScale as never,
+        remarks:
+          score >= 90
+            ? "Excellent performance"
+            : score >= 80
+              ? "Good work"
+              : score >= 70
+                ? "Satisfactory"
+                : score >= 60
+                  ? "Needs improvement"
+                  : "At risk",
+        gradedAt: daysAgo(randomBetween(1, 15)),
+      },
+    });
+    gradeCount++;
   }
-
   console.log(`✅ ${gradeCount} grades created\n`);
 
-  // ── 9. Attendance ──────────────────────────────────────────
+  // ── 7. Attendance ──────────────────────────────────────────
   console.log("📅 Seeding attendance records...");
   let attendanceCount = 0;
   const attendanceStatuses = [
@@ -640,151 +489,127 @@ async function main() {
     "EXCUSED",
   ] as const;
 
-  for (const { student, deptCode } of createdStudents) {
-    const deptCourses = coursesByDept[deptCode] ?? [];
+  for (const { student, courseCode } of createdStudents) {
+    const course = courseMap[courseCode];
+    if (!course) continue;
 
-    for (const course of deptCourses) {
-      // Generate 20 attendance records per course (last 40 days)
-      for (let day = 40; day >= 1; day -= 2) {
-        const status = randomFrom(attendanceStatuses);
-        await prisma.attendance.create({
-          data: {
-            studentId: student.id,
-            courseId: course.id,
-            date: daysAgo(day),
-            status: status as never,
-            notes:
-              status === "ABSENT"
-                ? "No reason provided"
-                : status === "EXCUSED"
-                  ? "Medical certificate submitted"
-                  : status === "LATE"
-                    ? "Arrived 15 minutes late"
-                    : null,
-          },
-        });
-        attendanceCount++;
-      }
+    for (let day = 40; day >= 1; day -= 2) {
+      const status = randomFrom(attendanceStatuses);
+      await prisma.attendance.create({
+        data: {
+          studentId: student.id,
+          courseId: course.id,
+          date: daysAgo(day),
+          status: status as never,
+          notes:
+            status === "ABSENT"
+              ? "No reason provided"
+              : status === "EXCUSED"
+                ? "Medical certificate submitted"
+                : status === "LATE"
+                  ? "Arrived 15 minutes late"
+                  : null,
+        },
+      });
+      attendanceCount++;
     }
   }
-
   console.log(`✅ ${attendanceCount} attendance records created\n`);
 
-  // ── 10. Payments ───────────────────────────────────────────
+  // ── 8. Payments ────────────────────────────────────────────
   console.log("💰 Seeding payments...");
   let paymentCount = 0;
 
-  for (const { student } of createdStudents) {
-    // Tuition fee — paid
-    await prisma.payment.create({
-      data: {
-        studentId: student.id,
-        amount: 2500.0,
-        type: "TUITION",
-        status: "PAID",
-        dueDate: daysAgo(60),
-        paidAt: daysAgo(55),
-        referenceNo: `PAY-${student.studentId}-TUI-${currentYear}`,
-        notes: "Tuition fee for active semester",
-      },
-    });
-    paymentCount++;
+  for (const { student, courseCode } of createdStudents) {
+    const course = courseMap[courseCode];
 
-    // Registration fee — paid
     await prisma.payment.create({
       data: {
         studentId: student.id,
-        amount: 150.0,
+        amount: course?.registrationFee ?? 5000,
         type: "REGISTRATION",
         status: "PAID",
-        dueDate: daysAgo(65),
-        paidAt: daysAgo(63),
+        dueDate: daysAgo(40),
+        paidAt: daysAgo(38),
         referenceNo: `PAY-${student.studentId}-REG-${currentYear}`,
+        momoNumber: "673422430",
+        notes: "Registration fee — Batch 11",
       },
     });
     paymentCount++;
 
-    // Exam fee — pending
     await prisma.payment.create({
       data: {
         studentId: student.id,
-        amount: 200.0,
-        type: "EXAM_FEE",
+        amount: course?.trainingFee ?? 50000,
+        type: "TUITION",
         status: randomFrom(["PENDING", "PAID"] as const),
-        dueDate: daysAgo(-30), // future
-        referenceNo: `PAY-${student.studentId}-EXM-${currentYear}`,
-        notes: "End of semester examination fee",
+        dueDate: daysAgo(-30),
+        referenceNo: `PAY-${student.studentId}-TUI-${currentYear}`,
+        momoNumber: "673422430",
+        notes: "Training fee — Batch 11",
       },
     });
     paymentCount++;
   }
-
   console.log(`✅ ${paymentCount} payments created\n`);
 
-  // ── 11. Notifications ──────────────────────────────────────
+  // ── 9. Notifications ───────────────────────────────────────
   console.log("🔔 Seeding notifications...");
   let notifCount = 0;
 
-  for (const { student } of createdStudents) {
-    const notifs = [
+  for (const { user, student } of createdStudents) {
+    for (const n of [
       {
-        userId: student.userId,
-        type: "GRADE_POSTED" as const,
-        title: "New Grade Posted",
-        message: "Your grade for CE-101 has been posted.",
+        userId: user.id,
+        type: "ANNOUNCEMENT" as const,
+        title: "Welcome to CHICAD Academy — Batch 11!",
+        message: `Hi ${student.firstName}, welcome! Please complete your payment to confirm your spot.`,
         isRead: false,
       },
       {
-        userId: student.userId,
+        userId: user.id,
         type: "PAYMENT_DUE" as const,
-        title: "Payment Reminder",
-        message: "Your exam fee is due in 30 days.",
-        isRead: true,
+        title: "Training Fee Due",
+        message: "Your training fee is due. Pay via MoMo 673 422 430.",
+        isRead: false,
       },
       {
-        userId: student.userId,
-        type: "ANNOUNCEMENT" as const,
-        title: "Welcome to Chicad Academy",
-        message: "Welcome to the student portal. Please complete your profile.",
+        userId: user.id,
+        type: "GRADE_POSTED" as const,
+        title: "Assessment Grade Posted",
+        message: "Your first assessment grade has been recorded.",
         isRead: true,
       },
-    ];
-
-    for (const n of notifs) {
+    ]) {
       await prisma.notification.create({ data: n });
       notifCount++;
     }
   }
 
-  // Admin notifications
   for (const { user } of admins) {
     await prisma.notification.create({
       data: {
         userId: user.id,
         type: "SYSTEM",
         title: "System Initialized",
-        message: "The academy portal has been set up successfully.",
+        message: "CHICAD Academy portal seeded successfully.",
         isRead: false,
       },
     });
     notifCount++;
   }
-
   console.log(`✅ ${notifCount} notifications created\n`);
 
-  // ── 12. Audit Logs ─────────────────────────────────────────
+  // ── 10. Audit Logs ─────────────────────────────────────────
   console.log("📝 Seeding audit logs...");
   const superAdmin = admins.find((a) => a.user.role === "SUPER_ADMIN")!;
 
-  const auditEvents = [
+  for (const event of [
     { action: "SYSTEM_INITIALIZED", entity: "System" },
-    { action: "DEPARTMENTS_CREATED", entity: "Department" },
-    { action: "TERMS_CREATED", entity: "AcademicTerm" },
     { action: "COURSES_CREATED", entity: "Course" },
     { action: "STUDENTS_ENROLLED", entity: "Enrollment" },
-  ];
-
-  for (const event of auditEvents) {
+  ]) {
     await prisma.auditLog.create({
       data: {
         userId: superAdmin.user.id,
@@ -795,17 +620,14 @@ async function main() {
       },
     });
   }
-
-  console.log(`✅ ${auditEvents.length} audit logs created\n`);
+  console.log("✅ 3 audit logs created\n");
 
   // ── Summary ────────────────────────────────────────────────
   console.log("═".repeat(50));
-  console.log("✅ SEED COMPLETE");
+  console.log("✅ SEED COMPLETE — CHICAD Academy Batch 11");
   console.log("═".repeat(50));
   console.log(`
 📊 Summary:
-  🏛️  Departments    : ${departments.length}
-  📅  Academic Terms : ${terms.length}
   📚  Courses        : ${courses.length}
   🛡️  Admins         : ${admins.length}
   🎓  Students       : ${createdStudents.length}
@@ -815,21 +637,18 @@ async function main() {
   💰  Payments       : ${paymentCount}
   🔔  Notifications  : ${notifCount}
 `);
-
   console.log("─".repeat(50));
   console.log("🔐 Login Credentials:\n");
   console.log("  SUPER ADMIN:");
-  console.log("    Email    : superadmin@chicadacademy.edu.gh");
+  console.log("    Email    : superadmin@chicadacademy.cm");
   console.log("    Password : superadmin123\n");
   console.log("  ADMIN:");
-  console.log("    Email    : admin@chicadacademy.edu.gh");
+  console.log("    Email    : admin@chicadacademy.cm");
   console.log("    Password : admin123\n");
-  console.log("  STUDENTS (use Student ID to login):");
-
-  for (let i = 0; i < createdStudents.length; i++) {
-    const { student } = createdStudents[i];
+  console.log("  STUDENTS (studentId or email + password: chicad123):");
+  for (const { student } of createdStudents) {
     console.log(
-      `    ${student.studentId}  →  ${STUDENTS_DATA[i].firstName} ${STUDENTS_DATA[i].lastName}  |  password: student123`,
+      `    ${student.studentId}  →  ${student.firstName} ${student.lastName}  (${student.userId})`,
     );
   }
   console.log("─".repeat(50));
