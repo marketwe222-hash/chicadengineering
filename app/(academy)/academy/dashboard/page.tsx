@@ -1,216 +1,16 @@
 //app/(academy)/academy/dashboard/page.tsx
 
 "use client";
-import { useState, ReactNode } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuthContext } from "@/context/AuthContext";
-/* ══════════════════════════════════════════════
-   MOCK DATA  — replace with real API calls
-══════════════════════════════════════════════ */
-const STUDENT = {
-  name: "Jean-Baptiste N.",
-  initials: "JN",
-  batch: 11,
-  software: "AutoCAD",
-  secondSoftware: "ArchiCAD",
-  status: "Active",
-  overallProgress: 60,
-  coursesEnrolled: 2,
-  lessonsCompleted: 18,
-  totalLessons: 30,
-  certificatesEarned: 1,
-  certStatus: "1 in progress",
-  studyHours: 42,
-  studyLabel: "This batch",
-  city: "Yaoundé",
-  joinedBatch: "Jan 2025",
-  avatar: "#3b82f6",
-};
-
-const COURSES = [
-  {
-    id: 1,
-    name: "AutoCAD",
-    color: "#ef4444",
-    icon: "📐",
-    category: "CAD",
-    currentLesson: 7,
-    totalLessons: 18,
-    lessonName: "3D Modeling Fundamentals",
-    progress: 60,
-    duration: "45 min",
-    lastActivity: "2 days ago",
-  },
-  {
-    id: 2,
-    name: "ArchiCAD",
-    color: "#a78bfa",
-    icon: "🏛️",
-    category: "BIM",
-    currentLesson: 4,
-    totalLessons: 18,
-    lessonName: "Parametric Objects",
-    progress: 38,
-    duration: "60 min",
-    lastActivity: "4 days ago",
-  },
-];
-
-const ANNOUNCEMENTS = [
-  {
-    id: 1,
-    tag: "NEW",
-    time: "2 DAYS AGO",
-    title: "ArchiCAD Session 4 uploaded",
-    body: "New video content is available in your ArchiCAD course.",
-    color: "#3b82f6",
-    icon: "📢",
-  },
-  {
-    id: 2,
-    tag: "CHALLENGE",
-    time: "5 DAYS AGO",
-    title: "CHICAD Challenge submissions open",
-    body: "Submit your final project before end of batch.",
-    color: "#f59e0b",
-    icon: "🏆",
-  },
-  {
-    id: 3,
-    tag: "PAYMENT",
-    time: "1 WEEK AGO",
-    title: "Registration confirmed — Batch 11",
-    body: "Your enrollment is confirmed. Welcome aboard!",
-    color: "#22c55e",
-    icon: "✅",
-  },
-];
-
-const UPCOMING = [
-  {
-    day: "MON",
-    course: "AUTOCAD",
-    topic: "Dimension & Annotation",
-    duration: "45 min",
-    color: "#ef4444",
-  },
-  {
-    day: "WED",
-    course: "ARCHICAD",
-    topic: "Parametric Objects",
-    duration: "60 min",
-    color: "#a78bfa",
-  },
-  {
-    day: "FRI",
-    course: "AUTOCAD",
-    topic: "Layout & Sheet Sets",
-    duration: "50 min",
-    color: "#ef4444",
-  },
-];
-
-const LESSONS = [
-  {
-    id: 1,
-    course: "AutoCAD",
-    name: "Introduction to Interface",
-    duration: "32 min",
-    done: true,
-    color: "#ef4444",
-  },
-  {
-    id: 2,
-    course: "AutoCAD",
-    name: "Basic Drawing Tools",
-    duration: "41 min",
-    done: true,
-    color: "#ef4444",
-  },
-  {
-    id: 3,
-    course: "AutoCAD",
-    name: "Layers & Properties",
-    duration: "38 min",
-    done: true,
-    color: "#ef4444",
-  },
-  {
-    id: 4,
-    course: "AutoCAD",
-    name: "Annotation & Text",
-    duration: "29 min",
-    done: true,
-    color: "#ef4444",
-  },
-  {
-    id: 5,
-    course: "AutoCAD",
-    name: "Blocks & References",
-    duration: "44 min",
-    done: true,
-    color: "#ef4444",
-  },
-  {
-    id: 6,
-    course: "AutoCAD",
-    name: "Dimensioning Basics",
-    duration: "35 min",
-    done: true,
-    color: "#ef4444",
-  },
-  {
-    id: 7,
-    course: "AutoCAD",
-    name: "3D Modeling Fundamentals",
-    duration: "45 min",
-    done: false,
-    color: "#ef4444",
-    current: true,
-  },
-  {
-    id: 8,
-    course: "AutoCAD",
-    name: "3D Solid Modeling",
-    duration: "50 min",
-    done: false,
-    color: "#ef4444",
-  },
-  {
-    id: 9,
-    course: "ArchiCAD",
-    name: "Getting Started with ArchiCAD",
-    duration: "28 min",
-    done: true,
-    color: "#a78bfa",
-  },
-  {
-    id: 10,
-    course: "ArchiCAD",
-    name: "Walls, Slabs & Roofs",
-    duration: "52 min",
-    done: true,
-    color: "#a78bfa",
-  },
-  {
-    id: 11,
-    course: "ArchiCAD",
-    name: "Doors, Windows & Objects",
-    duration: "39 min",
-    done: true,
-    color: "#a78bfa",
-  },
-  {
-    id: 12,
-    course: "ArchiCAD",
-    name: "Parametric Objects",
-    duration: "60 min",
-    done: false,
-    color: "#a78bfa",
-    current: true,
-  },
-];
+import {
+  useStudentDashboard,
+  type DashboardCourse,
+  type DashboardLesson,
+  type DashboardData,
+} from "@/hooks/useStudentDashboard";
 
 type View =
   | "overview"
@@ -261,26 +61,21 @@ const GLOBAL_CSS = `
   .resume-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
   .card-hover:hover { border-color: rgba(125,211,252,0.22) !important; transform: translateY(-2px); }
   .card-hover { transition: all 0.22s ease; }
-
   @media (max-width: 768px) {
-  .sidebar-toggle { display: flex !important; }
-  .mobile-overlay { display: block !important; }
-}
-@media (max-width: 768px) {
-  .app-sidebar {
-    position: fixed !important;
-    top: 0;
-    left: 0;
-    z-index: 50;
-    transform: translateX(-100%);
-    transition: transform 0.25s ease;
-    height: 100vh;
+    .sidebar-toggle { display: flex !important; }
+    .mobile-overlay { display: block !important; }
   }
-  .app-sidebar.sidebar-open {
-    transform: translateX(0);
+  @media (max-width: 768px) {
+    .app-sidebar {
+      position: fixed !important;
+      top: 0; left: 0;
+      z-index: 50;
+      transform: translateX(-100%);
+      transition: transform 0.25s ease;
+      height: 100vh;
+    }
+    .app-sidebar.sidebar-open { transform: translateX(0); }
   }
-}
-
 `;
 
 /* ══════════════════════════════════════════════
@@ -388,7 +183,6 @@ function Tag({ label, color }: { label: string; color: string }) {
 /* ══════════════════════════════════════════════
    SIDEBAR
 ══════════════════════════════════════════════ */
-// Change signature:
 function Sidebar({
   view,
   setView,
@@ -403,41 +197,17 @@ function Sidebar({
   const { logout, user } = useAuthContext();
   const student = user?.student;
 
-  // Derive display values from real data
   const initials = student
     ? `${student.firstName[0]}${student.lastName[0]}`.toUpperCase()
     : "??";
-
   const fullName = student
     ? `${student.firstName} ${student.lastName[0]}.`
     : "—";
-
-  // ✅ fallback to empty array if enrollments is undefined
   const courseNames =
     (student?.enrollments ?? [])
       .filter((e) => e.status === "ACTIVE")
       .map((e) => e.course.name)
       .join(", ") || "—";
-  const batch = student?.batch ?? "—";
-
-  console.log("Student data in Sidebar:", student); // Debug log
-  const statusLabel: Record<string, string> = {
-    ACTIVE: "Active",
-    INACTIVE: "Inactive",
-    GRADUATED: "Graduated",
-    SUSPENDED: "Suspended",
-    WITHDRAWN: "Withdrawn",
-  };
-
-  const statusColor: Record<string, string> = {
-    ACTIVE: "var(--green)",
-    INACTIVE: "var(--text3)",
-    GRADUATED: "var(--amber)",
-    SUSPENDED: "var(--red)",
-    WITHDRAWN: "var(--text3)",
-  };
-
-  const currentStatus = student?.status ?? "INACTIVE";
 
   const nav: { id: View; label: string; icon: string; badge?: number }[] = [
     { id: "overview", label: "Overview", icon: "⊞" },
@@ -445,8 +215,7 @@ function Sidebar({
       id: "courses",
       label: "My Courses",
       icon: "📚",
-      badge: user?.student?.enrollments.filter((e) => e.status === "ACTIVE")
-        .length,
+      badge: student?.enrollments.filter((e) => e.status === "ACTIVE").length,
     },
     { id: "lessons", label: "Lessons", icon: "▶️" },
     { id: "certificates", label: "Certificates", icon: "🎓" },
@@ -463,10 +232,9 @@ function Sidebar({
         display: "flex",
         flexDirection: "column",
         height: "100vh",
-        position: "sticky", // desktop default
+        position: "sticky",
         top: 0,
         overflow: "hidden",
-        // ↓ mobile overrides via className
       }}
       className={`app-sidebar${open ? " sidebar-open" : ""}`}
     >
@@ -725,10 +493,16 @@ function Sidebar({
 }
 
 /* ══════════════════════════════════════════════
-   OVERVIEW VIEW  (matches the screenshot)
+   OVERVIEW VIEW
 ══════════════════════════════════════════════ */
-function Overview({ setView }: { setView: (v: View) => void }) {
-  const activeCourse = COURSES[0];
+function Overview({
+  setView,
+  data,
+}: {
+  setView: (v: View) => void;
+  data: DashboardData;
+}) {
+  const activeCourse = data.courses[0];
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.1rem" }}>
@@ -781,7 +555,9 @@ function Overview({ setView }: { setView: (v: View) => void }) {
               marginBottom: "0.35rem",
             }}
           >
-            Jean-Baptiste
+            {activeCourse
+              ? `Let's continue where you left off in ${activeCourse.name}!`
+              : "Welcome to your dashboard!"}
           </h2>
           <p
             style={{
@@ -790,13 +566,26 @@ function Overview({ setView }: { setView: (v: View) => void }) {
               lineHeight: 1.6,
             }}
           >
-            You have <strong style={{ color: "var(--sky)" }}>3 lessons</strong>{" "}
-            remaining this week. Keep going!
+            {data.totalLessons > 0 ? (
+              <>
+                You've completed{" "}
+                <strong style={{ color: "var(--sky)" }}>
+                  {data.lessonsCompleted}
+                </strong>{" "}
+                of{" "}
+                <strong style={{ color: "var(--sky)" }}>
+                  {data.totalLessons}
+                </strong>{" "}
+                lessons. Keep going!
+              </>
+            ) : (
+              "No lessons available yet. Check back soon!"
+            )}
           </p>
         </div>
         <div style={{ position: "relative", flexShrink: 0 }}>
           <ProgressRing
-            value={STUDENT.overallProgress}
+            value={data.overallProgress}
             size={68}
             stroke={5}
             color="#3b82f6"
@@ -819,7 +608,7 @@ function Overview({ setView }: { setView: (v: View) => void }) {
                 fontFamily: "var(--mono)",
               }}
             >
-              {STUDENT.overallProgress}%
+              {data.overallProgress}%
             </span>
             <span
               style={{
@@ -835,7 +624,7 @@ function Overview({ setView }: { setView: (v: View) => void }) {
         </div>
       </div>
 
-      {/* Stats row — 4 cards */}
+      {/* Stats row */}
       <div
         className="fade-up"
         style={{
@@ -848,33 +637,36 @@ function Overview({ setView }: { setView: (v: View) => void }) {
         {[
           {
             label: "Courses Enrolled",
-            value: STUDENT.coursesEnrolled,
-            sub: [STUDENT.software, STUDENT.secondSoftware].join(", "),
+            value: data.coursesEnrolled,
+            sub: data.courses.map((c) => c.name).join(", ") || "—",
             icon: "📚",
             color: "#3b82f6",
           },
           {
             label: "Lessons Completed",
-            value: STUDENT.lessonsCompleted,
-            sub: `of ${STUDENT.totalLessons} total`,
+            value: data.lessonsCompleted,
+            sub: `of ${data.totalLessons} total`,
             icon: "✅",
             color: "#22c55e",
           },
           {
             label: "Certificates Earned",
-            value: STUDENT.certificatesEarned,
-            sub: STUDENT.certStatus,
+            value: data.certificatesEarned,
+            sub:
+              data.certificatesEarned > 0
+                ? "View in Certificates"
+                : "Complete a course to earn",
             icon: "🎓",
             color: "#f59e0b",
           },
           {
             label: "Study Hours",
-            value: `${STUDENT.studyHours}h`,
-            sub: STUDENT.studyLabel,
+            value: "—",
+            sub: "Coming soon",
             icon: "⏱",
             color: "#a78bfa",
           },
-        ].map((s, i) => (
+        ].map((s) => (
           <div
             key={s.label}
             className="card-hover"
@@ -953,110 +745,129 @@ function Overview({ setView }: { setView: (v: View) => void }) {
           >
             Resume · Continue Learning
           </div>
-          <div
-            style={{
-              background: "var(--surface)",
-              border: "1px solid var(--border)",
-              borderRadius: 14,
-              overflow: "hidden",
-            }}
-          >
-            {/* Course thumbnail */}
+          {activeCourse ? (
             <div
               style={{
-                height: 110,
-                background: `linear-gradient(135deg, ${activeCourse.color}22, rgba(7,24,40,0.9))`,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                position: "relative",
-                borderBottom: "1px solid var(--border2)",
+                background: "var(--surface)",
+                border: "1px solid var(--border)",
+                borderRadius: 14,
+                overflow: "hidden",
               }}
             >
               <div
                 style={{
-                  fontSize: "3rem",
-                  filter: "drop-shadow(0 0 12px rgba(239,68,68,0.4))",
-                }}
-              >
-                {activeCourse.icon}
-              </div>
-              <div
-                style={{ position: "absolute", top: "0.6rem", left: "0.7rem" }}
-              >
-                <Tag
-                  label={`${activeCourse.name} · Lesson ${activeCourse.currentLesson} of ${activeCourse.totalLessons}`}
-                  color={activeCourse.color}
-                />
-              </div>
-            </div>
-            <div style={{ padding: "0.9rem 1rem" }}>
-              <div
-                style={{
-                  fontSize: "0.88rem",
-                  fontWeight: 800,
-                  color: "var(--text)",
-                  marginBottom: "0.5rem",
-                  letterSpacing: "-0.01em",
-                }}
-              >
-                {activeCourse.lessonName}
-              </div>
-              <ProgressBar
-                value={activeCourse.progress}
-                color={activeCourse.color}
-              />
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  marginTop: "0.3rem",
-                  marginBottom: "0.75rem",
-                }}
-              >
-                <span style={{ fontSize: "0.62rem", color: "var(--text3)" }}>
-                  {activeCourse.progress}% complete
-                </span>
-                <span
-                  style={{
-                    fontSize: "0.62rem",
-                    color: "var(--text3)",
-                    fontFamily: "var(--mono)",
-                  }}
-                >
-                  {activeCourse.duration}
-                </span>
-              </div>
-              <button
-                className="resume-btn"
-                onClick={() => setView("lessons")}
-                style={{
-                  width: "100%",
-                  padding: "0.62rem",
-                  borderRadius: 8,
-                  border: "none",
-                  background: `linear-gradient(135deg, ${activeCourse.color}, ${activeCourse.color}cc)`,
-                  color: "#fff",
-                  fontSize: "0.78rem",
-                  fontWeight: 800,
-                  cursor: "pointer",
+                  height: 110,
+                  background: `linear-gradient(135deg, ${activeCourse.color}22, rgba(7,24,40,0.9))`,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  gap: "0.4rem",
-                  transition: "all 0.2s",
-                  boxShadow: `0 4px 14px ${activeCourse.color}44`,
+                  position: "relative",
+                  borderBottom: "1px solid var(--border2)",
                 }}
               >
-                ▶ Resume Lesson
-              </button>
+                <div
+                  style={{
+                    fontSize: "3rem",
+                    filter: `drop-shadow(0 0 12px ${activeCourse.color}66)`,
+                  }}
+                >
+                  {activeCourse.icon}
+                </div>
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "0.6rem",
+                    left: "0.7rem",
+                  }}
+                >
+                  <Tag
+                    label={`${activeCourse.name} · Lesson ${activeCourse.currentLessonOrder} of ${activeCourse.totalLessons}`}
+                    color={activeCourse.color}
+                  />
+                </div>
+              </div>
+              <div style={{ padding: "0.9rem 1rem" }}>
+                <div
+                  style={{
+                    fontSize: "0.88rem",
+                    fontWeight: 800,
+                    color: "var(--text)",
+                    marginBottom: "0.5rem",
+                    letterSpacing: "-0.01em",
+                  }}
+                >
+                  {activeCourse.currentLessonName}
+                </div>
+                <ProgressBar
+                  value={activeCourse.progress}
+                  color={activeCourse.color}
+                />
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginTop: "0.3rem",
+                    marginBottom: "0.75rem",
+                  }}
+                >
+                  <span style={{ fontSize: "0.62rem", color: "var(--text3)" }}>
+                    {activeCourse.progress}% complete
+                  </span>
+                  <span
+                    style={{
+                      fontSize: "0.62rem",
+                      color: "var(--text3)",
+                      fontFamily: "var(--mono)",
+                    }}
+                  >
+                    {activeCourse.currentLessonDuration}
+                  </span>
+                </div>
+                <button
+                  className="resume-btn"
+                  onClick={() => setView("lessons")}
+                  style={{
+                    width: "100%",
+                    padding: "0.62rem",
+                    borderRadius: 8,
+                    border: "none",
+                    background: `linear-gradient(135deg, ${activeCourse.color}, ${activeCourse.color}cc)`,
+                    color: "#fff",
+                    fontSize: "0.78rem",
+                    fontWeight: 800,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "0.4rem",
+                    transition: "all 0.2s",
+                    boxShadow: `0 4px 14px ${activeCourse.color}44`,
+                  }}
+                >
+                  ▶ Resume Lesson
+                </button>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div
+              style={{
+                background: "var(--surface)",
+                border: "1px solid var(--border)",
+                borderRadius: 14,
+                padding: "2rem",
+                textAlign: "center",
+                color: "var(--text3)",
+                fontSize: "0.78rem",
+              }}
+            >
+              No active courses yet.
+            </div>
+          )}
         </div>
 
-        {/* Right column: Announcements + Upcoming */}
+        {/* Right column */}
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          {/* Announcements */}
+          {/* Announcements — coming soon */}
           <div>
             <div
               style={{
@@ -1075,79 +886,38 @@ function Overview({ setView }: { setView: (v: View) => void }) {
                 background: "var(--surface)",
                 border: "1px solid var(--border)",
                 borderRadius: 14,
-                overflow: "hidden",
+                padding: "1.5rem",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "0.5rem",
+                minHeight: 100,
               }}
             >
-              {ANNOUNCEMENTS.map((a, i) => (
-                <div
-                  key={a.id}
-                  style={{
-                    padding: "0.75rem 1rem",
-                    borderBottom:
-                      i < ANNOUNCEMENTS.length - 1
-                        ? "1px solid var(--border2)"
-                        : "none",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                      gap: "0.6rem",
-                    }}
-                  >
-                    <span style={{ fontSize: "0.85rem", marginTop: "0.05rem" }}>
-                      {a.icon}
-                    </span>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "0.4rem",
-                          marginBottom: "0.2rem",
-                          flexWrap: "wrap",
-                        }}
-                      >
-                        <Tag label={a.tag} color={a.color} />
-                        <span
-                          style={{
-                            fontSize: "0.58rem",
-                            color: "var(--text3)",
-                            fontFamily: "var(--mono)",
-                          }}
-                        >
-                          · {a.time}
-                        </span>
-                      </div>
-                      <div
-                        style={{
-                          fontSize: "0.76rem",
-                          fontWeight: 700,
-                          color: "var(--text)",
-                          marginBottom: "0.15rem",
-                          lineHeight: 1.3,
-                        }}
-                      >
-                        {a.title}
-                      </div>
-                      <div
-                        style={{
-                          fontSize: "0.68rem",
-                          color: "var(--text2)",
-                          lineHeight: 1.5,
-                        }}
-                      >
-                        {a.body}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+              <span style={{ fontSize: "1.4rem" }}>📢</span>
+              <span
+                style={{
+                  fontSize: "0.75rem",
+                  fontWeight: 700,
+                  color: "var(--text2)",
+                }}
+              >
+                Announcements coming soon
+              </span>
+              <span
+                style={{
+                  fontSize: "0.65rem",
+                  color: "var(--text3)",
+                  textAlign: "center",
+                }}
+              >
+                Academy updates and notices will appear here.
+              </span>
             </div>
           </div>
 
-          {/* This week: upcoming lessons */}
+          {/* Upcoming lessons — derived from allLessons */}
           <div>
             <div
               style={{
@@ -1166,7 +936,7 @@ function Overview({ setView }: { setView: (v: View) => void }) {
                   letterSpacing: "0.12em",
                 }}
               >
-                This Week · Upcoming Lessons
+                Up Next · Remaining Lessons
               </div>
               <button
                 onClick={() => setView("lessons")}
@@ -1190,92 +960,91 @@ function Overview({ setView }: { setView: (v: View) => void }) {
                 overflow: "hidden",
               }}
             >
-              {UPCOMING.map((u, i) => (
+              {data.allLessons.filter((l) => !l.done).slice(0, 4).length > 0 ? (
+                data.allLessons
+                  .filter((l) => !l.done)
+                  .slice(0, 4)
+                  .map((l, i, arr) => (
+                    <div
+                      key={l.id}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.85rem",
+                        padding: "0.7rem 1rem",
+                        borderBottom:
+                          i < arr.length - 1
+                            ? "1px solid var(--border2)"
+                            : "none",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 34,
+                          height: 34,
+                          borderRadius: 8,
+                          background: `${l.courseColor}18`,
+                          border: `1px solid ${l.courseColor}33`,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0,
+                        }}
+                      >
+                        <span style={{ fontSize: "0.7rem" }}>
+                          {l.current ? "▶" : "○"}
+                        </span>
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div
+                          style={{
+                            fontSize: "0.58rem",
+                            fontWeight: 700,
+                            color: l.courseColor,
+                            textTransform: "uppercase",
+                            letterSpacing: "0.07em",
+                            marginBottom: "0.1rem",
+                          }}
+                        >
+                          {l.course}
+                        </div>
+                        <div
+                          style={{
+                            fontSize: "0.74rem",
+                            fontWeight: 600,
+                            color: "var(--text)",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {l.name}
+                        </div>
+                      </div>
+                      <span
+                        style={{
+                          fontSize: "0.62rem",
+                          color: "var(--text3)",
+                          fontFamily: "var(--mono)",
+                          flexShrink: 0,
+                        }}
+                      >
+                        ⏱ {l.duration}
+                      </span>
+                    </div>
+                  ))
+              ) : (
                 <div
-                  key={i}
                   style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.85rem",
-                    padding: "0.7rem 1rem",
-                    borderBottom:
-                      i < UPCOMING.length - 1
-                        ? "1px solid var(--border2)"
-                        : "none",
+                    padding: "1.5rem",
+                    textAlign: "center",
+                    color: "var(--text3)",
+                    fontSize: "0.75rem",
                   }}
                 >
-                  <div
-                    style={{
-                      width: 34,
-                      height: 34,
-                      borderRadius: 8,
-                      background: `${u.color}18`,
-                      border: `1px solid ${u.color}33`,
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontSize: "0.45rem",
-                        fontWeight: 800,
-                        color: u.color,
-                        textTransform: "uppercase",
-                        letterSpacing: "0.06em",
-                      }}
-                    >
-                      {u.day}
-                    </span>
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div
-                      style={{
-                        fontSize: "0.58rem",
-                        fontWeight: 700,
-                        color: u.color,
-                        textTransform: "uppercase",
-                        letterSpacing: "0.07em",
-                        marginBottom: "0.1rem",
-                      }}
-                    >
-                      {u.course}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: "0.74rem",
-                        fontWeight: 600,
-                        color: "var(--text)",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
-                      {u.topic}
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.25rem",
-                      flexShrink: 0,
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontSize: "0.62rem",
-                        color: "var(--text3)",
-                        fontFamily: "var(--mono)",
-                      }}
-                    >
-                      ⏱ {u.duration}
-                    </span>
-                  </div>
+                  🎉 All lessons completed!
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </div>
@@ -1287,13 +1056,31 @@ function Overview({ setView }: { setView: (v: View) => void }) {
 /* ══════════════════════════════════════════════
    COURSES VIEW
 ══════════════════════════════════════════════ */
-function CoursesView() {
+function CoursesView({ courses }: { courses: DashboardCourse[] }) {
+  if (courses.length === 0) {
+    return (
+      <div
+        style={{
+          background: "var(--surface)",
+          border: "1px solid var(--border)",
+          borderRadius: 14,
+          padding: "3rem",
+          textAlign: "center",
+          color: "var(--text3)",
+        }}
+      >
+        <div style={{ fontSize: "2rem", marginBottom: "0.75rem" }}>📚</div>
+        <div style={{ fontSize: "0.85rem" }}>No active courses enrolled.</div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
       <div
         style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}
       >
-        {COURSES.map((c, i) => (
+        {courses.map((c, i) => (
           <div
             key={c.id}
             className="card-hover fade-up"
@@ -1342,8 +1129,8 @@ function CoursesView() {
                   marginBottom: "0.75rem",
                 }}
               >
-                Lesson {c.currentLesson} of {c.totalLessons} · Currently:{" "}
-                <em style={{ color: c.color }}>{c.lessonName}</em>
+                Lesson {c.currentLessonOrder} of {c.totalLessons} · Currently:{" "}
+                <em style={{ color: c.color }}>{c.currentLessonName}</em>
               </p>
               <ProgressBar value={c.progress} color={c.color} />
               <div
@@ -1358,7 +1145,7 @@ function CoursesView() {
                   {c.progress}% complete
                 </span>
                 <span style={{ fontSize: "0.62rem", color: "var(--text3)" }}>
-                  Last: {c.lastActivity}
+                  {c.currentLessonDuration}
                 </span>
               </div>
               <button
@@ -1376,7 +1163,7 @@ function CoursesView() {
                   transition: "all 0.2s",
                 }}
               >
-                ▶ Continue — {c.lessonName}
+                ▶ Continue — {c.currentLessonName}
               </button>
             </div>
           </div>
@@ -1389,11 +1176,30 @@ function CoursesView() {
 /* ══════════════════════════════════════════════
    LESSONS VIEW
 ══════════════════════════════════════════════ */
-function LessonsView() {
+function LessonsView({ lessons }: { lessons: DashboardLesson[] }) {
   const [filter, setFilter] = useState("All");
-  const filters = ["All", "AutoCAD", "ArchiCAD"];
+  const courseNames = [...new Set(lessons.map((l) => l.course))];
+  const filters = ["All", ...courseNames];
   const visible =
-    filter === "All" ? LESSONS : LESSONS.filter((l) => l.course === filter);
+    filter === "All" ? lessons : lessons.filter((l) => l.course === filter);
+
+  if (lessons.length === 0) {
+    return (
+      <div
+        style={{
+          background: "var(--surface)",
+          border: "1px solid var(--border)",
+          borderRadius: 14,
+          padding: "3rem",
+          textAlign: "center",
+          color: "var(--text3)",
+        }}
+      >
+        <div style={{ fontSize: "2rem", marginBottom: "0.75rem" }}>▶️</div>
+        <div style={{ fontSize: "0.85rem" }}>No lessons available yet.</div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
@@ -1449,8 +1255,10 @@ function LessonsView() {
                 width: 28,
                 height: 28,
                 borderRadius: "50%",
-                background: l.done ? `${l.color}22` : "rgba(125,211,252,0.06)",
-                border: `1.5px solid ${l.done ? l.color : "rgba(125,211,252,0.14)"}`,
+                background: l.done
+                  ? `${l.courseColor}22`
+                  : "rgba(125,211,252,0.06)",
+                border: `1.5px solid ${l.done ? l.courseColor : "rgba(125,211,252,0.14)"}`,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -1459,7 +1267,7 @@ function LessonsView() {
               }}
             >
               {l.done ? (
-                <span style={{ color: l.color }}>✓</span>
+                <span style={{ color: l.courseColor }}>✓</span>
               ) : l.current ? (
                 <span style={{ color: "var(--sky)" }}>▶</span>
               ) : (
@@ -1479,7 +1287,7 @@ function LessonsView() {
                 style={{
                   fontSize: "0.58rem",
                   fontWeight: 700,
-                  color: l.color,
+                  color: l.courseColor,
                   textTransform: "uppercase",
                   letterSpacing: "0.07em",
                   marginBottom: "0.1rem",
@@ -1492,7 +1300,6 @@ function LessonsView() {
                   fontSize: "0.78rem",
                   fontWeight: l.current ? 700 : 500,
                   color: l.done ? "var(--text2)" : "var(--text)",
-                  textDecoration: l.done ? "none" : "none",
                 }}
               >
                 {l.name}
@@ -1515,7 +1322,7 @@ function LessonsView() {
               >
                 {l.duration}
               </span>
-              {l.done && <Tag label="Done" color={l.color} />}
+              {l.done && <Tag label="Done" color={l.courseColor} />}
               {l.current && <Tag label="Current" color="var(--sky)" />}
             </div>
           </div>
@@ -1528,104 +1335,121 @@ function LessonsView() {
 /* ══════════════════════════════════════════════
    CERTIFICATES VIEW
 ══════════════════════════════════════════════ */
-function CertificatesView() {
+function CertificatesView({
+  courses,
+  certificatesEarned,
+}: {
+  courses: DashboardCourse[];
+  certificatesEarned: number;
+}) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-      {/* Earned */}
-      <div
-        className="fade-up"
-        style={{
-          background:
-            "linear-gradient(135deg, rgba(245,158,11,0.12), rgba(7,24,40,0.95))",
-          border: "1px solid rgba(245,158,11,0.28)",
-          borderRadius: 14,
-          padding: "1.5rem",
-          display: "flex",
-          alignItems: "center",
-          gap: "1.25rem",
-        }}
-      >
-        <div style={{ fontSize: "3rem" }}>🏅</div>
-        <div style={{ flex: 1 }}>
-          <Tag label="Earned" color="#22c55e" />
-          <h3
+      {certificatesEarned === 0 &&
+        courses.filter((c) => c.progress < 100).length === 0 && (
+          <div
             style={{
-              fontSize: "1.05rem",
-              fontWeight: 800,
-              color: "var(--text)",
-              marginTop: "0.4rem",
-              marginBottom: "0.2rem",
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
+              borderRadius: 14,
+              padding: "3rem",
+              textAlign: "center",
+              color: "var(--text3)",
             }}
           >
-            AutoCAD — Batch 11 Certificate
-          </h3>
-          <p style={{ fontSize: "0.72rem", color: "var(--text2)" }}>
-            Issued: March 2025 · CHICAD Academy
-          </p>
-        </div>
-        <button
-          style={{
-            padding: "0.55rem 1rem",
-            borderRadius: 8,
-            border: "1px solid rgba(245,158,11,0.35)",
-            background: "rgba(245,158,11,0.1)",
-            color: "#f59e0b",
-            fontSize: "0.72rem",
-            fontWeight: 700,
-            cursor: "pointer",
-          }}
-        >
-          ⬇ Download
-        </button>
-      </div>
-      {/* In progress */}
-      {COURSES.filter((c) => c.progress < 100).map((c) => (
-        <div
-          key={c.id}
-          className="fade-up card-hover"
-          style={{
-            background: "var(--surface)",
-            border: "1px solid var(--border)",
-            borderRadius: 14,
-            padding: "1.25rem 1.4rem",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-            <span style={{ fontSize: "2rem" }}>{c.icon}</span>
-            <div style={{ flex: 1 }}>
-              <Tag label="In Progress" color={c.color} />
-              <h3
-                style={{
-                  fontSize: "0.9rem",
-                  fontWeight: 700,
-                  color: "var(--text)",
-                  marginTop: "0.35rem",
-                  marginBottom: "0.45rem",
-                }}
-              >
-                {c.name} Certificate
-              </h3>
-              <ProgressBar value={c.progress} color={c.color} />
-              <span
-                style={{
-                  fontSize: "0.62rem",
-                  color: "var(--text3)",
-                  marginTop: "0.25rem",
-                  display: "block",
-                }}
-              >
-                {c.progress}% — complete all lessons to unlock
-              </span>
+            <div style={{ fontSize: "2rem", marginBottom: "0.75rem" }}>🎓</div>
+            <div style={{ fontSize: "0.85rem" }}>
+              No certificates yet. Complete a course to earn one!
             </div>
           </div>
+        )}
+
+      {/* Earned certificates (placeholder — would come from API when you add cert data to hook) */}
+      {certificatesEarned > 0 && (
+        <div
+          className="fade-up"
+          style={{
+            background:
+              "linear-gradient(135deg, rgba(245,158,11,0.12), rgba(7,24,40,0.95))",
+            border: "1px solid rgba(245,158,11,0.28)",
+            borderRadius: 14,
+            padding: "1.5rem",
+            display: "flex",
+            alignItems: "center",
+            gap: "1.25rem",
+          }}
+        >
+          <div style={{ fontSize: "3rem" }}>🏅</div>
+          <div style={{ flex: 1 }}>
+            <Tag label="Earned" color="#22c55e" />
+            <h3
+              style={{
+                fontSize: "1.05rem",
+                fontWeight: 800,
+                color: "var(--text)",
+                marginTop: "0.4rem",
+                marginBottom: "0.2rem",
+              }}
+            >
+              {certificatesEarned} Certificate
+              {certificatesEarned > 1 ? "s" : ""} Earned
+            </h3>
+            <p style={{ fontSize: "0.72rem", color: "var(--text2)" }}>
+              CHICAD Academy
+            </p>
+          </div>
         </div>
-      ))}
+      )}
+
+      {/* In-progress courses */}
+      {courses
+        .filter((c) => c.progress < 100)
+        .map((c) => (
+          <div
+            key={c.id}
+            className="fade-up card-hover"
+            style={{
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
+              borderRadius: 14,
+              padding: "1.25rem 1.4rem",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+              <span style={{ fontSize: "2rem" }}>{c.icon}</span>
+              <div style={{ flex: 1 }}>
+                <Tag label="In Progress" color={c.color} />
+                <h3
+                  style={{
+                    fontSize: "0.9rem",
+                    fontWeight: 700,
+                    color: "var(--text)",
+                    marginTop: "0.35rem",
+                    marginBottom: "0.45rem",
+                  }}
+                >
+                  {c.name} Certificate
+                </h3>
+                <ProgressBar value={c.progress} color={c.color} />
+                <span
+                  style={{
+                    fontSize: "0.62rem",
+                    color: "var(--text3)",
+                    marginTop: "0.25rem",
+                    display: "block",
+                  }}
+                >
+                  {c.progress}% — complete all lessons to unlock
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
     </div>
   );
 }
 
 /* ══════════════════════════════════════════════
-   RESOURCES VIEW
+   RESOURCES VIEW  (static for now — no DB model yet)
 ══════════════════════════════════════════════ */
 function ResourcesView() {
   const resources = [
@@ -1744,6 +1568,35 @@ function ResourcesView() {
    PROFILE VIEW
 ══════════════════════════════════════════════ */
 function ProfileView() {
+  const { user } = useAuthContext();
+  const student = user?.student;
+
+  const initials = student
+    ? `${student.firstName[0]}${student.lastName[0]}`.toUpperCase()
+    : "??";
+  const fullName = student ? `${student.firstName} ${student.lastName}` : "—";
+  const courseNames =
+    (student?.enrollments ?? [])
+      .filter((e) => e.status === "ACTIVE")
+      .map((e) => e.course.name)
+      .join(", ") || "—";
+
+  const rows = [
+    { label: "City", value: student?.city ?? "—" },
+    {
+      label: "Enrolled Since",
+      value: student?.enrolledAt
+        ? new Date(student.enrolledAt).toLocaleDateString("en-US", {
+            month: "short",
+            year: "numeric",
+          })
+        : "—",
+    },
+    { label: "Programs", value: courseNames },
+    { label: "Batch", value: student?.batch ? `Batch ${student.batch}` : "—" },
+    { label: "Status", value: student?.status ?? "—" },
+  ];
+
   return (
     <div
       style={{
@@ -1782,7 +1635,7 @@ function ProfileView() {
             flexShrink: 0,
           }}
         >
-          JN
+          {initials}
         </div>
         <div>
           <h2
@@ -1794,26 +1647,17 @@ function ProfileView() {
               marginBottom: "0.2rem",
             }}
           >
-            {STUDENT.name}
+            {fullName}
           </h2>
           <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
-            <Tag label={`Batch ${STUDENT.batch}`} color="#3b82f6" />
-            <Tag label={STUDENT.status} color="#22c55e" />
-            <Tag label={STUDENT.software} color="#ef4444" />
+            {student?.batch && (
+              <Tag label={`Batch ${student.batch}`} color="#3b82f6" />
+            )}
+            {student?.status && <Tag label={student.status} color="#22c55e" />}
           </div>
         </div>
       </div>
-      {[
-        { label: "City", value: STUDENT.city },
-        { label: "Enrolled Since", value: STUDENT.joinedBatch },
-        {
-          label: "Programs",
-          value: `${STUDENT.software}, ${STUDENT.secondSoftware}`,
-        },
-        { label: "Batch", value: `Batch ${STUDENT.batch}` },
-        { label: "Overall Progress", value: `${STUDENT.overallProgress}%` },
-        { label: "Total Study Hours", value: `${STUDENT.studyHours}h` },
-      ].map((row) => (
+      {rows.map((row) => (
         <div
           key={row.label}
           style={{
@@ -1834,10 +1678,6 @@ function ProfileView() {
               fontSize: "0.78rem",
               fontWeight: 700,
               color: "var(--text)",
-              fontFamily:
-                row.label.includes("Hours") || row.label.includes("Progress")
-                  ? "var(--mono)"
-                  : "var(--sans)",
             }}
           >
             {row.value}
@@ -1849,30 +1689,99 @@ function ProfileView() {
 }
 
 /* ══════════════════════════════════════════════
-   PAGE TITLES & SUBTITLES
-══════════════════════════════════════════════ */
-const PAGE_META: Record<View, { title: string; sub: string }> = {
-  overview: {
-    title: "Overview",
-    sub: `Batch ${STUDENT.batch} · ${STUDENT.software} & ${STUDENT.secondSoftware}`,
-  },
-  courses: { title: "My Courses", sub: "Your enrolled programs" },
-  lessons: { title: "Lessons", sub: "All lessons across your courses" },
-  certificates: {
-    title: "Certificates",
-    sub: "Your earned & in-progress certificates",
-  },
-  resources: { title: "Resources", sub: "Downloads, guides & materials" },
-  profile: { title: "My Profile", sub: "Your student information" },
-};
-
-/* ══════════════════════════════════════════════
    ROOT
 ══════════════════════════════════════════════ */
 export default function StudentPortal() {
   const [view, setView] = useState<View>("overview");
-  const meta = PAGE_META[view];
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { data, loading, error } = useStudentDashboard();
+  const { user } = useAuthContext();
+  const student = user?.student;
+
+  const courseLabel = data?.courses.map((c) => c.name).join(" & ") ?? "—";
+
+  const PAGE_META: Record<View, { title: string; sub: string }> = {
+    overview: { title: "Overview", sub: courseLabel },
+    courses: { title: "My Courses", sub: "Your enrolled programs" },
+    lessons: { title: "Lessons", sub: "All lessons across your courses" },
+    certificates: {
+      title: "Certificates",
+      sub: "Your earned & in-progress certificates",
+    },
+    resources: { title: "Resources", sub: "Downloads, guides & materials" },
+    profile: {
+      title: "My Profile",
+      sub: student
+        ? `${student.firstName} ${student.lastName}`
+        : "Your student information",
+    },
+  };
+
+  const meta = PAGE_META[view];
+
+  if (loading) {
+    return (
+      <>
+        <style>{GLOBAL_CSS}</style>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            minHeight: "100vh",
+            background: "var(--bg)",
+            flexDirection: "column",
+            gap: "1rem",
+          }}
+        >
+          <div
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: "50%",
+              border: "3px solid rgba(59,130,246,0.2)",
+              borderTopColor: "#3b82f6",
+              animation: "spin 0.8s linear infinite",
+            }}
+          />
+          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+          <span
+            style={{
+              fontSize: "0.78rem",
+              color: "var(--text3)",
+              fontFamily: "var(--mono)",
+            }}
+          >
+            Loading dashboard...
+          </span>
+        </div>
+      </>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <>
+        <style>{GLOBAL_CSS}</style>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            minHeight: "100vh",
+            background: "var(--bg)",
+            flexDirection: "column",
+            gap: "0.5rem",
+          }}
+        >
+          <span style={{ fontSize: "1.5rem" }}>⚠️</span>
+          <span style={{ fontSize: "0.85rem", color: "var(--red)" }}>
+            {error ?? "Could not load dashboard"}
+          </span>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -1880,12 +1789,11 @@ export default function StudentPortal() {
       <div
         style={{ display: "flex", minHeight: "100vh", background: "var(--bg)" }}
       >
-        {/* Overlay backdrop (mobile only) */}
         {sidebarOpen && (
           <div
             onClick={() => setSidebarOpen(false)}
             style={{
-              display: "none", // overridden by media query below
+              display: "none",
               position: "fixed",
               inset: 0,
               background: "rgba(0,0,0,0.55)",
@@ -1894,6 +1802,7 @@ export default function StudentPortal() {
             className="mobile-overlay"
           />
         )}
+
         <Sidebar
           view={view}
           setView={setView}
@@ -1901,7 +1810,6 @@ export default function StudentPortal() {
           onClose={() => setSidebarOpen(false)}
         />
 
-        {/* Main content */}
         <div
           style={{
             flex: 1,
@@ -1925,12 +1833,12 @@ export default function StudentPortal() {
               backdropFilter: "blur(10px)",
             }}
           >
-            <div>
+            <div style={{ display: "flex", alignItems: "center" }}>
               <button
                 className="sidebar-toggle"
                 onClick={() => setSidebarOpen((v) => !v)}
                 style={{
-                  display: "none", // shown via media query
+                  display: "none",
                   width: 30,
                   height: 30,
                   borderRadius: 7,
@@ -1947,32 +1855,33 @@ export default function StudentPortal() {
               >
                 {sidebarOpen ? "✕" : "☰"}
               </button>
-              <h1
-                style={{
-                  fontSize: "1rem",
-                  fontWeight: 800,
-                  color: "var(--text)",
-                  letterSpacing: "-0.02em",
-                  lineHeight: 1,
-                }}
-              >
-                {meta.title}
-              </h1>
-              <p
-                style={{
-                  fontSize: "0.62rem",
-                  color: "var(--text3)",
-                  marginTop: "0.2rem",
-                  fontFamily: "var(--mono)",
-                }}
-              >
-                {meta.sub}
-              </p>
+              <div>
+                <h1
+                  style={{
+                    fontSize: "1rem",
+                    fontWeight: 800,
+                    color: "var(--text)",
+                    letterSpacing: "-0.02em",
+                    lineHeight: 1,
+                  }}
+                >
+                  {meta.title}
+                </h1>
+                <p
+                  style={{
+                    fontSize: "0.62rem",
+                    color: "var(--text3)",
+                    marginTop: "0.2rem",
+                    fontFamily: "var(--mono)",
+                  }}
+                >
+                  {meta.sub}
+                </p>
+              </div>
             </div>
             <div
               style={{ display: "flex", alignItems: "center", gap: "0.65rem" }}
             >
-              {/* Notification bell */}
               <div style={{ position: "relative" }}>
                 <button
                   style={{
@@ -2003,7 +1912,6 @@ export default function StudentPortal() {
                   }}
                 />
               </div>
-              {/* Enroll button */}
               <button
                 style={{
                   padding: "0.42rem 0.9rem",
@@ -2024,10 +1932,15 @@ export default function StudentPortal() {
 
           {/* Page content */}
           <div style={{ flex: 1, padding: "1.4rem 1.6rem", overflowY: "auto" }}>
-            {view === "overview" && <Overview setView={setView} />}
-            {view === "courses" && <CoursesView />}
-            {view === "lessons" && <LessonsView />}
-            {view === "certificates" && <CertificatesView />}
+            {view === "overview" && <Overview setView={setView} data={data} />}
+            {view === "courses" && <CoursesView courses={data.courses} />}
+            {view === "lessons" && <LessonsView lessons={data.allLessons} />}
+            {view === "certificates" && (
+              <CertificatesView
+                courses={data.courses}
+                certificatesEarned={data.certificatesEarned}
+              />
+            )}
             {view === "resources" && <ResourcesView />}
             {view === "profile" && <ProfileView />}
           </div>
