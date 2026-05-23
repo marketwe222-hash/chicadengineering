@@ -72,7 +72,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     await fetch("/api/auth/logout", { method: "POST" });
     setUser(null);
-    router.push("/academy/login");
+    router.push("/academy");
+    router.refresh(); // ← add this
   }, [router]);
 
   return (

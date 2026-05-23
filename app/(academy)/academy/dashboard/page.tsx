@@ -4,6 +4,7 @@
 import { useState, ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useAuthContext } from "@/context/AuthContext";
 /* ══════════════════════════════════════════════
    MOCK DATA  — replace with real API calls
 ══════════════════════════════════════════════ */
@@ -399,6 +400,8 @@ function Sidebar({
   open: boolean;
   onClose: () => void;
 }) {
+  const { logout } = useAuthContext();
+
   const nav: { id: View; label: string; icon: string; badge?: number }[] = [
     { id: "overview", label: "Overview", icon: "⊞" },
     {
@@ -664,6 +667,7 @@ function Sidebar({
       <div style={{ padding: "0.7rem", borderTop: "1px solid var(--border2)" }}>
         <div
           className="nav-item"
+          onClick={logout}
           style={{
             display: "flex",
             alignItems: "center",
