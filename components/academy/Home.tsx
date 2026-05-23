@@ -101,6 +101,14 @@ const SOFTWARE_PREVIEW = [
   { icon: "🎨", name: "Lumion", cat: "Visualisation", color: "#ec4899" },
   { icon: "🏛️", name: "ArchiCAD", cat: "Architectural BIM", color: "#f59e0b" },
   { icon: "📦", name: "SketchUp Pro", cat: "3D Modelling", color: "#10b981" },
+  {
+    icon: "👨‍🔬",
+    name: "Robot Structural Analysis",
+    cat: "Structural Analysis",
+    color: "#fbbf24",
+  },
+  //abaqus and other tools can be added here in the future
+  { icon: "🧮", name: "ABAQUS", cat: "Building Analysis", color: "#7c3aed" },
 ];
 
 const TESTIMONIALS = [

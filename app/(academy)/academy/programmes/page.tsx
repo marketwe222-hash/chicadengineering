@@ -14,7 +14,8 @@ const SOFTWARE_COURSES = [
     trainingFee: 30000,
     duration: "1 Month",
     category: "Visualization",
-    description: "3D rendering & real-time visualization for architecture. Master photorealistic rendering and immersive virtual walkthroughs.",
+    description:
+      "3D rendering & real-time visualization for architecture. Master photorealistic rendering and immersive virtual walkthroughs.",
     gradientFrom: "#f59e0b",
     gradientTo: "#d97706",
     icon: "🌅",
@@ -28,7 +29,8 @@ const SOFTWARE_COURSES = [
     trainingFee: 30000,
     duration: "1 Month",
     category: "Productivity",
-    description: "Advanced spreadsheets, data analysis & project management. From pivot tables to VBA macros used daily in engineering firms.",
+    description:
+      "Advanced spreadsheets, data analysis & project management. From pivot tables to VBA macros used daily in engineering firms.",
     gradientFrom: "#22c55e",
     gradientTo: "#16a34a",
     icon: "📊",
@@ -42,7 +44,8 @@ const SOFTWARE_COURSES = [
     trainingFee: 50000,
     duration: "2 Months",
     category: "Structural Analysis",
-    description: "Structural analysis & design for buildings & bridges. Perform linear and nonlinear analysis of complex structures.",
+    description:
+      "Structural analysis & design for buildings & bridges. Perform linear and nonlinear analysis of complex structures.",
     gradientFrom: "#fb923c",
     gradientTo: "#ea580c",
     icon: "🔩",
@@ -56,7 +59,8 @@ const SOFTWARE_COURSES = [
     trainingFee: 50000,
     duration: "2 Months",
     category: "FEA",
-    description: "Finite element analysis for complex structural simulations including nonlinear mechanics, dynamic analysis and fatigue prediction.",
+    description:
+      "Finite element analysis for complex structural simulations including nonlinear mechanics, dynamic analysis and fatigue prediction.",
     gradientFrom: "#e879f9",
     gradientTo: "#a21caf",
     icon: "⚙️",
@@ -70,7 +74,8 @@ const SOFTWARE_COURSES = [
     trainingFee: 70000,
     duration: "3 Months",
     category: "BIM",
-    description: "Building Information Modeling for architects & engineers. Model complete buildings, generate construction documents and coordinate MEP systems.",
+    description:
+      "Building Information Modeling for architects & engineers. Model complete buildings, generate construction documents and coordinate MEP systems.",
     gradientFrom: "#7dd3fc",
     gradientTo: "#0ea5e9",
     icon: "🏗️",
@@ -84,7 +89,8 @@ const SOFTWARE_COURSES = [
     trainingFee: 70000,
     duration: "3 Months",
     category: "CAD",
-    description: "Industry-standard 2D/3D drafting & design software. Master precision drafting, 3D modeling, annotation, and sheet sets.",
+    description:
+      "Industry-standard 2D/3D drafting & design software. Master precision drafting, 3D modeling, annotation, and sheet sets.",
     gradientFrom: "#ef4444",
     gradientTo: "#b91c1c",
     icon: "📐",
@@ -98,11 +104,27 @@ const SOFTWARE_COURSES = [
     trainingFee: 70000,
     duration: "3 Months",
     category: "BIM",
-    description: "BIM software focused on architectural design & documentation. Architect-first workflow with parametric objects and teamwork collaboration.",
+    description:
+      "BIM software focused on architectural design & documentation. Architect-first workflow with parametric objects and teamwork collaboration.",
     gradientFrom: "#a78bfa",
     gradientTo: "#7c3aed",
     icon: "🏛️",
     badge: null,
+  },
+  {
+    id: "Robot structural",
+    name: "Robot Structural Analysis",
+    software: "Robot Structural Analysis",
+    registrationFee: 10000,
+    trainingFee: 100000,
+    duration: "3 Months",
+    category: "Structural Analysis",
+    description:
+      "Advanced structural analysis software for complex building projects. Perform comprehensive analysis of building structures, including steel, concrete, and timber.",
+    gradientFrom: "#fbbf24",
+    gradientTo: "#f59e0b",
+    icon: "🔩",
+    badge: "Advanced",
   },
 ];
 
@@ -293,47 +315,195 @@ function SoftwareCourseCard({
       }}
     >
       {/* Coloured top stripe */}
-      <div style={{ height: "4px", background: `linear-gradient(90deg, ${course.gradientFrom}, ${course.gradientTo})` }} />
+      <div
+        style={{
+          height: "4px",
+          background: `linear-gradient(90deg, ${course.gradientFrom}, ${course.gradientTo})`,
+        }}
+      />
 
       {/* Card body */}
       <div style={{ padding: "1.4rem 1.25rem" }}>
         {/* Icon + badge row */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.85rem" }}>
-          <div style={{ width: "2.75rem", height: "2.75rem", borderRadius: "0.75rem", background: `linear-gradient(135deg, ${course.gradientFrom} 0%, ${course.gradientTo} 100%)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.3rem", boxShadow: `0 4px 16px ${course.gradientFrom}55` }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: "0.85rem",
+          }}
+        >
+          <div
+            style={{
+              width: "2.75rem",
+              height: "2.75rem",
+              borderRadius: "0.75rem",
+              background: `linear-gradient(135deg, ${course.gradientFrom} 0%, ${course.gradientTo} 100%)`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "1.3rem",
+              boxShadow: `0 4px 16px ${course.gradientFrom}55`,
+            }}
+          >
             {course.icon}
           </div>
           {course.badge && (
-            <div style={{ padding: "0.25rem 0.7rem", borderRadius: "999px", background: `linear-gradient(135deg, ${course.gradientFrom} 0%, ${course.gradientTo} 100%)`, fontSize: "0.62rem", fontWeight: 800, color: "#fff", letterSpacing: "0.08em", textTransform: "uppercase" as const }}>
+            <div
+              style={{
+                padding: "0.25rem 0.7rem",
+                borderRadius: "999px",
+                background: `linear-gradient(135deg, ${course.gradientFrom} 0%, ${course.gradientTo} 100%)`,
+                fontSize: "0.62rem",
+                fontWeight: 800,
+                color: "#fff",
+                letterSpacing: "0.08em",
+                textTransform: "uppercase" as const,
+              }}
+            >
               {course.badge}
             </div>
           )}
           {selected && (
-            <div style={{ width: "2rem", height: "2rem", borderRadius: "50%", background: `linear-gradient(135deg, ${course.gradientFrom} 0%, ${course.gradientTo} 100%)`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 16px ${course.gradientFrom}88` }}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+            <div
+              style={{
+                width: "2rem",
+                height: "2rem",
+                borderRadius: "50%",
+                background: `linear-gradient(135deg, ${course.gradientFrom} 0%, ${course.gradientTo} 100%)`,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: `0 0 16px ${course.gradientFrom}88`,
+              }}
+            >
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#fff"
+                strokeWidth="3.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
             </div>
           )}
         </div>
 
-        <p style={{ margin: "0 0 0.2rem", fontSize: "0.65rem", fontWeight: 800, textTransform: "uppercase" as const, letterSpacing: "0.1em", color: course.gradientFrom }}>{course.category}</p>
-        <h3 style={{ margin: "0 0 0.55rem", fontSize: "1rem", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.02em", lineHeight: 1.25 }}>{course.name}</h3>
-        <p style={{ margin: "0 0 1rem", fontSize: "0.75rem", color: "var(--text-secondary)", lineHeight: 1.65 }}>{course.description}</p>
+        <p
+          style={{
+            margin: "0 0 0.2rem",
+            fontSize: "0.65rem",
+            fontWeight: 800,
+            textTransform: "uppercase" as const,
+            letterSpacing: "0.1em",
+            color: course.gradientFrom,
+          }}
+        >
+          {course.category}
+        </p>
+        <h3
+          style={{
+            margin: "0 0 0.55rem",
+            fontSize: "1rem",
+            fontWeight: 800,
+            color: "var(--text-primary)",
+            letterSpacing: "-0.02em",
+            lineHeight: 1.25,
+          }}
+        >
+          {course.name}
+        </h3>
+        <p
+          style={{
+            margin: "0 0 1rem",
+            fontSize: "0.75rem",
+            color: "var(--text-secondary)",
+            lineHeight: 1.65,
+          }}
+        >
+          {course.description}
+        </p>
 
         {/* Meta row */}
-        <div style={{ display: "flex", gap: "0.75rem", paddingTop: "0.85rem", borderTop: "1px solid rgba(125,211,252,0.10)", marginBottom: "1rem" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", fontSize: "0.72rem", color: "var(--text-secondary)" }}>
+        <div
+          style={{
+            display: "flex",
+            gap: "0.75rem",
+            paddingTop: "0.85rem",
+            borderTop: "1px solid rgba(125,211,252,0.10)",
+            marginBottom: "1rem",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.35rem",
+              fontSize: "0.72rem",
+              color: "var(--text-secondary)",
+            }}
+          >
             <ClockIcon />
             <span style={{ fontWeight: 600 }}>{course.duration}</span>
           </div>
-          <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: 600 }}>Reg: {course.registrationFee.toLocaleString()} FRS</div>
+          <div
+            style={{
+              fontSize: "0.72rem",
+              color: "var(--text-secondary)",
+              fontWeight: 600,
+            }}
+          >
+            Reg: {course.registrationFee.toLocaleString()} FRS
+          </div>
         </div>
 
         {/* Price + CTA */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
           <div>
-            <span style={{ fontSize: "1.1rem", fontWeight: 900, color: course.gradientFrom, letterSpacing: "-0.02em" }}>{course.trainingFee.toLocaleString()} FRS</span>
-            <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)", marginLeft: "0.35rem" }}>training</span>
+            <span
+              style={{
+                fontSize: "1.1rem",
+                fontWeight: 900,
+                color: course.gradientFrom,
+                letterSpacing: "-0.02em",
+              }}
+            >
+              {course.trainingFee.toLocaleString()} FRS
+            </span>
+            <span
+              style={{
+                fontSize: "0.65rem",
+                color: "var(--text-secondary)",
+                marginLeft: "0.35rem",
+              }}
+            >
+              training
+            </span>
           </div>
-          <div style={{ padding: "0.45rem 1rem", borderRadius: "0.6rem", background: selected ? `linear-gradient(135deg, ${course.gradientFrom} 0%, ${course.gradientTo} 100%)` : "rgba(14,111,168,0.18)", border: selected ? "none" : "1px solid rgba(125,211,252,0.22)", color: selected ? "#fff" : "var(--text-primary)", fontSize: "0.73rem", fontWeight: 700, transition: "all 0.2s ease" }}>
+          <div
+            style={{
+              padding: "0.45rem 1rem",
+              borderRadius: "0.6rem",
+              background: selected
+                ? `linear-gradient(135deg, ${course.gradientFrom} 0%, ${course.gradientTo} 100%)`
+                : "rgba(14,111,168,0.18)",
+              border: selected ? "none" : "1px solid rgba(125,211,252,0.22)",
+              color: selected ? "#fff" : "var(--text-primary)",
+              fontSize: "0.73rem",
+              fontWeight: 700,
+              transition: "all 0.2s ease",
+            }}
+          >
             {selected ? "✓ Selected" : "Select"}
           </div>
         </div>
@@ -1221,14 +1391,50 @@ export default function ProgrammesPage() {
                   Course Selection Summary
                 </h3>
                 {selectedCourse ? (
-                  <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                    <div style={{ width: "3rem", height: "3rem", borderRadius: "0.75rem", background: `linear-gradient(135deg, ${selectedCourse.gradientFrom} 0%, ${selectedCourse.gradientTo} 100%)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.3rem", flexShrink: 0 }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "1rem",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: "3rem",
+                        height: "3rem",
+                        borderRadius: "0.75rem",
+                        background: `linear-gradient(135deg, ${selectedCourse.gradientFrom} 0%, ${selectedCourse.gradientTo} 100%)`,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "1.3rem",
+                        flexShrink: 0,
+                      }}
+                    >
                       {selectedCourse.icon}
                     </div>
                     <div>
-                      <p style={{ margin: "0 0 0.2rem", fontSize: "0.95rem", fontWeight: 800, color: "var(--text-primary)" }}>{selectedCourse.name}</p>
-                      <p style={{ margin: 0, fontSize: "0.8rem", color: "var(--text-secondary)" }}>
-                        {selectedCourse.trainingFee.toLocaleString()} FRS training · {selectedCourse.registrationFee.toLocaleString()} FRS reg · {selectedCourse.duration}
+                      <p
+                        style={{
+                          margin: "0 0 0.2rem",
+                          fontSize: "0.95rem",
+                          fontWeight: 800,
+                          color: "var(--text-primary)",
+                        }}
+                      >
+                        {selectedCourse.name}
+                      </p>
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: "0.8rem",
+                          color: "var(--text-secondary)",
+                        }}
+                      >
+                        {selectedCourse.trainingFee.toLocaleString()} FRS
+                        training ·{" "}
+                        {selectedCourse.registrationFee.toLocaleString()} FRS
+                        reg · {selectedCourse.duration}
                       </p>
                     </div>
                   </div>
@@ -1272,14 +1478,48 @@ export default function ProgrammesPage() {
                   </p>
                   {selectedCourse ? (
                     <>
-                      <p style={{ margin: "0 0 0.35rem", fontSize: "0.9rem", fontWeight: 800, color: "var(--text-primary)" }}>{selectedCourse.name}</p>
-                      <p style={{ margin: "0 0 0.85rem", fontSize: "0.78rem", color: "var(--text-secondary)", lineHeight: 1.6 }}>
-                        {selectedCourse.software} · {selectedCourse.category} · {selectedCourse.duration}
+                      <p
+                        style={{
+                          margin: "0 0 0.35rem",
+                          fontSize: "0.9rem",
+                          fontWeight: 800,
+                          color: "var(--text-primary)",
+                        }}
+                      >
+                        {selectedCourse.name}
                       </p>
-                      <p style={{ margin: 0, fontSize: "1.6rem", fontWeight: 900, color: selectedCourse.gradientFrom, letterSpacing: "-0.03em" }}>
+                      <p
+                        style={{
+                          margin: "0 0 0.85rem",
+                          fontSize: "0.78rem",
+                          color: "var(--text-secondary)",
+                          lineHeight: 1.6,
+                        }}
+                      >
+                        {selectedCourse.software} · {selectedCourse.category} ·{" "}
+                        {selectedCourse.duration}
+                      </p>
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: "1.6rem",
+                          fontWeight: 900,
+                          color: selectedCourse.gradientFrom,
+                          letterSpacing: "-0.03em",
+                        }}
+                      >
                         {selectedCourse.trainingFee.toLocaleString()} FRS
                       </p>
-                      <p style={{ margin: "0.2rem 0 0", fontSize: "0.68rem", color: "var(--text-secondary)" }}>+ {selectedCourse.registrationFee.toLocaleString()} FRS registration fee</p>
+                      <p
+                        style={{
+                          margin: "0.2rem 0 0",
+                          fontSize: "0.68rem",
+                          color: "var(--text-secondary)",
+                        }}
+                      >
+                        + {selectedCourse.registrationFee.toLocaleString()} FRS
+                        registration fee
+                      </p>
                     </>
                   ) : (
                     <p
@@ -1297,7 +1537,9 @@ export default function ProgrammesPage() {
                 </div>
 
                 <button
-                  onClick={() => { if (selectedCourseId) router.push("/academy/login"); }}
+                  onClick={() => {
+                    if (selectedCourseId) router.push("/academy/login");
+                  }}
                   disabled={!selectedCourseId}
                   style={{
                     marginTop: "1.25rem",
@@ -1319,7 +1561,9 @@ export default function ProgrammesPage() {
                     opacity: selectedCourse ? 1 : 0.55,
                   }}
                 >
-                  {selectedCourse ? `Enroll — ${selectedCourse.trainingFee.toLocaleString()} FRS` : "Select a course first"}
+                  {selectedCourse
+                    ? `Enroll — ${selectedCourse.trainingFee.toLocaleString()} FRS`
+                    : "Select a course first"}
                 </button>
               </div>
             </div>

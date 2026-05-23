@@ -9,5 +9,5 @@ export async function generateStudentId() {
   // Example: CHICAD-2026-0001
   const sequence = String(count + 1).padStart(4, "0");
 
-  return `CHICAD-${year}-${sequence}`;
+  return `ACA-${year}-${sequence}`;
 }

@@ -117,6 +117,24 @@ const SOFTWARES = [
     details:
       "Industry-leading FEA suite for advanced simulations including nonlinear mechanics, dynamic analysis, thermal coupling, and fatigue prediction.",
   },
+
+  //ROBOT STRUCTURAL ANALYSIS can be added here in the future
+  {
+    id: "robot",
+    name: "Robot Structural Analysis",
+    icon: "👨‍🔬",
+    category: "Structural Analysis",
+    duration: "2 Months",
+    registrationFee: 10000,
+    trainingFee: 100000,
+    color: "#fbbf24",
+    glow: "rgba(251,191,36,0.40)",
+    accent: "rgba(251,191,36,0.12)",
+    border: "rgba(251,191,36,0.35)",
+    description: "Structural analysis & design for buildings & bridges",
+    details:
+      "Perform linear and nonlinear analysis of complex structures. Design steel, concrete, and composite members to international codes.",
+  },
 ];
 
 const STEPS = [
