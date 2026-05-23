@@ -260,6 +260,26 @@ const GLOBAL_CSS = `
   .resume-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
   .card-hover:hover { border-color: rgba(125,211,252,0.22) !important; transform: translateY(-2px); }
   .card-hover { transition: all 0.22s ease; }
+
+  @media (max-width: 768px) {
+  .sidebar-toggle { display: flex !important; }
+  .mobile-overlay { display: block !important; }
+}
+@media (max-width: 768px) {
+  .app-sidebar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    z-index: 50;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    height: 100vh;
+  }
+  .app-sidebar.sidebar-open {
+    transform: translateX(0);
+  }
+}
+
 `;
 
 /* ══════════════════════════════════════════════
@@ -367,12 +387,17 @@ function Tag({ label, color }: { label: string; color: string }) {
 /* ══════════════════════════════════════════════
    SIDEBAR
 ══════════════════════════════════════════════ */
+// Change signature:
 function Sidebar({
   view,
   setView,
+  open,
+  onClose,
 }: {
   view: View;
   setView: (v: View) => void;
+  open: boolean;
+  onClose: () => void;
 }) {
   const nav: { id: View; label: string; icon: string; badge?: number }[] = [
     { id: "overview", label: "Overview", icon: "⊞" },
@@ -397,10 +422,12 @@ function Sidebar({
         display: "flex",
         flexDirection: "column",
         height: "100vh",
-        position: "sticky",
+        position: "sticky", // desktop default
         top: 0,
         overflow: "hidden",
+        // ↓ mobile overrides via className
       }}
+      className={`app-sidebar${open ? " sidebar-open" : ""}`}
     >
       {/* Logo */}
       <div
@@ -525,7 +552,10 @@ function Sidebar({
             <div
               key={item.id}
               className="nav-item"
-              onClick={() => setView(item.id)}
+              onClick={() => {
+                setView(item.id);
+                onClose();
+              }}
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -596,7 +626,10 @@ function Sidebar({
         </div>
         <div
           className="nav-item"
-          onClick={() => setView("profile")}
+          onClick={() => {
+            setView("profile");
+            onClose();
+          }}
           style={{
             display: "flex",
             alignItems: "center",
@@ -1797,6 +1830,7 @@ const PAGE_META: Record<View, { title: string; sub: string }> = {
 export default function StudentPortal() {
   const [view, setView] = useState<View>("overview");
   const meta = PAGE_META[view];
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <>
@@ -1804,7 +1838,26 @@ export default function StudentPortal() {
       <div
         style={{ display: "flex", minHeight: "100vh", background: "var(--bg)" }}
       >
-        <Sidebar view={view} setView={setView} />
+        {/* Overlay backdrop (mobile only) */}
+        {sidebarOpen && (
+          <div
+            onClick={() => setSidebarOpen(false)}
+            style={{
+              display: "none", // overridden by media query below
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0,0,0,0.55)",
+              zIndex: 40,
+            }}
+            className="mobile-overlay"
+          />
+        )}
+        <Sidebar
+          view={view}
+          setView={setView}
+          open={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+        />
 
         {/* Main content */}
         <div
@@ -1831,6 +1884,27 @@ export default function StudentPortal() {
             }}
           >
             <div>
+              <button
+                className="sidebar-toggle"
+                onClick={() => setSidebarOpen((v) => !v)}
+                style={{
+                  display: "none", // shown via media query
+                  width: 30,
+                  height: 30,
+                  borderRadius: 7,
+                  border: "1px solid var(--border)",
+                  background: "var(--surface2)",
+                  color: "var(--sky)",
+                  fontSize: "0.85rem",
+                  cursor: "pointer",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginRight: "0.6rem",
+                  flexShrink: 0,
+                }}
+              >
+                {sidebarOpen ? "✕" : "☰"}
+              </button>
               <h1
                 style={{
                   fontSize: "1rem",
