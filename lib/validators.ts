@@ -1,11 +1,21 @@
 import { z } from "zod";
 
 // ── Auth ──────────────────────────────────────────────────────
+// ── Auth ──────────────────────────────────────────────────────
+// ── Auth ──────────────────────────────────────────────────────
 export const loginSchema = z.object({
-  identifier: z.string().min(1, "Identifier is required"),
+  identifier: z
+    .string()
+    .min(1, "Student ID or email is required")
+    .trim()
+    .transform((val) => {
+      // Emails are case-insensitive → lowercase
+      // Student IDs must stay uppercase → don't transform
+      if (val.includes("@")) return val.toLowerCase();
+      return val.toUpperCase(); // "aca-2026-0001" → "ACA-2026-0001"
+    }),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
-
 // Used internally / admin-created accounts
 export const registerSchema = z
   .object({
@@ -76,14 +86,16 @@ export const updateStudentSchema = createStudentSchema
 export const createCourseSchema = z.object({
   courseCode: z.string().min(1, "Course code is required").max(20),
   name: z.string().min(1, "Course name is required").max(100),
+  category: z.string().min(1, "Category is required"), // e.g. "CAD", "BIM"
+  icon: z.string().optional(), // emoji e.g. "📐"
   description: z.string().optional(),
-  credits: z.number().int().min(1).max(6).default(3),
+  registrationFee: z.number().int().min(0).default(5000),
+  trainingFee: z.number().int().min(0).default(70000),
+  durationMonths: z.number().int().min(1).max(24).default(3),
   maxStudents: z.number().int().min(1).max(200).default(30),
-  departmentId: z.string().min(1, "Department is required"),
-  academicTermId: z.string().min(1, "Academic term is required"),
+  batch: z.number().int().optional(),
   instructorName: z.string().optional(),
   schedule: z.string().optional(),
-  room: z.string().optional(),
 });
 
 // ── Grade ─────────────────────────────────────────────────────
@@ -110,3 +122,5 @@ export type UpdateStudentInput = z.infer<typeof updateStudentSchema>;
 export type CreateCourseInput = z.infer<typeof createCourseSchema>;
 export type GradeInput = z.infer<typeof gradeSchema>;
 export type AttendanceInput = z.infer<typeof attendanceSchema>;
+export const updateCourseSchema = createCourseSchema.partial();
+export type UpdateCourseInput = z.infer<typeof updateCourseSchema>;

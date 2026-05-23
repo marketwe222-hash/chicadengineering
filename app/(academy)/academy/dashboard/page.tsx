@@ -400,7 +400,44 @@ function Sidebar({
   open: boolean;
   onClose: () => void;
 }) {
-  const { logout } = useAuthContext();
+  const { logout, user } = useAuthContext();
+  const student = user?.student;
+
+  // Derive display values from real data
+  const initials = student
+    ? `${student.firstName[0]}${student.lastName[0]}`.toUpperCase()
+    : "??";
+
+  const fullName = student
+    ? `${student.firstName} ${student.lastName[0]}.`
+    : "—";
+
+  // ✅ fallback to empty array if enrollments is undefined
+  const courseNames =
+    (student?.enrollments ?? [])
+      .filter((e) => e.status === "ACTIVE")
+      .map((e) => e.course.name)
+      .join(", ") || "—";
+  const batch = student?.batch ?? "—";
+
+  console.log("Student data in Sidebar:", student); // Debug log
+  const statusLabel: Record<string, string> = {
+    ACTIVE: "Active",
+    INACTIVE: "Inactive",
+    GRADUATED: "Graduated",
+    SUSPENDED: "Suspended",
+    WITHDRAWN: "Withdrawn",
+  };
+
+  const statusColor: Record<string, string> = {
+    ACTIVE: "var(--green)",
+    INACTIVE: "var(--text3)",
+    GRADUATED: "var(--amber)",
+    SUSPENDED: "var(--red)",
+    WITHDRAWN: "var(--text3)",
+  };
+
+  const currentStatus = student?.status ?? "INACTIVE";
 
   const nav: { id: View; label: string; icon: string; badge?: number }[] = [
     { id: "overview", label: "Overview", icon: "⊞" },
@@ -408,7 +445,8 @@ function Sidebar({
       id: "courses",
       label: "My Courses",
       icon: "📚",
-      badge: STUDENT.coursesEnrolled,
+      badge: user?.student?.enrollments.filter((e) => e.status === "ACTIVE")
+        .length,
     },
     { id: "lessons", label: "Lessons", icon: "▶️" },
     { id: "certificates", label: "Certificates", icon: "🎓" },
@@ -474,7 +512,7 @@ function Sidebar({
               fontFamily: "var(--mono)",
             }}
           >
-            JN
+            {initials}
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div
@@ -487,7 +525,7 @@ function Sidebar({
                 textOverflow: "ellipsis",
               }}
             >
-              {STUDENT.name}
+              {fullName}
             </div>
             <div
               style={{
@@ -499,7 +537,7 @@ function Sidebar({
                 textOverflow: "ellipsis",
               }}
             >
-              {STUDENT.software} · BATCH {STUDENT.batch}
+              {courseNames}
             </div>
           </div>
         </div>

@@ -68,8 +68,15 @@ export async function setAuthCookies(
 // ── Clear auth cookies ────────────────────────────────────────
 export async function clearAuthCookies(): Promise<void> {
   const cookieStore = await cookies();
-  cookieStore.set(COOKIE_NAMES.AUTH_TOKEN, "", { ...COOKIE_OPTIONS, maxAge: 0 });
-  cookieStore.set(COOKIE_NAMES.USER_ROLE, "", { ...COOKIE_OPTIONS, httpOnly: false, maxAge: 0 });
+  cookieStore.set(COOKIE_NAMES.AUTH_TOKEN, "", {
+    ...COOKIE_OPTIONS,
+    maxAge: 0,
+  });
+  cookieStore.set(COOKIE_NAMES.USER_ROLE, "", {
+    ...COOKIE_OPTIONS,
+    httpOnly: false,
+    maxAge: 0,
+  });
 }
 
 // ── Get current user from cookie ──────────────────────────────
@@ -86,13 +93,45 @@ export async function getCurrentUser() {
       where: { id: payload.userId, isActive: true },
       include: {
         student: {
-          select: {
-            id: true,
-            studentId: true,
-            firstName: true,
-            lastName: true,
-            profileImage: true,
-            status: true,
+          include: {
+            enrollments: {
+              include: {
+                course: {
+                  include: {
+                    lessons: {
+                      where: { status: "PUBLISHED" },
+                      orderBy: { order: "asc" },
+                      select: {
+                        id: true,
+                        title: true,
+                        order: true,
+                        duration: true,
+                        status: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            certificates: {
+              include: {
+                course: {
+                  select: { id: true, name: true, icon: true },
+                },
+              },
+            },
+            lessonProgress: {
+              select: {
+                lessonId: true,
+                completed: true,
+                completedAt: true,
+              },
+            },
+            payments: {
+              orderBy: { createdAt: "desc" },
+              take: 10,
+            },
+            emergencyContact: true,
           },
         },
         admin: {
@@ -102,6 +141,7 @@ export async function getCurrentUser() {
             lastName: true,
             profileImage: true,
             department: true,
+            phone: true,
           },
         },
       },
