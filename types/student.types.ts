@@ -76,3 +76,44 @@ export interface Attendance {
     name: string;
   };
 }
+
+/* ─────────────────────────────────────────────
+   DASHBOARD TYPES
+   Moved here from useStudentDashboard.ts so they
+   are available across components without importing
+   from a hook file.
+───────────────────────────────────────────── */
+
+export interface DashboardLesson {
+  id: string;
+  course: string;
+  courseColor: string;
+  name: string;
+  duration: string;
+  done: boolean;
+  current: boolean;
+}
+
+export interface DashboardCourse {
+  id: string;
+  name: string;
+  category: string;
+  icon: string;
+  color: string;
+  currentLessonOrder: number;
+  totalLessons: number;
+  currentLessonName: string;
+  currentLessonDuration: string;
+  progress: number;
+  lessons: DashboardLesson[];
+}
+
+export interface DashboardData {
+  overallProgress: number;
+  coursesEnrolled: number;
+  lessonsCompleted: number;
+  totalLessons: number;
+  certificatesEarned: number;
+  courses: DashboardCourse[];
+  allLessons: DashboardLesson[];
+}

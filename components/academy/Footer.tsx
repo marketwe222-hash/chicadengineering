@@ -16,7 +16,7 @@ export default function Footer() {
       Innovation in Civil & Architectural Design · Yaoundé, Cameroon
       <span style={{ margin: "0 0.5rem", opacity: 0.3 }}>·</span>
       <Link
-        href="/academy/admin/login"
+        href="/admin/login"
         style={{
           fontSize: "0.65rem",
           color: "rgba(220,38,38,0.45)",
