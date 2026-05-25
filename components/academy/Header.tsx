@@ -153,7 +153,7 @@ export default function Header({ onSignIn }: HeaderProps) {
   /* Logo */
   const logoSrc = isMobile
     ? theme === "light"
-      ? "/images/logosmallblue.png"
+      ? "https://pub-608e7a106efa47bda7aae56ff6f486a3.r2.dev/FinalLogo.png"
       : "/images/logosmalllight.png"
     : theme === "light"
       ? "https://pub-608e7a106efa47bda7aae56ff6f486a3.r2.dev/FinalLogo.png"
