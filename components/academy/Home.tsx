@@ -4,8 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { HeroSection } from "./HeroSection";
 import { Header, Footer } from "@/components/academy";
+import { useCourses } from "@/hooks/useCourse";
 
-/* ─── Glass surface helper (consistent with Software & Programmes pages) ── */
+/* ─── Glass surface helper ─────────────────────────────────────────────────── */
 const glassStyle = (bg = "rgba(14,111,168,0.12)"): React.CSSProperties => ({
   background: bg,
   backdropFilter: "blur(20px) saturate(180%)",
@@ -15,8 +16,22 @@ const glassStyle = (bg = "rgba(14,111,168,0.12)"): React.CSSProperties => ({
     "0 4px 24px rgba(5,20,40,0.55), 0 1px 0 rgba(255,255,255,0.06) inset",
 });
 
-/* ─── DATA ────────────────────────────────────────────────────────────────── */
+/* ─── Category → color map (presentation only) ─────────────────────────────── */
+const CATEGORY_COLORS: Record<string, string> = {
+  CAD: "#ef4444",
+  BIM: "#3b82f6",
+  FEA: "#7c3aed",
+  "Structural Analysis": "#fb923c",
+  Visualization: "#ec4899",
+  Productivity: "#22c55e",
+};
+const FALLBACK_COLOR = "#7dd3fc";
+function categoryColor(cat?: string | null) {
+  if (!cat) return FALLBACK_COLOR;
+  return CATEGORY_COLORS[cat] ?? FALLBACK_COLOR;
+}
 
+/* ─── Static data ──────────────────────────────────────────────────────────── */
 const STATS = [
   { value: "500+", label: "Graduates" },
   { value: "8", label: "Software Tools" },
@@ -28,7 +43,7 @@ const PROGRAMMES_PREVIEW = [
   {
     icon: "⚡",
     name: "3-Month Intensive",
-    price: "750,000 CFA",
+    price: "Contact us",
     tag: "Most Popular",
     desc: "8 tools, hands-on projects, and job placement support — for those who want results fast.",
     gradientFrom: "#0ea5e9",
@@ -38,7 +53,7 @@ const PROGRAMMES_PREVIEW = [
   {
     icon: "🏆",
     name: "6-Month Comprehensive",
-    price: "1,200,000 CFA",
+    price: "Contact us",
     tag: "Complete Mastery",
     desc: "Every tool, site visits, professional certification, and a guaranteed internship.",
     gradientFrom: "#f59e0b",
@@ -48,7 +63,7 @@ const PROGRAMMES_PREVIEW = [
   {
     icon: "🎯",
     name: "Single Software Courses",
-    price: "65K – 130K CFA",
+    price: "30K – 70K FRS",
     tag: "Flexible",
     desc: "Pick exactly the tool you need — AutoCAD, Revit, SAP2000, Lumion and more.",
     gradientFrom: "#10b981",
@@ -90,25 +105,6 @@ const HOW_IT_WORKS = [
     gradientFrom: "#ec4899",
     gradientTo: "#be185d",
   },
-];
-
-const SOFTWARE_PREVIEW = [
-  { icon: "📐", name: "AutoCAD", cat: "2D Drafting", color: "#ff6b35" },
-  { icon: "🏗️", name: "Revit Architecture", cat: "BIM", color: "#3b82f6" },
-  { icon: "⚡", name: "SAP2000", cat: "Structural Analysis", color: "#059669" },
-  { icon: "🏢", name: "ETABS", cat: "Building Analysis", color: "#7c3aed" },
-  { icon: "🪨", name: "SAFE", cat: "Foundation Design", color: "#dc2626" },
-  { icon: "🎨", name: "Lumion", cat: "Visualisation", color: "#ec4899" },
-  { icon: "🏛️", name: "ArchiCAD", cat: "Architectural BIM", color: "#f59e0b" },
-  { icon: "📦", name: "SketchUp Pro", cat: "3D Modelling", color: "#10b981" },
-  {
-    icon: "👨‍🔬",
-    name: "Robot Structural Analysis",
-    cat: "Structural Analysis",
-    color: "#fbbf24",
-  },
-  //abaqus and other tools can be added here in the future
-  { icon: "🧮", name: "ABAQUS", cat: "Building Analysis", color: "#7c3aed" },
 ];
 
 const TESTIMONIALS = [
@@ -169,14 +165,14 @@ const FAQS = [
   },
   {
     q: "How long are the programmes?",
-    a: "Our intensive programmes run 3 or 6 months. Individual software courses range from 3 to 8 weeks depending on the tool.",
+    a: "Our intensive programmes run 3 or 6 months. Individual software courses range from 1 to 3 months depending on the tool.",
   },
   {
     q: "Do I receive a certificate?",
     a: "Yes. All programme graduates receive a CHICAD Certificate of Completion. The 6-month programme also prepares you for official Autodesk certification exams.",
   },
   {
-    q: "Can I enrol in more than one course at a time?",
+    q: "Can I enrol in more than one course?",
     a: "No — to maximise focus and practical results, students enrol in one programme or one software course at a time.",
   },
   {
@@ -189,7 +185,7 @@ const FAQS = [
   },
 ];
 
-/* ─── Section label helper ─────────────────────────────────────────────────── */
+/* ─── Small helpers ────────────────────────────────────────────────────────── */
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <p
@@ -206,7 +202,6 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
     </p>
   );
 }
-
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
     <h2
@@ -224,7 +219,6 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
   );
 }
 
-/* ─── FAQ Item ─────────────────────────────────────────────────────────────── */
 function FaqItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
   return (
@@ -308,6 +302,63 @@ function FaqItem({ q, a }: { q: string; a: string }) {
   );
 }
 
+/* ─── Software preview skeleton ────────────────────────────────────────────── */
+function SoftwarePreviewSkeleton() {
+  return (
+    <>
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div
+          key={i}
+          style={{
+            ...glassStyle("rgba(14,111,168,0.07)"),
+            borderRadius: "1rem",
+            padding: "1.25rem",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.85rem",
+            height: "68px",
+          }}
+        >
+          <div
+            style={{
+              width: "2.5rem",
+              height: "2.5rem",
+              borderRadius: "0.6rem",
+              background: "rgba(125,211,252,0.08)",
+              flexShrink: 0,
+            }}
+          />
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              gap: "0.4rem",
+            }}
+          >
+            <div
+              style={{
+                height: "0.75rem",
+                width: "60%",
+                borderRadius: "0.3rem",
+                background: "rgba(125,211,252,0.08)",
+              }}
+            />
+            <div
+              style={{
+                height: "0.6rem",
+                width: "40%",
+                borderRadius: "0.3rem",
+                background: "rgba(125,211,252,0.06)",
+              }}
+            />
+          </div>
+        </div>
+      ))}
+    </>
+  );
+}
+
 /* ─── Main Home Component ──────────────────────────────────────────────────── */
 export default function Home({
   onSignIn,
@@ -318,6 +369,12 @@ export default function Home({
 }) {
   const router = useRouter();
 
+  // Fetch live active courses for the software preview section
+  const { courses: rawCourses, isLoading: coursesLoading } = useCourses({
+    status: "ACTIVE",
+  });
+  const courses = rawCourses ?? [];
+
   return (
     <>
       <div
@@ -326,10 +383,7 @@ export default function Home({
           fontFamily: "var(--font-sans, system-ui, sans-serif)",
         }}
       >
-        {/* ════════════════════════════════════════════
-            GLOBAL BACKGROUND — fixed behind everything
-            (same as Software & Programmes pages)
-        ════════════════════════════════════════════ */}
+        {/* ── Background ── */}
         <div
           aria-hidden="true"
           style={{
@@ -347,25 +401,15 @@ export default function Home({
           style={{
             position: "fixed",
             inset: 0,
-            background: `
-              radial-gradient(ellipse 60% 50% at 20% 30%, rgba(14,111,168,0.20) 0%, transparent 60%),
-              radial-gradient(ellipse 50% 40% at 80% 70%, rgba(99,102,241,0.14) 0%, transparent 55%),
-              radial-gradient(ellipse 40% 35% at 60% 15%, rgba(14,111,168,0.12) 0%, transparent 50%),
-              linear-gradient(145deg, rgba(7,24,40,0.75) 0%, rgba(10,34,54,0.70) 40%, rgba(6,14,24,0.80) 100%)
-            `,
+            background: `radial-gradient(ellipse 60% 50% at 20% 30%, rgba(14,111,168,0.20) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 80% 70%, rgba(99,102,241,0.14) 0%, transparent 55%), radial-gradient(ellipse 40% 35% at 60% 15%, rgba(14,111,168,0.12) 0%, transparent 50%), linear-gradient(145deg, rgba(7,24,40,0.75) 0%, rgba(10,34,54,0.70) 40%, rgba(6,14,24,0.80) 100%)`,
             zIndex: -1,
           }}
         />
 
         <Header onSignIn={onSignIn} />
-
-        {/* ── 1. HERO ─────────────────────────────────────────────────────── */}
-        {/* HeroSection already has its own full-bleed photo; it sits above the
-            fixed background naturally because its slides are position:absolute
-            inside a position:relative section. */}
         <HeroSection onSignIn={onSignIn} />
 
-        {/* ── 2. STATS STRIP ──────────────────────────────────────────────── */}
+        {/* ── STATS STRIP ── */}
         <section
           style={{
             padding: "0 clamp(1.5rem, 5vw, 3rem)",
@@ -430,7 +474,7 @@ export default function Home({
           </div>
         </section>
 
-        {/* ── 3. ABOUT / WHY CHICAD ───────────────────────────────────────── */}
+        {/* ── ABOUT ── */}
         <section
           style={{ padding: "5rem clamp(1.5rem, 5vw, 3rem)" }}
           id="about"
@@ -445,7 +489,6 @@ export default function Home({
               }}
               className="about-grid"
             >
-              {/* Left: text */}
               <div>
                 <SectionLabel>About CHICAD Academy</SectionLabel>
                 <SectionHeading>
@@ -517,8 +560,6 @@ export default function Home({
                   </button>
                 </div>
               </div>
-
-              {/* Right: pillars grid */}
               <div
                 style={{
                   display: "grid",
@@ -554,6 +595,7 @@ export default function Home({
                       ...glassStyle("rgba(14,111,168,0.12)"),
                       borderRadius: "1rem",
                       padding: "1.25rem",
+                      transition: "background 0.2s",
                     }}
                     onMouseEnter={(e) => {
                       (e.currentTarget as HTMLDivElement).style.background =
@@ -600,7 +642,7 @@ export default function Home({
           </div>
         </section>
 
-        {/* ── DIVIDER STRIP ───────────────────────────────────────────────── */}
+        {/* ── DIVIDER ── */}
         <div
           style={{
             padding: "2.5rem clamp(1.5rem, 5vw, 3rem)",
@@ -617,12 +659,10 @@ export default function Home({
               fontSize: "clamp(0.95rem, 2vw, 1.25rem)",
               fontWeight: 800,
               color: "var(--text-primary)",
-              margin: 0,
+              margin: "0 auto",
               letterSpacing: "-0.02em",
               lineHeight: 1.5,
               maxWidth: "640px",
-              marginLeft: "auto",
-              marginRight: "auto",
             }}
           >
             "From basic 2D drafting to complex structural analysis — we guide
@@ -630,7 +670,7 @@ export default function Home({
           </p>
         </div>
 
-        {/* ── 4. PROGRAMMES PREVIEW ───────────────────────────────────────── */}
+        {/* ── PROGRAMMES PREVIEW ── */}
         <section style={{ padding: "5rem clamp(1.5rem, 5vw, 3rem)" }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
             <div style={{ textAlign: "center", marginBottom: "3rem" }}>
@@ -649,7 +689,6 @@ export default function Home({
                 and time commitments.
               </p>
             </div>
-
             <div
               style={{
                 display: "grid",
@@ -680,7 +719,6 @@ export default function Home({
                     el.style.transform = "translateY(0)";
                   }}
                 >
-                  {/* Gradient top bar */}
                   <div
                     style={{
                       height: "3px",
@@ -781,7 +819,6 @@ export default function Home({
                 </div>
               ))}
             </div>
-
             <div style={{ textAlign: "center" }}>
               <button
                 onClick={() => router.push("/academy/programmes")}
@@ -800,7 +837,7 @@ export default function Home({
           </div>
         </section>
 
-        {/* ── 5. HOW IT WORKS ─────────────────────────────────────────────── */}
+        {/* ── HOW IT WORKS ── */}
         <section
           style={{
             padding: "5rem clamp(1.5rem, 5vw, 3rem)",
@@ -823,7 +860,6 @@ export default function Home({
                 From registration to career launch — a clear four-step journey.
               </p>
             </div>
-
             <div
               style={{
                 display: "grid",
@@ -843,19 +879,16 @@ export default function Home({
                     transition: "all 0.3s ease",
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLDivElement).style.background =
-                      "rgba(14,111,168,0.20)";
-                    (e.currentTarget as HTMLDivElement).style.transform =
-                      "translateY(-3px)";
+                    const el = e.currentTarget as HTMLDivElement;
+                    el.style.background = "rgba(14,111,168,0.20)";
+                    el.style.transform = "translateY(-3px)";
                   }}
                   onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLDivElement).style.background =
-                      "rgba(14,111,168,0.10)";
-                    (e.currentTarget as HTMLDivElement).style.transform =
-                      "translateY(0)";
+                    const el = e.currentTarget as HTMLDivElement;
+                    el.style.background = "rgba(14,111,168,0.10)";
+                    el.style.transform = "translateY(0)";
                   }}
                 >
-                  {/* Step number watermark */}
                   <div
                     style={{
                       position: "absolute",
@@ -871,8 +904,6 @@ export default function Home({
                   >
                     {step.step}
                   </div>
-
-                  {/* Icon */}
                   <div
                     style={{
                       width: "3rem",
@@ -889,7 +920,6 @@ export default function Home({
                   >
                     {step.icon}
                   </div>
-
                   <h3
                     style={{
                       margin: "0 0 0.6rem",
@@ -911,8 +941,6 @@ export default function Home({
                   >
                     {step.desc}
                   </p>
-
-                  {/* Connector arrow (not on last) */}
                   {i < HOW_IT_WORKS.length - 1 && (
                     <div
                       style={{
@@ -935,7 +963,7 @@ export default function Home({
           </div>
         </section>
 
-        {/* ── 6. SOFTWARE TOOLS PREVIEW ───────────────────────────────────── */}
+        {/* ── SOFTWARE TOOLS PREVIEW — live from DB ── */}
         <section
           style={{
             padding: "5rem clamp(1.5rem, 5vw, 3rem)",
@@ -954,7 +982,11 @@ export default function Home({
               }}
             >
               <div>
-                <SectionLabel>8 Professional Tools</SectionLabel>
+                <SectionLabel>
+                  {coursesLoading
+                    ? "Professional Tools"
+                    : `${courses.length} Professional Tool${courses.length !== 1 ? "s" : ""}`}
+                </SectionLabel>
                 <SectionHeading>Software You'll Master</SectionHeading>
               </div>
               <button
@@ -980,79 +1012,86 @@ export default function Home({
                 gap: "0.85rem",
               }}
             >
-              {SOFTWARE_PREVIEW.map((sw, i) => (
-                <div
-                  key={i}
-                  style={{
-                    ...glassStyle("rgba(14,111,168,0.10)"),
-                    borderRadius: "1rem",
-                    padding: "1.25rem",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.85rem",
-                    transition: "all 0.25s ease",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => router.push("/academy/software")}
-                  onMouseEnter={(e) => {
-                    const el = e.currentTarget as HTMLDivElement;
-                    el.style.background = "rgba(14,111,168,0.22)";
-                    el.style.transform = "translateY(-2px)";
-                  }}
-                  onMouseLeave={(e) => {
-                    const el = e.currentTarget as HTMLDivElement;
-                    el.style.background = "rgba(14,111,168,0.10)";
-                    el.style.transform = "translateY(0)";
-                  }}
-                >
-                  <div
-                    style={{
-                      width: "2.5rem",
-                      height: "2.5rem",
-                      borderRadius: "0.6rem",
-                      background: `${sw.color}22`,
-                      border: `1px solid ${sw.color}44`,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "1.1rem",
-                      flexShrink: 0,
-                    }}
-                  >
-                    {sw.icon}
-                  </div>
-                  <div>
-                    <p
+              {coursesLoading ? (
+                <SoftwarePreviewSkeleton />
+              ) : (
+                courses.map((course) => {
+                  const color = categoryColor(course.category);
+                  return (
+                    <div
+                      key={course.id}
                       style={{
-                        margin: "0 0 0.1rem",
-                        fontSize: "0.8rem",
-                        fontWeight: 800,
-                        color: "var(--text-primary)",
-                        lineHeight: 1.2,
+                        ...glassStyle("rgba(14,111,168,0.10)"),
+                        borderRadius: "1rem",
+                        padding: "1.25rem",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.85rem",
+                        transition: "all 0.25s ease",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => router.push("/academy/software")}
+                      onMouseEnter={(e) => {
+                        const el = e.currentTarget as HTMLDivElement;
+                        el.style.background = "rgba(14,111,168,0.22)";
+                        el.style.transform = "translateY(-2px)";
+                      }}
+                      onMouseLeave={(e) => {
+                        const el = e.currentTarget as HTMLDivElement;
+                        el.style.background = "rgba(14,111,168,0.10)";
+                        el.style.transform = "translateY(0)";
                       }}
                     >
-                      {sw.name}
-                    </p>
-                    <p
-                      style={{
-                        margin: 0,
-                        fontSize: "0.65rem",
-                        fontWeight: 700,
-                        color: sw.color,
-                        textTransform: "uppercase",
-                        letterSpacing: "0.06em",
-                      }}
-                    >
-                      {sw.cat}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                      <div
+                        style={{
+                          width: "2.5rem",
+                          height: "2.5rem",
+                          borderRadius: "0.6rem",
+                          background: `${color}22`,
+                          border: `1px solid ${color}44`,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: "1.1rem",
+                          flexShrink: 0,
+                        }}
+                      >
+                        {course.icon ?? "🖥️"}
+                      </div>
+                      <div>
+                        <p
+                          style={{
+                            margin: "0 0 0.1rem",
+                            fontSize: "0.8rem",
+                            fontWeight: 800,
+                            color: "var(--text-primary)",
+                            lineHeight: 1.2,
+                          }}
+                        >
+                          {course.name}
+                        </p>
+                        <p
+                          style={{
+                            margin: 0,
+                            fontSize: "0.65rem",
+                            fontWeight: 700,
+                            color,
+                            textTransform: "uppercase",
+                            letterSpacing: "0.06em",
+                          }}
+                        >
+                          {course.category}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
         </section>
 
-        {/* ── 7. TESTIMONIALS ─────────────────────────────────────────────── */}
+        {/* ── TESTIMONIALS ── */}
         <section
           style={{
             padding: "5rem clamp(1.5rem, 5vw, 3rem)",
@@ -1076,7 +1115,6 @@ export default function Home({
                 their careers through CHICAD Academy.
               </p>
             </div>
-
             <div
               style={{
                 display: "grid",
@@ -1098,19 +1136,16 @@ export default function Home({
                     transition: "all 0.3s ease",
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLDivElement).style.background =
-                      "rgba(14,111,168,0.20)";
-                    (e.currentTarget as HTMLDivElement).style.transform =
-                      "translateY(-2px)";
+                    const el = e.currentTarget as HTMLDivElement;
+                    el.style.background = "rgba(14,111,168,0.20)";
+                    el.style.transform = "translateY(-2px)";
                   }}
                   onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLDivElement).style.background =
-                      "rgba(14,111,168,0.10)";
-                    (e.currentTarget as HTMLDivElement).style.transform =
-                      "translateY(0)";
+                    const el = e.currentTarget as HTMLDivElement;
+                    el.style.background = "rgba(14,111,168,0.10)";
+                    el.style.transform = "translateY(0)";
                   }}
                 >
-                  {/* Quote mark */}
                   <div
                     style={{
                       fontSize: "3rem",
@@ -1190,7 +1225,7 @@ export default function Home({
           </div>
         </section>
 
-        {/* ── 8. MEET THE INSTRUCTORS ─────────────────────────────────────── */}
+        {/* ── INSTRUCTORS ── */}
         <section
           style={{
             padding: "5rem clamp(1.5rem, 5vw, 3rem)",
@@ -1214,7 +1249,6 @@ export default function Home({
                 and architecture practice.
               </p>
             </div>
-
             <div
               style={{
                 display: "grid",
@@ -1232,19 +1266,16 @@ export default function Home({
                     transition: "all 0.3s ease",
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLDivElement).style.background =
-                      "rgba(14,111,168,0.20)";
-                    (e.currentTarget as HTMLDivElement).style.transform =
-                      "translateY(-3px)";
+                    const el = e.currentTarget as HTMLDivElement;
+                    el.style.background = "rgba(14,111,168,0.20)";
+                    el.style.transform = "translateY(-3px)";
                   }}
                   onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLDivElement).style.background =
-                      "rgba(14,111,168,0.10)";
-                    (e.currentTarget as HTMLDivElement).style.transform =
-                      "translateY(0)";
+                    const el = e.currentTarget as HTMLDivElement;
+                    el.style.background = "rgba(14,111,168,0.10)";
+                    el.style.transform = "translateY(0)";
                   }}
                 >
-                  {/* Avatar */}
                   <div
                     style={{
                       width: "4rem",
@@ -1302,7 +1333,7 @@ export default function Home({
           </div>
         </section>
 
-        {/* ── 9. FAQ ──────────────────────────────────────────────────────── */}
+        {/* ── FAQ ── */}
         <section
           style={{
             padding: "5rem clamp(1.5rem, 5vw, 3rem)",
@@ -1314,7 +1345,6 @@ export default function Home({
               <SectionLabel>Common Questions</SectionLabel>
               <SectionHeading>Frequently Asked Questions</SectionHeading>
             </div>
-
             <div
               style={{
                 display: "flex",
@@ -1329,7 +1359,7 @@ export default function Home({
           </div>
         </section>
 
-        {/* ── 10. FINAL CTA ───────────────────────────────────────────────── */}
+        {/* ── FINAL CTA ── */}
         <section
           style={{
             padding: "5rem clamp(1.5rem, 5vw, 3rem)",
@@ -1340,11 +1370,7 @@ export default function Home({
           }}
         >
           <div
-            style={{
-              maxWidth: "640px",
-              margin: "0 auto",
-              textAlign: "center",
-            }}
+            style={{ maxWidth: "640px", margin: "0 auto", textAlign: "center" }}
           >
             <SectionLabel>Ready to Begin?</SectionLabel>
             <h2
@@ -1426,14 +1452,14 @@ export default function Home({
       <style>{`
         * { box-sizing: border-box; }
         html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
-
+        .btn-primary  { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: #fff; border: none; box-shadow: 0 4px 20px rgba(59,130,246,0.35); transition: opacity 0.2s, transform 0.2s; }
+        .btn-primary:hover  { opacity: 0.88; transform: translateY(-2px); }
+        .btn-secondary { background: rgba(14,111,168,0.15); color: #7dd3fc; border: 1px solid rgba(125,211,252,0.22); backdrop-filter: blur(10px); transition: background 0.2s, border-color 0.2s; }
+        .btn-secondary:hover { background: rgba(14,111,168,0.28); border-color: rgba(125,211,252,0.38); }
         @media (max-width: 640px) {
-          .stats-grid  { grid-template-columns: repeat(2, 1fr) !important; }
-          .about-grid  { grid-template-columns: 1fr !important; gap: 2rem !important; }
-          .step-arrow  { display: none !important; }
-        }
-        @media (max-width: 480px) {
           .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .about-grid { grid-template-columns: 1fr !important; gap: 2rem !important; }
+          .step-arrow { display: none !important; }
         }
       `}</style>
     </>
