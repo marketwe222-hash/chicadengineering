@@ -293,7 +293,6 @@ export default function StudentLoginPage() {
       />
 
       <LogoButton />
-      <ThemeToggle />
 
       {/* LOGIN */}
       <div

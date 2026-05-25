@@ -315,8 +315,6 @@ export default function Header({ onSignIn }: HeaderProps) {
               );
             })}
 
-            <ThemeToggle />
-
             {/* ── AUTH ── */}
             {isAuthenticated ? (
               /* Logged-in: avatar + name pill + dropdown */
@@ -447,7 +445,6 @@ export default function Header({ onSignIn }: HeaderProps) {
         {/* ── MOBILE: theme + hamburger ── */}
         {isMobile && (
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <ThemeToggle />
             <button
               onClick={() => setMobileMenu((v) => !v)}
               aria-label={mobileMenu ? "Close menu" : "Open menu"}

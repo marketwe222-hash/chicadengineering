@@ -693,7 +693,6 @@ function Navbar() {
 
       {/* Right */}
       <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-        <ThemeToggle />
         <motion.a
           href="#contact"
           whileHover={{ scale: 1.04, y: -1 }}
