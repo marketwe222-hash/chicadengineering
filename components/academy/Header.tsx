@@ -156,7 +156,7 @@ export default function Header({ onSignIn }: HeaderProps) {
       ? "/images/logosmallblue.png"
       : "/images/logosmalllight.png"
     : theme === "light"
-      ? "/images/logowhite.png"
+      ? "https://pub-608e7a106efa47bda7aae56ff6f486a3.r2.dev/FinalLogo.png"
       : "/images/logo.png";
 
   const logoHeight = isXs
@@ -164,8 +164,8 @@ export default function Header({ onSignIn }: HeaderProps) {
     : isMobile
       ? "2.4rem"
       : isCompact
-        ? "2.6rem"
-        : "2.9rem";
+        ? "9rem"
+        : "13rem";
 
   const navHeight = isXs ? "3.4rem" : isMobile ? "4.2rem" : "4.8rem";
   const navFontSize = isCompact ? "0.82rem" : "0.88rem";

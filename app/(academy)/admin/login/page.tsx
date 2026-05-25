@@ -12,7 +12,8 @@ const glassStyle: CSSProperties = {
   backdropFilter: "blur(20px) saturate(180%)",
   WebkitBackdropFilter: "blur(20px) saturate(180%)",
   border: "1px solid rgba(220,38,38,0.22)",
-  boxShadow: "0 4px 24px rgba(5,0,0,0.55), 0 1px 0 rgba(255,255,255,0.04) inset",
+  boxShadow:
+    "0 4px 24px rgba(5,0,0,0.55), 0 1px 0 rgba(255,255,255,0.04) inset",
 };
 
 const labelStyle: CSSProperties = {
@@ -346,7 +347,7 @@ export default function AdminLoginPage() {
               }}
             >
               <Image
-                src="/images/logowhite.png"
+                src="https://pub-608e7a106efa47bda7aae56ff6f486a3.r2.dev/FinalLogo.png"
                 alt="CHICAD"
                 width={120}
                 height={60}
@@ -425,7 +426,11 @@ export default function AdminLoginPage() {
             }}
           >
             <div
-              style={{ display: "flex", flexDirection: "column", gap: "1.1rem" }}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "1.1rem",
+              }}
             >
               <FloatingInput
                 label="Admin Email"

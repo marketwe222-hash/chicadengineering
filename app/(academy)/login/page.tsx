@@ -36,7 +36,9 @@ function LogoButton() {
   };
 
   let logoSrc =
-    theme === "light" ? "/images/logowhite.png" : "/images/logo.png";
+    theme === "light"
+      ? "https://pub-608e7a106efa47bda7aae56ff6f486a3.r2.dev/FinalLogo.png"
+      : "/images/logo.png";
   let logoWidth = 180;
 
   if (breakpoints.xs || breakpoints.sm || breakpoints.md) {

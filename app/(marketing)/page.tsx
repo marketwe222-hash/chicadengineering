@@ -42,7 +42,9 @@ function LogoButton() {
   ───────────────────────────────────────────── */
 
   let logoSrc =
-    theme === "light" ? "/images/logowhite.png" : "/images/logo.png";
+    theme === "light"
+      ? "https://pub-608e7a106efa47bda7aae56ff6f486a3.r2.dev/FinalLogo.png"
+      : "/images/logo.png";
   let logoWidth = 200;
   let logoHeight = 200;
 
@@ -82,11 +84,10 @@ function LogoButton() {
       onMouseLeave={() => setHovered(false)}
       style={{
         position: "fixed",
-        top: "1.5vh",
+        top: "0vh",
         left: "1.5vh",
         zIndex: 50,
         display: "flex",
-        alignItems: "center",
         gap: "0.65rem",
         cursor: "pointer",
         transform: hovered ? "translateY(-2px) scale(1.03)" : "none",
@@ -104,7 +105,7 @@ function LogoButton() {
         priority
         style={{
           width: `${logoWidth}px`,
-          height: "auto",
+          height: `${logoHeight}px`,
           transition: "all 0.3s ease",
         }}
       />
@@ -477,7 +478,6 @@ export default function LandingPage() {
       />
 
       <LogoButton />
-      <ThemeToggle />
 
       {/* Heading */}
       <div

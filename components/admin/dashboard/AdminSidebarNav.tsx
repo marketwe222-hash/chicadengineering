@@ -167,7 +167,7 @@ export function AdminSidebarNav({
         >
           <Link href="/academy">
             <Image
-              src="/images/logowhite.png"
+              src="https://pub-608e7a106efa47bda7aae56ff6f486a3.r2.dev/FinalLogo.png"
               alt="CHICAD"
               width={100}
               height={50}
