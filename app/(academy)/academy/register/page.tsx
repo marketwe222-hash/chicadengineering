@@ -1,142 +1,70 @@
 "use client";
 import { Header, Footer } from "@/components/academy";
 import { useRouter } from "next/navigation";
-import { useState, ChangeEvent, CSSProperties, ReactNode } from "react";
+import {
+  useState,
+  ChangeEvent,
+  CSSProperties,
+  ReactNode,
+  useEffect,
+} from "react";
+import { useCourses } from "@/hooks/useCourse";
+import type { Course } from "@/types";
 
-/* ─── Software catalogue ────────────────────────────────────── */
-const SOFTWARES = [
-  {
-    id: "lumion",
-    name: "Lumion",
-    icon: "🌅",
-    category: "Visualization",
-    duration: "1 Month",
-    registrationFee: 5000,
-    trainingFee: 30000,
+/* ─── Visual config keyed by category (presentation only) ─── */
+const CATEGORY_VISUALS: Record<
+  string,
+  { color: string; glow: string; accent: string; border: string }
+> = {
+  Visualization: {
     color: "#f59e0b",
     glow: "rgba(245,158,11,0.40)",
     accent: "rgba(245,158,11,0.12)",
     border: "rgba(245,158,11,0.35)",
-    description: "3D rendering & real-time visualization for architecture",
-    details:
-      "Master photorealistic rendering and immersive virtual walkthroughs. Create stunning visual presentations that bring architectural designs to life.",
   },
-  {
-    id: "excel",
-    name: "Ms Excel",
-    icon: "📊",
-    category: "Productivity",
-    duration: "1 Month",
-    registrationFee: 5000,
-    trainingFee: 30000,
+  Productivity: {
     color: "#22c55e",
     glow: "rgba(34,197,94,0.40)",
     accent: "rgba(34,197,94,0.12)",
     border: "rgba(34,197,94,0.35)",
-    description: "Advanced spreadsheets, data analysis & project management",
-    details:
-      "From pivot tables to VBA macros, learn professional-grade data workflows used daily in engineering firms and construction management.",
   },
-  {
-    id: "revit",
-    name: "Revit",
-    icon: "🏗️",
-    category: "BIM",
-    duration: "3 Months",
-    registrationFee: 5000,
-    trainingFee: 70000,
+  BIM: {
     color: "#7dd3fc",
     glow: "rgba(125,211,252,0.40)",
     accent: "rgba(14,111,168,0.18)",
     border: "rgba(125,211,252,0.35)",
-    description: "Building Information Modeling for architects & engineers",
-    details:
-      "The industry-standard BIM platform. Model complete buildings, generate construction documents, coordinate MEP systems, and collaborate across disciplines.",
   },
-  {
-    id: "autocad",
-    name: "AutoCAD",
-    icon: "📐",
-    category: "CAD",
-    duration: "3 Months",
-    registrationFee: 5000,
-    trainingFee: 70000,
+  CAD: {
     color: "#ef4444",
     glow: "rgba(239,68,68,0.40)",
     accent: "rgba(239,68,68,0.12)",
     border: "rgba(239,68,68,0.35)",
-    description: "Industry-standard 2D/3D drafting & design software",
-    details:
-      "Master precision drafting, 3D modeling, annotation, and sheet sets. The most widely used CAD platform in engineering and architecture worldwide.",
   },
-  {
-    id: "archicad",
-    name: "ArchiCAD",
-    icon: "🏛️",
-    category: "BIM",
-    duration: "3 Months",
-    registrationFee: 5000,
-    trainingFee: 70000,
-    color: "#a78bfa",
-    glow: "rgba(167,139,250,0.40)",
-    accent: "rgba(167,139,250,0.12)",
-    border: "rgba(167,139,250,0.35)",
-    description: "BIM software focused on architectural design & documentation",
-    details:
-      "Architect-first BIM workflow with intuitive design tools, parametric objects, teamwork collaboration, and seamless IFC exchange for open BIM projects.",
-  },
-  {
-    id: "sap2000",
-    name: "SAP2000",
-    icon: "🔩",
-    category: "Structural Analysis",
-    duration: "2 Months",
-    registrationFee: 5000,
-    trainingFee: 50000,
+  "Structural Analysis": {
     color: "#fb923c",
     glow: "rgba(251,146,60,0.40)",
     accent: "rgba(251,146,60,0.12)",
     border: "rgba(251,146,60,0.35)",
-    description: "Structural analysis & design for buildings & bridges",
-    details:
-      "Perform linear and nonlinear analysis of complex structures. Design steel, concrete, and composite members to international codes.",
   },
-  {
-    id: "abaqus",
-    name: "ABAQUS",
-    icon: "⚙️",
-    category: "FEA",
-    duration: "2 Months",
-    registrationFee: 5000,
-    trainingFee: 50000,
+  FEA: {
     color: "#e879f9",
     glow: "rgba(232,121,249,0.40)",
     accent: "rgba(232,121,249,0.12)",
     border: "rgba(232,121,249,0.35)",
-    description: "Finite element analysis for complex structural simulations",
-    details:
-      "Industry-leading FEA suite for advanced simulations including nonlinear mechanics, dynamic analysis, thermal coupling, and fatigue prediction.",
   },
+};
+const FALLBACK_VISUAL = {
+  color: "#7dd3fc",
+  glow: "rgba(125,211,252,0.40)",
+  accent: "rgba(14,111,168,0.12)",
+  border: "rgba(125,211,252,0.35)",
+};
+function getVisual(category?: string | null) {
+  if (!category) return FALLBACK_VISUAL;
+  return CATEGORY_VISUALS[category] ?? FALLBACK_VISUAL;
+}
 
-  //ROBOT STRUCTURAL ANALYSIS can be added here in the future
-  {
-    id: "robot",
-    name: "Robot Structural Analysis",
-    icon: "👨‍🔬",
-    category: "Structural Analysis",
-    duration: "2 Months",
-    registrationFee: 10000,
-    trainingFee: 100000,
-    color: "#fbbf24",
-    glow: "rgba(251,191,36,0.40)",
-    accent: "rgba(251,191,36,0.12)",
-    border: "rgba(251,191,36,0.35)",
-    description: "Structural analysis & design for buildings & bridges",
-    details:
-      "Perform linear and nonlinear analysis of complex structures. Design steel, concrete, and composite members to international codes.",
-  },
-];
-
+/* ─── Steps ─────────────────────────────────────────────────── */
 const STEPS = [
   { id: 1, label: "Identity", icon: "👤", short: "Who You Are" },
   { id: 2, label: "Background", icon: "🎓", short: "Your Background" },
@@ -145,7 +73,7 @@ const STEPS = [
 ];
 
 const INITIAL = {
-  software: "",
+  courseId: "",
   fullName: "",
   phone: "",
   email: "",
@@ -153,8 +81,8 @@ const INITIAL = {
   status: "",
   school: "",
   field: "",
-  whyRevit: "",
-  revitLevel: "",
+  whyEnrolled: "",
+  skillLevel: "",
   followsSocial: "",
   joinChallenge: "",
   howHeard: "",
@@ -165,7 +93,7 @@ const INITIAL = {
 type FormData = typeof INITIAL;
 type SetFn = (key: keyof FormData, val: string | boolean) => void;
 
-/* ─── Style helpers ─────────────────────────────────────────── */
+/* ─── Style helpers ──────────────────────────────────────────── */
 const glassStyle = (bg = "rgba(14,111,168,0.12)"): CSSProperties => ({
   background: bg,
   backdropFilter: "blur(20px) saturate(180%)",
@@ -174,7 +102,6 @@ const glassStyle = (bg = "rgba(14,111,168,0.12)"): CSSProperties => ({
   boxShadow:
     "0 4px 24px rgba(5,20,40,0.55), 0 1px 0 rgba(255,255,255,0.06) inset",
 });
-
 const labelStyle: CSSProperties = {
   fontSize: "0.72rem",
   fontWeight: 700,
@@ -184,7 +111,6 @@ const labelStyle: CSSProperties = {
   marginBottom: "0.45rem",
   display: "block",
 };
-
 const inputStyle: CSSProperties = {
   width: "100%",
   padding: "0.78rem 1rem",
@@ -197,14 +123,13 @@ const inputStyle: CSSProperties = {
   transition: "border-color 0.2s, box-shadow 0.2s",
   boxSizing: "border-box",
 };
-
 const textareaStyle: CSSProperties = {
   ...inputStyle,
   resize: "vertical",
   minHeight: "100px",
 };
 
-/* ─── Atoms ─────────────────────────────────────────────────── */
+/* ─── Atoms ──────────────────────────────────────────────────── */
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
@@ -213,7 +138,6 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
     </div>
   );
 }
-
 function Input({
   value,
   onChange,
@@ -244,7 +168,6 @@ function Input({
     />
   );
 }
-
 function Textarea({
   value,
   onChange,
@@ -272,7 +195,6 @@ function Textarea({
     />
   );
 }
-
 function RadioGroup({
   options,
   value,
@@ -319,7 +241,6 @@ function RadioGroup({
 function BgScene() {
   return (
     <>
-      {/* Hero background image — same as software page */}
       <div
         aria-hidden="true"
         style={{
@@ -332,18 +253,12 @@ function BgScene() {
           zIndex: -2,
         }}
       />
-      {/* Gradient overlay — identical to software page */}
       <div
         aria-hidden="true"
         style={{
           position: "fixed",
           inset: 0,
-          background: `
-            radial-gradient(ellipse 60% 50% at 20% 30%, rgba(14,111,168,0.20) 0%, transparent 60%),
-            radial-gradient(ellipse 50% 40% at 80% 70%, rgba(99,102,241,0.14) 0%, transparent 55%),
-            radial-gradient(ellipse 40% 35% at 60% 15%, rgba(14,111,168,0.12) 0%, transparent 50%),
-            linear-gradient(145deg, rgba(7,24,40,0.75) 0%, rgba(10,34,54,0.70) 40%, rgba(6,14,24,0.80) 100%)
-          `,
+          background: `radial-gradient(ellipse 60% 50% at 20% 30%, rgba(14,111,168,0.20) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 80% 70%, rgba(99,102,241,0.14) 0%, transparent 55%), radial-gradient(ellipse 40% 35% at 60% 15%, rgba(14,111,168,0.12) 0%, transparent 50%), linear-gradient(145deg, rgba(7,24,40,0.75) 0%, rgba(10,34,54,0.70) 40%, rgba(6,14,24,0.80) 100%)`,
           zIndex: -1,
         }}
       />
@@ -351,31 +266,42 @@ function BgScene() {
   );
 }
 
-/* ─── Software Selector ─────────────────────────────────────── */
-function SoftwareSelector({
-  selected,
+/* ─── Course Selector ────────────────────────────────────────── */
+function CourseSelector({
+  courses,
+  isLoading,
+  error,
+  selectedId,
   onSelect,
   onConfirm,
 }: {
-  selected: string;
+  courses: Course[];
+  isLoading: boolean;
+  error: string | null;
+  selectedId: string;
   onSelect: (id: string) => void;
   onConfirm: () => void;
 }) {
-  const [expanded, setExpanded] = useState<string | null>(null);
-  const expandedSw = SOFTWARES.find((s) => s.id === expanded);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const expandedCourse = courses.find((c) => c.id === expandedId);
 
   const handleCardClick = (id: string) => {
-    setExpanded(id);
+    setExpandedId(id);
     onSelect(id);
   };
 
   /* ── Expanded detail view ── */
-  if (expanded && expandedSw) {
+  if (expandedId && expandedCourse) {
+    const v = getVisual(expandedCourse.category);
+    const duration =
+      expandedCourse.durationMonths === 1
+        ? "1 Month"
+        : `${expandedCourse.durationMonths} Months`;
     return (
       <div style={{ animation: "fadeSlideIn 0.25s ease" }}>
         <button
           type="button"
-          onClick={() => setExpanded(null)}
+          onClick={() => setExpandedId(null)}
           style={{
             display: "inline-flex",
             alignItems: "center",
@@ -403,14 +329,13 @@ function SoftwareSelector({
           ← Back to all programs
         </button>
 
-        {/* Feature card */}
         <div
           style={{
             borderRadius: "1.25rem",
             padding: "2rem",
-            background: expandedSw.accent,
-            border: `1px solid ${expandedSw.border}`,
-            boxShadow: `0 0 50px ${expandedSw.glow}`,
+            background: v.accent,
+            border: `1px solid ${v.border}`,
+            boxShadow: `0 0 50px ${v.glow}`,
             marginBottom: "1.25rem",
           }}
         >
@@ -428,16 +353,16 @@ function SoftwareSelector({
                 height: "66px",
                 borderRadius: "1rem",
                 flexShrink: 0,
-                background: `radial-gradient(circle at 30% 30%, ${expandedSw.color}33, transparent 70%), rgba(7,24,40,0.7)`,
-                border: `1px solid ${expandedSw.border}`,
+                background: `radial-gradient(circle at 30% 30%, ${v.color}33, transparent 70%), rgba(7,24,40,0.7)`,
+                border: `1px solid ${v.border}`,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 fontSize: "2.1rem",
-                boxShadow: `0 0 28px ${expandedSw.glow}`,
+                boxShadow: `0 0 28px ${v.glow}`,
               }}
             >
-              {expandedSw.icon}
+              {expandedCourse.icon ?? "🖥️"}
             </div>
             <div style={{ flex: 1 }}>
               <div
@@ -454,26 +379,26 @@ function SoftwareSelector({
                     margin: 0,
                     fontSize: "1.65rem",
                     fontWeight: 900,
-                    color: expandedSw.color,
+                    color: v.color,
                     letterSpacing: "-0.03em",
                   }}
                 >
-                  {expandedSw.name}
+                  {expandedCourse.name}
                 </h2>
                 <span
                   style={{
                     fontSize: "0.62rem",
                     fontWeight: 700,
-                    color: expandedSw.color,
-                    background: `${expandedSw.color}22`,
-                    border: `1px solid ${expandedSw.border}`,
+                    color: v.color,
+                    background: `${v.color}22`,
+                    border: `1px solid ${v.border}`,
                     borderRadius: "1rem",
                     padding: "0.2rem 0.6rem",
                     letterSpacing: "0.07em",
                     textTransform: "uppercase",
                   }}
                 >
-                  {expandedSw.category}
+                  {expandedCourse.category}
                 </span>
               </div>
               <p
@@ -484,23 +409,11 @@ function SoftwareSelector({
                   lineHeight: 1.6,
                 }}
               >
-                {expandedSw.description}
+                {expandedCourse.description ??
+                  `Professional training in ${expandedCourse.name}`}
               </p>
             </div>
           </div>
-
-          <p
-            style={{
-              margin: "0 0 1.5rem",
-              fontSize: "0.84rem",
-              color: "var(--text-secondary, rgba(180,210,240,0.65))",
-              lineHeight: 1.8,
-              borderLeft: `3px solid ${expandedSw.border}`,
-              paddingLeft: "1rem",
-            }}
-          >
-            {expandedSw.details}
-          </p>
 
           <div
             style={{
@@ -510,15 +423,15 @@ function SoftwareSelector({
             }}
           >
             {[
-              { label: "Duration", value: expandedSw.duration, icon: "⏱" },
+              { label: "Duration", value: duration, icon: "⏱" },
               {
                 label: "Registration",
-                value: `${expandedSw.registrationFee.toLocaleString()} FRS`,
+                value: `${expandedCourse.registrationFee.toLocaleString()} FRS`,
                 icon: "🎟",
               },
               {
                 label: "Training Fee",
-                value: `${expandedSw.trainingFee.toLocaleString()} FRS`,
+                value: `${expandedCourse.trainingFee.toLocaleString()} FRS`,
                 icon: "💳",
               },
             ].map((stat) => (
@@ -528,7 +441,7 @@ function SoftwareSelector({
                   background: "rgba(7,24,40,0.50)",
                   borderRadius: "0.85rem",
                   padding: "1rem 0.85rem",
-                  border: `1px solid ${expandedSw.border}`,
+                  border: `1px solid ${v.border}`,
                   textAlign: "center",
                 }}
               >
@@ -551,7 +464,7 @@ function SoftwareSelector({
                   style={{
                     fontSize: "0.92rem",
                     fontWeight: 800,
-                    color: expandedSw.color,
+                    color: v.color,
                   }}
                 >
                   {stat.value}
@@ -569,13 +482,13 @@ function SoftwareSelector({
             padding: "1rem 2rem",
             borderRadius: "0.85rem",
             border: "none",
-            background: `linear-gradient(135deg, ${expandedSw.color}ee, ${expandedSw.color}88)`,
+            background: `linear-gradient(135deg, ${v.color}ee, ${v.color}88)`,
             color: "#fff",
             fontSize: "1rem",
             fontWeight: 800,
             cursor: "pointer",
             letterSpacing: "-0.01em",
-            boxShadow: `0 6px 28px ${expandedSw.glow}`,
+            boxShadow: `0 6px 28px ${v.glow}`,
             transition: "opacity 0.2s, transform 0.2s",
           }}
           onMouseEnter={(e) => {
@@ -587,13 +500,52 @@ function SoftwareSelector({
             e.currentTarget.style.transform = "translateY(0)";
           }}
         >
-          Register for {expandedSw.name} {expandedSw.icon} →
+          Register for {expandedCourse.name} {expandedCourse.icon ?? "🖥️"} →
         </button>
       </div>
     );
   }
 
-  /* ── Grid (all cards visible) ── */
+  /* ── Grid ── */
+  if (isLoading) {
+    return (
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(192px, 1fr))",
+          gap: "0.85rem",
+        }}
+      >
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div
+            key={i}
+            style={{
+              height: "180px",
+              borderRadius: "1rem",
+              background: "rgba(14,111,168,0.08)",
+              border: "1px solid rgba(125,211,252,0.08)",
+            }}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div
+        style={{
+          textAlign: "center",
+          padding: "2rem",
+          color: "var(--text-secondary)",
+        }}
+      >
+        <p style={{ fontSize: "1.5rem" }}>⚠️</p>
+        <p>Couldn't load courses. Please refresh.</p>
+      </div>
+    );
+  }
+
   return (
     <div style={{ animation: "fadeSlideIn 0.2s ease" }}>
       <div
@@ -603,116 +555,125 @@ function SoftwareSelector({
           gap: "0.85rem",
         }}
       >
-        {SOFTWARES.map((sw) => (
-          <button
-            key={sw.id}
-            type="button"
-            onClick={() => handleCardClick(sw.id)}
-            style={{
-              padding: "1.2rem 1.1rem",
-              borderRadius: "1rem",
-              border: "1px solid rgba(125,211,252,0.10)",
-              background: "rgba(7,24,40,0.52)",
-              cursor: "pointer",
-              textAlign: "left",
-              transition: "all 0.22s cubic-bezier(0.34,1.56,0.64,1)",
-              backdropFilter: "blur(12px)",
-              WebkitBackdropFilter: "blur(12px)",
-              position: "relative",
-              overflow: "hidden",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.border = `1px solid ${sw.border}`;
-              e.currentTarget.style.background = sw.accent;
-              e.currentTarget.style.boxShadow = `0 0 24px ${sw.glow}`;
-              e.currentTarget.style.transform = "translateY(-4px)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.border = "1px solid rgba(125,211,252,0.10)";
-              e.currentTarget.style.background = "rgba(7,24,40,0.52)";
-              e.currentTarget.style.boxShadow = "none";
-              e.currentTarget.style.transform = "translateY(0)";
-            }}
-          >
-            {/* Top color stripe */}
-            <div
+        {courses.map((course) => {
+          const v = getVisual(course.category);
+          const duration =
+            course.durationMonths === 1
+              ? "1 Month"
+              : `${course.durationMonths} Months`;
+          return (
+            <button
+              key={course.id}
+              type="button"
+              onClick={() => handleCardClick(course.id)}
               style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                height: "3px",
-                background: `linear-gradient(90deg, ${sw.color}, transparent)`,
-                borderRadius: "1rem 1rem 0 0",
+                padding: "1.2rem 1.1rem",
+                borderRadius: "1rem",
+                border: "1px solid rgba(125,211,252,0.10)",
+                background: "rgba(7,24,40,0.52)",
+                cursor: "pointer",
+                textAlign: "left",
+                transition: "all 0.22s cubic-bezier(0.34,1.56,0.64,1)",
+                backdropFilter: "blur(12px)",
+                WebkitBackdropFilter: "blur(12px)",
+                position: "relative",
+                overflow: "hidden",
               }}
-            />
-            <div style={{ fontSize: "1.7rem", marginBottom: "0.55rem" }}>
-              {sw.icon}
-            </div>
-            <div
-              style={{
-                fontSize: "0.93rem",
-                fontWeight: 800,
-                color: "var(--text-primary, #e2f4ff)",
-                marginBottom: "0.18rem",
+              onMouseEnter={(e) => {
+                e.currentTarget.style.border = `1px solid ${v.border}`;
+                e.currentTarget.style.background = v.accent;
+                e.currentTarget.style.boxShadow = `0 0 24px ${v.glow}`;
+                e.currentTarget.style.transform = "translateY(-4px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.border =
+                  "1px solid rgba(125,211,252,0.10)";
+                e.currentTarget.style.background = "rgba(7,24,40,0.52)";
+                e.currentTarget.style.boxShadow = "none";
+                e.currentTarget.style.transform = "translateY(0)";
               }}
             >
-              {sw.name}
-            </div>
-            <div
-              style={{
-                fontSize: "0.61rem",
-                fontWeight: 700,
-                color: sw.color,
-                textTransform: "uppercase",
-                letterSpacing: "0.08em",
-                marginBottom: "0.5rem",
-              }}
-            >
-              {sw.category}
-            </div>
-            <div
-              style={{
-                fontSize: "0.72rem",
-                color: "var(--text-muted, rgba(180,210,240,0.48))",
-                lineHeight: 1.55,
-                marginBottom: "0.85rem",
-              }}
-            >
-              {sw.description}
-            </div>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <span
+              {/* Top stripe */}
+              <div
                 style={{
-                  fontSize: "0.68rem",
-                  fontWeight: 700,
-                  color: "rgba(125,211,252,0.55)",
-                  background: "rgba(14,111,168,0.18)",
-                  borderRadius: "1rem",
-                  padding: "0.18rem 0.52rem",
-                  border: "1px solid rgba(125,211,252,0.12)",
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: "3px",
+                  background: `linear-gradient(90deg, ${v.color}, transparent)`,
+                  borderRadius: "1rem 1rem 0 0",
+                }}
+              />
+              <div style={{ fontSize: "1.7rem", marginBottom: "0.55rem" }}>
+                {course.icon ?? "🖥️"}
+              </div>
+              <div
+                style={{
+                  fontSize: "0.93rem",
+                  fontWeight: 800,
+                  color: "var(--text-primary, #e2f4ff)",
+                  marginBottom: "0.18rem",
                 }}
               >
-                ⏱ {sw.duration}
-              </span>
-              <span
+                {course.name}
+              </div>
+              <div
                 style={{
-                  fontSize: "0.76rem",
-                  color: sw.color,
+                  fontSize: "0.61rem",
                   fontWeight: 700,
+                  color: v.color,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
+                  marginBottom: "0.5rem",
                 }}
               >
-                View →
-              </span>
-            </div>
-          </button>
-        ))}
+                {course.category}
+              </div>
+              <div
+                style={{
+                  fontSize: "0.72rem",
+                  color: "var(--text-muted, rgba(180,210,240,0.48))",
+                  lineHeight: 1.55,
+                  marginBottom: "0.85rem",
+                }}
+              >
+                {course.description ??
+                  `Professional training in ${course.name}`}
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: "0.68rem",
+                    fontWeight: 700,
+                    color: "rgba(125,211,252,0.55)",
+                    background: "rgba(14,111,168,0.18)",
+                    borderRadius: "1rem",
+                    padding: "0.18rem 0.52rem",
+                    border: "1px solid rgba(125,211,252,0.12)",
+                  }}
+                >
+                  ⏱ {duration}
+                </span>
+                <span
+                  style={{
+                    fontSize: "0.76rem",
+                    color: v.color,
+                    fontWeight: 700,
+                  }}
+                >
+                  View →
+                </span>
+              </div>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
@@ -755,7 +716,6 @@ function Step1({ data, set }: { data: FormData; set: SetFn }) {
     </div>
   );
 }
-
 function Step2({ data, set }: { data: FormData; set: SetFn }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.4rem" }}>
@@ -787,22 +747,28 @@ function Step2({ data, set }: { data: FormData; set: SetFn }) {
     </div>
   );
 }
-
-function Step3({ data, set }: { data: FormData; set: SetFn }) {
-  const sw = SOFTWARES.find((s) => s.id === data.software);
+function Step3({
+  data,
+  set,
+  selectedCourse,
+}: {
+  data: FormData;
+  set: SetFn;
+  selectedCourse: Course | null;
+}) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.4rem" }}>
-      <Field label={`Why ${sw?.name ?? "this software"}? *`}>
+      <Field label={`Why ${selectedCourse?.name ?? "this software"}? *`}>
         <Textarea
-          value={data.whyRevit}
-          onChange={(e) => set("whyRevit", e.target.value)}
+          value={data.whyEnrolled}
+          onChange={(e) => set("whyEnrolled", e.target.value)}
           placeholder="Share your motivation — career goals, projects, opportunities…"
         />
       </Field>
       <Field label="Current Level">
         <RadioGroup
-          value={data.revitLevel}
-          onChange={(v) => set("revitLevel", v)}
+          value={data.skillLevel}
+          onChange={(v) => set("skillLevel", v)}
           options={[
             { value: "beginner", label: "🌱 Beginner" },
             { value: "intermediate", label: "⚡ Intermediate" },
@@ -831,9 +797,18 @@ function Step3({ data, set }: { data: FormData; set: SetFn }) {
     </div>
   );
 }
-
-function Step4({ data, set }: { data: FormData; set: SetFn }) {
-  const sw = SOFTWARES.find((s) => s.id === data.software);
+function Step4({
+  data,
+  set,
+  selectedCourse,
+}: {
+  data: FormData;
+  set: SetFn;
+  selectedCourse: Course | null;
+}) {
+  const v = selectedCourse
+    ? getVisual(selectedCourse.category)
+    : FALLBACK_VISUAL;
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.4rem" }}>
       <Field label="Follow our socials? *">
@@ -918,7 +893,7 @@ function Step4({ data, set }: { data: FormData; set: SetFn }) {
         </p>
         <RadioGroup
           value={data.joinChallenge}
-          onChange={(v) => set("joinChallenge", v)}
+          onChange={(jc) => set("joinChallenge", jc)}
           options={[
             { value: "yes", label: "🏆 Yes" },
             { value: "no", label: "⏭ No" },
@@ -1011,7 +986,7 @@ function Step4({ data, set }: { data: FormData; set: SetFn }) {
         >
           💳 Payment / Paiement
         </p>
-        {sw && (
+        {selectedCourse && (
           <div
             style={{
               display: "flex",
@@ -1040,7 +1015,7 @@ function Step4({ data, set }: { data: FormData; set: SetFn }) {
                   color: "#fde68a",
                 }}
               >
-                {sw.registrationFee.toLocaleString()} FRS
+                {selectedCourse.registrationFee.toLocaleString()} FRS
               </p>
             </div>
             <div>
@@ -1063,7 +1038,7 @@ function Step4({ data, set }: { data: FormData; set: SetFn }) {
                   color: "#fde68a",
                 }}
               >
-                {sw.trainingFee.toLocaleString()} FRS
+                {selectedCourse.trainingFee.toLocaleString()} FRS
               </p>
             </div>
           </div>
@@ -1123,7 +1098,6 @@ function Step4({ data, set }: { data: FormData; set: SetFn }) {
   );
 }
 
-/* ─── Gradient Text ──────────────────────────────────────────── */
 function GradientText({ children }: { children: ReactNode }) {
   return (
     <span
@@ -1140,28 +1114,56 @@ function GradientText({ children }: { children: ReactNode }) {
   );
 }
 
-/* ─── Main Page ─────────────────────────────────────────────── */
+/* ─── Main Page ──────────────────────────────────────────────── */
 export default function RegisterPage() {
   const [phase, setPhase] = useState<"select" | "form">("select");
   const [step, setStep] = useState(1);
   const [data, setData] = useState(INITIAL);
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  // Fetch live courses — only ACTIVE ones
+  const {
+    courses: rawCourses,
+    isLoading,
+    error,
+  } = useCourses({ status: "ACTIVE" });
+  const courses = rawCourses ?? [];
+
   const set: SetFn = (key, val) => setData((d) => ({ ...d, [key]: val }));
-  const selectedSw = SOFTWARES.find((s) => s.id === data.software);
-  // Replace the entire handleSubmit function (around line 453–490)
-  const [loading, setLoading] = useState(false);
+
+  // The selected Course object (from DB), not a hardcoded slug
+  const selectedCourse = courses.find((c) => c.id === data.courseId) ?? null;
+  const selectedVisual = selectedCourse
+    ? getVisual(selectedCourse.category)
+    : FALLBACK_VISUAL;
+
+  // Pre-select from ?courseId= query param (coming from programmes page)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const qId = params.get("courseId");
+    if (qId) set("courseId", qId);
+  }, []);
+
+  const canNext = () => {
+    if (step === 1)
+      return !!(data.fullName && data.phone && data.email && data.city);
+    if (step === 2) return !!(data.status && data.school && data.field);
+    if (step === 3)
+      return !!(data.whyEnrolled && data.howHeard && data.referrer);
+    if (step === 4)
+      return !!(data.followsSocial && data.joinChallenge && data.commitment);
+    return true;
+  };
 
   const handleSubmit = async () => {
     try {
       setLoading(true);
-
       const names = data.fullName.trim().split(" ");
       const firstName = names[0] || "";
       const lastName = names.slice(1).join(" ") || "Student";
 
-      // Map form values to API-expected enums
       const backgroundMap: Record<string, string> = {
         student: "STUDENT",
         graduate: "GRADUATE",
@@ -1187,12 +1189,12 @@ export default function RegisterPage() {
           email: data.email,
           phone: data.phone,
           city: data.city,
-          software: data.software,
+          courseId: data.courseId, // ← real DB id, not a slug
           background: backgroundMap[data.status] ?? undefined,
           school: data.school,
           fieldOfStudy: data.field,
-          whyEnrolled: data.whyRevit,
-          skillLevel: skillLevelMap[data.revitLevel] ?? undefined,
+          whyEnrolled: data.whyEnrolled,
+          skillLevel: skillLevelMap[data.skillLevel] ?? undefined,
           howHeard: howHeardMap[data.howHeard] ?? undefined,
           referrer: data.referrer,
           followsSocial: data.followsSocial === "yes",
@@ -1201,29 +1203,17 @@ export default function RegisterPage() {
       });
 
       const result = await response.json();
-
       if (!response.ok) {
         alert(result.message || "Registration failed");
         return;
       }
-
       setSubmitted(true);
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
       alert("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
-  };
-
-  const canNext = () => {
-    if (step === 1)
-      return data.fullName && data.phone && data.email && data.city;
-    if (step === 2) return data.status && data.school && data.field;
-    if (step === 3) return data.whyRevit && data.howHeard && data.referrer;
-    if (step === 4)
-      return data.followsSocial && data.joinChallenge && data.commitment;
-    return true;
   };
 
   /* ── Success Screen ── */
@@ -1275,7 +1265,7 @@ export default function RegisterPage() {
               >
                 Registration Submitted!
               </h2>
-              {selectedSw && (
+              {selectedCourse && (
                 <div
                   style={{
                     display: "inline-flex",
@@ -1283,20 +1273,21 @@ export default function RegisterPage() {
                     gap: "0.5rem",
                     padding: "0.4rem 1rem",
                     borderRadius: "2rem",
-                    background: selectedSw.accent,
-                    border: `1px solid ${selectedSw.border}`,
+                    background: selectedVisual.accent,
+                    border: `1px solid ${selectedVisual.border}`,
                     marginBottom: "1rem",
                   }}
                 >
-                  <span>{selectedSw.icon}</span>
+                  <span>{selectedCourse.icon ?? "🖥️"}</span>
                   <span
                     style={{
                       fontSize: "0.85rem",
                       fontWeight: 700,
-                      color: selectedSw.color,
+                      color: selectedVisual.color,
                     }}
                   >
-                    {selectedSw.name} — {selectedSw.duration}
+                    {selectedCourse.name} — {selectedCourse.durationMonths}{" "}
+                    Month{selectedCourse.durationMonths !== 1 ? "s" : ""}
                   </span>
                 </div>
               )}
@@ -1308,9 +1299,9 @@ export default function RegisterPage() {
                   margin: "0 0 1.5rem",
                 }}
               >
-                Welcome to CHICAD Academy Batch 11! Pay your registration fee of{" "}
+                Welcome to CHICAD Academy! Pay your registration fee of{" "}
                 <strong style={{ color: "#fde68a" }}>
-                  {selectedSw?.registrationFee.toLocaleString()} FRS
+                  {selectedCourse?.registrationFee.toLocaleString()} FRS
                 </strong>{" "}
                 to MoMo{" "}
                 <strong style={{ color: "#fde68a" }}>673 422 430</strong> and
@@ -1369,8 +1360,6 @@ export default function RegisterPage() {
         >
           <BgScene />
           <Header onSignIn={() => router.push("/academy/login")} />
-
-          {/* ── Software grid ── */}
           <main
             style={{
               flex: 1,
@@ -1417,7 +1406,6 @@ export default function RegisterPage() {
                 Click any card to explore details, then register.
               </p>
             </div>
-
             <div
               style={{
                 ...glassStyle("rgba(7,24,40,0.40)"),
@@ -1425,14 +1413,16 @@ export default function RegisterPage() {
                 padding: "1.75rem",
               }}
             >
-              <SoftwareSelector
-                selected={data.software}
-                onSelect={(id) => set("software", id)}
+              <CourseSelector
+                courses={courses}
+                isLoading={isLoading}
+                error={error}
+                selectedId={data.courseId}
+                onSelect={(id) => set("courseId", id)}
                 onConfirm={() => setPhase("form")}
               />
             </div>
           </main>
-
           <Footer />
         </div>
         <GlobalStyles />
@@ -1454,7 +1444,6 @@ export default function RegisterPage() {
       >
         <BgScene />
         <Header onSignIn={() => router.push("/academy/login")} />
-
         <div
           style={{
             flex: 1,
@@ -1479,16 +1468,15 @@ export default function RegisterPage() {
               WebkitBackdropFilter: "blur(20px) saturate(180%)",
             }}
           >
-            {/* Selected program badge */}
-            {selectedSw && (
+            {selectedCourse && (
               <div
                 style={{
                   marginBottom: "1.75rem",
                   padding: "0.9rem 1rem",
-                  background: selectedSw.accent,
-                  border: `1px solid ${selectedSw.border}`,
+                  background: selectedVisual.accent,
+                  border: `1px solid ${selectedVisual.border}`,
                   borderRadius: "0.85rem",
-                  boxShadow: `0 0 18px ${selectedSw.glow}`,
+                  boxShadow: `0 0 18px ${selectedVisual.glow}`,
                 }}
               >
                 <div
@@ -1499,16 +1487,18 @@ export default function RegisterPage() {
                     marginBottom: "0.35rem",
                   }}
                 >
-                  <span style={{ fontSize: "1.3rem" }}>{selectedSw.icon}</span>
+                  <span style={{ fontSize: "1.3rem" }}>
+                    {selectedCourse.icon ?? "🖥️"}
+                  </span>
                   <div>
                     <div
                       style={{
                         fontSize: "0.88rem",
                         fontWeight: 900,
-                        color: selectedSw.color,
+                        color: selectedVisual.color,
                       }}
                     >
-                      {selectedSw.name}
+                      {selectedCourse.name}
                     </div>
                     <div
                       style={{
@@ -1518,7 +1508,9 @@ export default function RegisterPage() {
                         letterSpacing: "0.07em",
                       }}
                     >
-                      {selectedSw.duration} · {selectedSw.category}
+                      {selectedCourse.durationMonths} Month
+                      {selectedCourse.durationMonths !== 1 ? "s" : ""} ·{" "}
+                      {selectedCourse.category}
                     </div>
                   </div>
                 </div>
@@ -1682,7 +1674,7 @@ export default function RegisterPage() {
                   lineHeight: 1.5,
                 }}
               >
-                {selectedSw?.registrationFee.toLocaleString()} FRS via MoMo
+                {selectedCourse?.registrationFee.toLocaleString()} FRS via MoMo
                 <br />
                 <span style={{ fontWeight: 700, color: "#fde68a" }}>
                   673 422 430
@@ -1752,12 +1744,7 @@ export default function RegisterPage() {
 
             {/* Step heading */}
             <div style={{ marginBottom: "1.65rem" }}>
-              <p
-                style={{
-                  ...labelStyle,
-                  marginBottom: "0.28rem",
-                }}
-              >
+              <p style={{ ...labelStyle, marginBottom: "0.28rem" }}>
                 {STEPS[step - 1].icon} {STEPS[step - 1].label}
               </p>
               <h1
@@ -1821,10 +1808,14 @@ export default function RegisterPage() {
             >
               {step === 1 && <Step1 data={data} set={set} />}
               {step === 2 && <Step2 data={data} set={set} />}
-              {step === 3 && <Step3 data={data} set={set} />}
-              {step === 4 && <Step4 data={data} set={set} />}
+              {step === 3 && (
+                <Step3 data={data} set={set} selectedCourse={selectedCourse} />
+              )}
+              {step === 4 && (
+                <Step4 data={data} set={set} selectedCourse={selectedCourse} />
+              )}
 
-              {/* Navigation buttons */}
+              {/* Navigation */}
               <div
                 style={{
                   display: "flex",
@@ -1910,7 +1901,6 @@ export default function RegisterPage() {
             </div>
           </div>
         </div>
-
         <Footer />
       </div>
       <GlobalStyles />
@@ -1918,46 +1908,24 @@ export default function RegisterPage() {
   );
 }
 
-/* ─── Global Styles ─────────────────────────────────────────── */
+/* ─── Global Styles ──────────────────────────────────────────── */
 function GlobalStyles() {
   return (
     <style>{`
       * { box-sizing: border-box; }
       html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
       body { margin: 0; }
-      input::placeholder,
-      textarea::placeholder { color: rgba(125,211,252,0.28); }
-      input:focus,
-      textarea:focus { outline: none; }
+      input::placeholder, textarea::placeholder { color: rgba(125,211,252,0.28); }
+      input:focus, textarea:focus { outline: none; }
       @keyframes fadeSlideIn {
         from { opacity: 0; transform: translateY(14px); }
         to   { opacity: 1; transform: translateY(0); }
       }
-      .btn-primary {
-        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-        color: #fff;
-        border: none;
-        box-shadow: 0 4px 20px rgba(59,130,246,0.35);
-        transition: opacity 0.2s, transform 0.2s;
-      }
-      .btn-primary:hover {
-        opacity: 0.88;
-        transform: translateY(-2px);
-      }
-      .btn-secondary {
-        background: rgba(14,111,168,0.15);
-        color: #7dd3fc;
-        border: 1px solid rgba(125,211,252,0.22);
-        backdrop-filter: blur(10px);
-        transition: background 0.2s, border-color 0.2s;
-      }
-      .btn-secondary:hover {
-        background: rgba(14,111,168,0.28);
-        border-color: rgba(125,211,252,0.38);
-      }
-      @media (max-width: 640px) {
-        .sidebar { display: none !important; }
-      }
+      .btn-primary { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: #fff; border: none; box-shadow: 0 4px 20px rgba(59,130,246,0.35); transition: opacity 0.2s, transform 0.2s; }
+      .btn-primary:hover { opacity: 0.88; transform: translateY(-2px); }
+      .btn-secondary { background: rgba(14,111,168,0.15); color: #7dd3fc; border: 1px solid rgba(125,211,252,0.22); backdrop-filter: blur(10px); transition: background 0.2s, border-color 0.2s; }
+      .btn-secondary:hover { background: rgba(14,111,168,0.28); border-color: rgba(125,211,252,0.38); }
+      @media (max-width: 640px) { .sidebar { display: none !important; } }
     `}</style>
   );
 }

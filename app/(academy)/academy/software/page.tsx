@@ -3,110 +3,54 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Header, Footer } from "@/components/academy";
+import { useCourses } from "@/hooks/useCourse";
+import type { Course } from "@/types";
 
-/* ─── Software Data ───────────────────────────────────────── */
-const SOFTWARE_TOOLS = [
-  {
-    name: "Lumion",
-    category: "Visualization",
-    icon: "🌅",
-    description: "3D rendering & real-time visualization for architecture. Create stunning photorealistic renders and immersive virtual walkthroughs that bring designs to life.",
-    features: ["Real-time rendering", "Animation tools", "Material libraries", "Lighting effects", "VR export capabilities"],
-    level: "Beginner to Intermediate",
-    duration: "1 Month",
-    registrationFee: 5000,
-    trainingFee: 30000,
+/* ─── Visual config keyed by category ────────────────────────
+   Only presentational data that doesn't belong in the DB.
+   Falls back to defaults for unknown categories.
+────────────────────────────────────────────────────────────── */
+const CATEGORY_VISUALS: Record<
+  string,
+  { gradientFrom: string; gradientTo: string; level: string }
+> = {
+  Visualization: {
     gradientFrom: "#f59e0b",
     gradientTo: "#d97706",
+    level: "Beginner to Intermediate",
   },
-  {
-    name: "Ms Excel",
-    category: "Productivity",
-    icon: "📊",
-    description: "Advanced spreadsheets, data analysis & project management. From pivot tables to VBA macros used daily in engineering firms and construction management.",
-    features: ["Pivot tables & charts", "VBA macros", "Data analysis tools", "Project scheduling", "Engineering calculations"],
-    level: "Beginner to Advanced",
-    duration: "1 Month",
-    registrationFee: 5000,
-    trainingFee: 30000,
+  Productivity: {
     gradientFrom: "#22c55e",
     gradientTo: "#16a34a",
+    level: "Beginner to Advanced",
   },
-  {
-    name: "SAP2000",
-    category: "Structural Analysis",
-    icon: "🔩",
-    description: "Structural analysis & design for buildings & bridges. Perform linear and nonlinear analysis of complex structures to international codes.",
-    features: ["Static & dynamic analysis", "Steel & concrete design", "Foundation design", "Bridge analysis", "Seismic analysis"],
-    level: "Intermediate to Advanced",
-    duration: "2 Months",
-    registrationFee: 5000,
-    trainingFee: 50000,
+  "Structural Analysis": {
     gradientFrom: "#fb923c",
     gradientTo: "#ea580c",
-  },
-  {
-    name: "ABAQUS",
-    category: "FEA",
-    icon: "⚙️",
-    description: "Finite element analysis for complex structural simulations including nonlinear mechanics, dynamic analysis, thermal coupling, and fatigue prediction.",
-    features: ["Nonlinear FEA", "Dynamic analysis", "Thermal coupling", "Fatigue prediction", "Advanced material models"],
-    level: "Advanced",
-    duration: "2 Months",
-    registrationFee: 5000,
-    trainingFee: 50000,
-    gradientFrom: "#e879f9",
-    gradientTo: "#a21caf",
-  },
-  {
-    name: "Revit",
-    category: "BIM",
-    icon: "🏗️",
-    description: "Building Information Modeling for architects & engineers. Model complete buildings, generate construction documents, and coordinate MEP systems.",
-    features: ["3D parametric modeling", "Building systems integration", "Construction documentation", "Quantity takeoffs", "Collaboration tools"],
     level: "Intermediate to Advanced",
-    duration: "3 Months",
-    registrationFee: 5000,
-    trainingFee: 70000,
+  },
+  FEA: { gradientFrom: "#e879f9", gradientTo: "#a21caf", level: "Advanced" },
+  BIM: {
     gradientFrom: "#7dd3fc",
     gradientTo: "#0ea5e9",
+    level: "Intermediate to Advanced",
   },
-  {
-    name: "AutoCAD",
-    category: "CAD",
-    icon: "📐",
-    description: "Industry-standard 2D/3D drafting & design software. Master precision drafting, 3D modeling, annotation, and sheet sets used worldwide.",
-    features: ["2D drafting & annotation", "3D modeling", "Layer management", "Block libraries", "PDF & DWG export"],
-    level: "Beginner to Advanced",
-    duration: "3 Months",
-    registrationFee: 5000,
-    trainingFee: 70000,
+  CAD: {
     gradientFrom: "#ef4444",
     gradientTo: "#b91c1c",
+    level: "Beginner to Advanced",
   },
-  {
-    name: "ArchiCAD",
-    category: "BIM",
-    icon: "🏛️",
-    description: "BIM software focused on architectural design & documentation. Architect-first workflow with parametric objects, teamwork collaboration, and open BIM.",
-    features: ["Virtual building modeling", "Energy analysis", "Construction documentation", "Team collaboration", "Open BIM workflow"],
-    level: "Intermediate to Advanced",
-    duration: "3 Months",
-    registrationFee: 5000,
-    trainingFee: 70000,
-    gradientFrom: "#a78bfa",
-    gradientTo: "#7c3aed",
-  },
-];
+};
 
-const CATEGORIES = [
-  { name: "Visualization", count: 1, icon: "🌅" },
-  { name: "Productivity", count: 1, icon: "📊" },
-  { name: "Structural Analysis", count: 1, icon: "🔩" },
-  { name: "FEA", count: 1, icon: "⚙️" },
-  { name: "BIM", count: 2, icon: "🏗️" },
-  { name: "CAD", count: 1, icon: "📐" },
-];
+const FALLBACK_VISUAL = {
+  gradientFrom: "#94a3b8",
+  gradientTo: "#475569",
+  level: "All Levels",
+};
+
+function getVisual(category: string) {
+  return CATEGORY_VISUALS[category] ?? FALLBACK_VISUAL;
+}
 
 const WHY_ITEMS = [
   {
@@ -158,7 +102,6 @@ function CheckIcon({ color }: { color: string }) {
     </svg>
   );
 }
-
 function ClockIcon() {
   return (
     <svg
@@ -176,7 +119,6 @@ function ClockIcon() {
     </svg>
   );
 }
-
 function LevelIcon() {
   return (
     <svg
@@ -205,8 +147,23 @@ const glassStyle = (bg = "rgba(14,111,168,0.12)"): React.CSSProperties => ({
 });
 
 /* ─── Software Card ───────────────────────────────────────── */
-function SoftwareCard({ software }: { software: (typeof SOFTWARE_TOOLS)[0] }) {
+function SoftwareCard({ course }: { course: Course }) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const { gradientFrom, gradientTo, level } = getVisual(course.category);
+
+  // description may contain a pipe-separated feature list after a newline,
+  // or fall back gracefully if not present
+  const [blurb, ...featureLines] = (course.description ?? "").split("\n");
+  // Support both newline-separated and comma-separated feature lists
+  const features =
+    featureLines.length > 0
+      ? featureLines
+          .flatMap((l) => l.split(",").map((s) => s.trim()))
+          .filter(Boolean)
+      : [];
+
+  const duration =
+    course.durationMonths === 1 ? "1 Month" : `${course.durationMonths} Months`;
 
   return (
     <div
@@ -217,29 +174,28 @@ function SoftwareCard({ software }: { software: (typeof SOFTWARE_TOOLS)[0] }) {
         transition: "all 0.3s ease",
       }}
       onMouseEnter={(e) => {
-        (e.currentTarget as HTMLDivElement).style.background =
-          "rgba(14,111,168,0.18)";
-        (e.currentTarget as HTMLDivElement).style.boxShadow =
+        const el = e.currentTarget as HTMLDivElement;
+        el.style.background = "rgba(14,111,168,0.18)";
+        el.style.boxShadow =
           "0 16px 56px rgba(5,20,40,0.70), 0 1px 0 rgba(255,255,255,0.08) inset";
-        (e.currentTarget as HTMLDivElement).style.transform =
-          "translateY(-2px)";
+        el.style.transform = "translateY(-2px)";
       }}
       onMouseLeave={(e) => {
-        (e.currentTarget as HTMLDivElement).style.background =
-          "rgba(14,111,168,0.10)";
-        (e.currentTarget as HTMLDivElement).style.boxShadow =
+        const el = e.currentTarget as HTMLDivElement;
+        el.style.background = "rgba(14,111,168,0.10)";
+        el.style.boxShadow =
           "0 4px 24px rgba(5,20,40,0.55), 0 1px 0 rgba(255,255,255,0.06) inset";
-        (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
+        el.style.transform = "translateY(0)";
       }}
     >
-      {/* ── Card Header ── */}
+      {/* ── Header ── */}
       <div
         style={{
           padding: "1.5rem",
           borderBottom: isExpanded
             ? "1px solid rgba(125,211,252,0.12)"
             : "none",
-          background: `linear-gradient(135deg, ${software.gradientFrom}12 0%, ${software.gradientTo}08 100%)`,
+          background: `linear-gradient(135deg, ${gradientFrom}12 0%, ${gradientTo}08 100%)`,
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
@@ -249,16 +205,16 @@ function SoftwareCard({ software }: { software: (typeof SOFTWARE_TOOLS)[0] }) {
               width: "3rem",
               height: "3rem",
               borderRadius: "0.75rem",
-              background: `linear-gradient(135deg, ${software.gradientFrom} 0%, ${software.gradientTo} 100%)`,
+              background: `linear-gradient(135deg, ${gradientFrom} 0%, ${gradientTo} 100%)`,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               fontSize: "1.4rem",
               flexShrink: 0,
-              boxShadow: `0 4px 16px ${software.gradientFrom}44`,
+              boxShadow: `0 4px 16px ${gradientFrom}44`,
             }}
           >
-            {software.icon}
+            {course.icon ?? "🖥️"}
           </div>
 
           <div style={{ flex: 1 }}>
@@ -271,19 +227,19 @@ function SoftwareCard({ software }: { software: (typeof SOFTWARE_TOOLS)[0] }) {
                 letterSpacing: "-0.02em",
               }}
             >
-              {software.name}
+              {course.name}
             </h3>
             <p
               style={{
                 margin: 0,
                 fontSize: "0.7rem",
                 fontWeight: 700,
-                color: software.gradientFrom,
+                color: gradientFrom,
                 textTransform: "uppercase",
                 letterSpacing: "0.06em",
               }}
             >
-              {software.category}
+              {course.category}
             </p>
           </div>
 
@@ -309,9 +265,9 @@ function SoftwareCard({ software }: { software: (typeof SOFTWARE_TOOLS)[0] }) {
               flexShrink: 0,
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = `${software.gradientFrom}28`;
-              e.currentTarget.style.borderColor = `${software.gradientFrom}66`;
-              e.currentTarget.style.color = software.gradientFrom;
+              e.currentTarget.style.background = `${gradientFrom}28`;
+              e.currentTarget.style.borderColor = `${gradientFrom}66`;
+              e.currentTarget.style.color = gradientFrom;
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.background = "rgba(14,111,168,0.15)";
@@ -334,72 +290,75 @@ function SoftwareCard({ software }: { software: (typeof SOFTWARE_TOOLS)[0] }) {
           opacity: isExpanded ? 1 : 0,
         }}
       >
-        <p
-          style={{
-            margin: "0 0 1.25rem",
-            fontSize: "0.83rem",
-            color: "var(--text-secondary)",
-            lineHeight: 1.7,
-          }}
-        >
-          {software.description}
-        </p>
-
-        {/* Features grid */}
-        <div style={{ marginBottom: "1.25rem" }}>
+        {blurb && (
           <p
             style={{
-              fontSize: "0.67rem",
-              fontWeight: 700,
-              letterSpacing: "0.1em",
-              textTransform: "uppercase",
-              color: "var(--text-muted)",
-              margin: "0 0 0.6rem",
+              margin: "0 0 1.25rem",
+              fontSize: "0.83rem",
+              color: "var(--text-secondary)",
+              lineHeight: 1.7,
             }}
           >
-            Key Features
+            {blurb}
           </p>
-          <ul
-            style={{
-              margin: 0,
-              padding: 0,
-              listStyle: "none",
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: "0.45rem",
-            }}
-          >
-            {software.features.map((feature, j) => (
-              <li
-                key={j}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                  fontSize: "0.75rem",
-                  color: "var(--text-secondary)",
-                }}
-              >
-                <span
+        )}
+
+        {features.length > 0 && (
+          <div style={{ marginBottom: "1.25rem" }}>
+            <p
+              style={{
+                fontSize: "0.67rem",
+                fontWeight: 700,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                color: "var(--text-muted)",
+                margin: "0 0 0.6rem",
+              }}
+            >
+              Key Features
+            </p>
+            <ul
+              style={{
+                margin: 0,
+                padding: 0,
+                listStyle: "none",
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "0.45rem",
+              }}
+            >
+              {features.map((feature, j) => (
+                <li
+                  key={j}
                   style={{
-                    width: "1.1rem",
-                    height: "1.1rem",
-                    borderRadius: "50%",
-                    background: `${software.gradientFrom}18`,
-                    border: `1px solid ${software.gradientFrom}38`,
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0,
+                    gap: "0.5rem",
+                    fontSize: "0.75rem",
+                    color: "var(--text-secondary)",
                   }}
                 >
-                  <CheckIcon color={software.gradientFrom} />
-                </span>
-                {feature}
-              </li>
-            ))}
-          </ul>
-        </div>
+                  <span
+                    style={{
+                      width: "1.1rem",
+                      height: "1.1rem",
+                      borderRadius: "50%",
+                      background: `${gradientFrom}18`,
+                      border: `1px solid ${gradientFrom}38`,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <CheckIcon color={gradientFrom} />
+                  </span>
+                  {feature}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* Meta row */}
         <div
@@ -420,7 +379,7 @@ function SoftwareCard({ software }: { software: (typeof SOFTWARE_TOOLS)[0] }) {
             }}
           >
             <LevelIcon />
-            <span style={{ fontWeight: 600 }}>{software.level}</span>
+            <span style={{ fontWeight: 600 }}>{level}</span>
           </div>
           <div
             style={{
@@ -432,12 +391,71 @@ function SoftwareCard({ software }: { software: (typeof SOFTWARE_TOOLS)[0] }) {
             }}
           >
             <ClockIcon />
-            <span style={{ fontWeight: 600 }}>{software.duration}</span>
+            <span style={{ fontWeight: 600 }}>{duration}</span>
           </div>
-          <div style={{ marginLeft: "auto", fontSize: "0.75rem", fontWeight: 700, color: software.gradientFrom }}>
-            {software.trainingFee.toLocaleString()} FRS
+          <div
+            style={{
+              marginLeft: "auto",
+              fontSize: "0.75rem",
+              fontWeight: 700,
+              color: gradientFrom,
+            }}
+          >
+            {course.trainingFee.toLocaleString()} FRS
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Loading skeleton ────────────────────────────────────── */
+function CardSkeleton() {
+  return (
+    <div
+      style={{
+        ...glassStyle("rgba(14,111,168,0.07)"),
+        borderRadius: "1.25rem",
+        padding: "1.5rem",
+        display: "flex",
+        alignItems: "center",
+        gap: "1rem",
+        minHeight: "88px",
+      }}
+    >
+      <div
+        style={{
+          width: "3rem",
+          height: "3rem",
+          borderRadius: "0.75rem",
+          background: "rgba(125,211,252,0.08)",
+          flexShrink: 0,
+        }}
+      />
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.5rem",
+        }}
+      >
+        <div
+          style={{
+            height: "0.9rem",
+            width: "55%",
+            borderRadius: "0.3rem",
+            background: "rgba(125,211,252,0.08)",
+          }}
+        />
+        <div
+          style={{
+            height: "0.65rem",
+            width: "30%",
+            borderRadius: "0.3rem",
+            background: "rgba(125,211,252,0.06)",
+          }}
+        />
       </div>
     </div>
   );
@@ -446,6 +464,27 @@ function SoftwareCard({ software }: { software: (typeof SOFTWARE_TOOLS)[0] }) {
 /* ─── Page ────────────────────────────────────────────────── */
 export default function SoftwarePage() {
   const router = useRouter();
+  const {
+    courses: rawCourses,
+    isLoading,
+    error,
+  } = useCourses({ status: "ACTIVE" });
+  const courses = rawCourses ?? [];
+
+  // Derive unique categories from live data for the hero pills
+  const categories = Array.from(
+    courses
+      .reduce((map, c) => {
+        const existing = map.get(c.category);
+        map.set(c.category, {
+          name: c.category,
+          icon: c.icon ?? "🖥️",
+          count: (existing?.count ?? 0) + 1,
+        });
+        return map;
+      }, new Map<string, { name: string; icon: string; count: number }>())
+      .values(),
+  );
 
   return (
     <>
@@ -455,7 +494,7 @@ export default function SoftwarePage() {
           fontFamily: "var(--font-sans, system-ui, sans-serif)",
         }}
       >
-        {/* ── Background scene — identical to About page ── */}
+        {/* ── Background ── */}
         <div
           aria-hidden="true"
           style={{
@@ -473,12 +512,7 @@ export default function SoftwarePage() {
           style={{
             position: "fixed",
             inset: 0,
-            background: `
-              radial-gradient(ellipse 60% 50% at 20% 30%, rgba(14,111,168,0.20) 0%, transparent 60%),
-              radial-gradient(ellipse 50% 40% at 80% 70%, rgba(99,102,241,0.14) 0%, transparent 55%),
-              radial-gradient(ellipse 40% 35% at 60% 15%, rgba(14,111,168,0.12) 0%, transparent 50%),
-              linear-gradient(145deg, rgba(7,24,40,0.75) 0%, rgba(10,34,54,0.70) 40%, rgba(6,14,24,0.80) 100%)
-            `,
+            background: `radial-gradient(ellipse 60% 50% at 20% 30%, rgba(14,111,168,0.20) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 80% 70%, rgba(99,102,241,0.14) 0%, transparent 55%), radial-gradient(ellipse 40% 35% at 60% 15%, rgba(14,111,168,0.12) 0%, transparent 50%), linear-gradient(145deg, rgba(7,24,40,0.75) 0%, rgba(10,34,54,0.70) 40%, rgba(6,14,24,0.80) 100%)`,
             zIndex: -1,
           }}
         />
@@ -505,7 +539,6 @@ export default function SoftwarePage() {
             >
               Our Software Suite
             </p>
-
             <h1
               style={{
                 fontSize: "clamp(2rem, 5vw, 3.2rem)",
@@ -553,7 +586,9 @@ export default function SoftwarePage() {
                 >
                   Our comprehensive curriculum covers{" "}
                   <strong style={{ color: "var(--text-primary)" }}>
-                    7 professional software tools
+                    {isLoading
+                      ? "…"
+                      : `${courses.length} professional software tool${courses.length !== 1 ? "s" : ""}`}
                   </strong>{" "}
                   used by engineers and architects worldwide. From 2D drafting
                   to advanced structural analysis, you'll gain hands-on
@@ -606,7 +641,7 @@ export default function SoftwarePage() {
                 </div>
               </div>
 
-              {/* Right: category pills */}
+              {/* Right: category pills — live from API */}
               <div
                 style={{
                   display: "grid",
@@ -614,49 +649,61 @@ export default function SoftwarePage() {
                   gap: "0.75rem",
                 }}
               >
-                {CATEGORIES.map((cat, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      ...glassStyle("rgba(14,111,168,0.12)"),
-                      borderRadius: "0.85rem",
-                      padding: "1rem 1.1rem",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.6rem",
-                    }}
-                  >
-                    <span style={{ fontSize: "1.1rem" }}>{cat.icon}</span>
-                    <div>
-                      <span
+                {isLoading
+                  ? Array.from({ length: 6 }).map((_, i) => (
+                      <div
+                        key={i}
                         style={{
-                          fontSize: "0.78rem",
-                          fontWeight: 700,
-                          color: "var(--text-primary)",
-                          lineHeight: 1.3,
-                          display: "block",
+                          ...glassStyle("rgba(14,111,168,0.08)"),
+                          borderRadius: "0.85rem",
+                          padding: "1rem 1.1rem",
+                          height: "3.5rem",
+                        }}
+                      />
+                    ))
+                  : categories.map((cat, i) => (
+                      <div
+                        key={i}
+                        style={{
+                          ...glassStyle("rgba(14,111,168,0.12)"),
+                          borderRadius: "0.85rem",
+                          padding: "1rem 1.1rem",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.6rem",
                         }}
                       >
-                        {cat.name}
-                      </span>
-                      <span
-                        style={{
-                          fontSize: "0.65rem",
-                          color: "var(--text-muted)",
-                          fontWeight: 600,
-                        }}
-                      >
-                        {cat.count} tool{cat.count > 1 ? "s" : ""}
-                      </span>
-                    </div>
-                  </div>
-                ))}
+                        <span style={{ fontSize: "1.1rem" }}>{cat.icon}</span>
+                        <div>
+                          <span
+                            style={{
+                              fontSize: "0.78rem",
+                              fontWeight: 700,
+                              color: "var(--text-primary)",
+                              lineHeight: 1.3,
+                              display: "block",
+                            }}
+                          >
+                            {cat.name}
+                          </span>
+                          <span
+                            style={{
+                              fontSize: "0.65rem",
+                              color: "var(--text-muted)",
+                              fontWeight: 600,
+                            }}
+                          >
+                            {cat.count} tool{cat.count > 1 ? "s" : ""}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
               </div>
             </div>
           </div>
         </section>
 
-        {/* ── LEARNING PATH STRIP — glass tinted, same as mission strip ── */}
+        {/* ── LEARNING PATH STRIP ── */}
         <section
           style={{
             padding: "3rem clamp(1.5rem, 5vw, 3rem)",
@@ -754,6 +801,21 @@ export default function SoftwarePage() {
               </p>
             </div>
 
+            {/* Error state */}
+            {error && (
+              <div
+                style={{
+                  textAlign: "center",
+                  padding: "3rem",
+                  color: "var(--text-secondary)",
+                }}
+              >
+                <p style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>⚠️</p>
+                <p>Couldn't load courses. Please try again later.</p>
+              </div>
+            )}
+
+            {/* Grid */}
             <div
               style={{
                 display: "grid",
@@ -761,9 +823,13 @@ export default function SoftwarePage() {
                 gap: "1.25rem",
               }}
             >
-              {SOFTWARE_TOOLS.map((software, i) => (
-                <SoftwareCard key={i} software={software} />
-              ))}
+              {isLoading
+                ? Array.from({ length: 6 }).map((_, i) => (
+                    <CardSkeleton key={i} />
+                  ))
+                : courses.map((course) => (
+                    <SoftwareCard key={course.id} course={course} />
+                  ))}
             </div>
           </div>
         </section>
@@ -807,7 +873,6 @@ export default function SoftwarePage() {
                 display: "grid",
                 gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
                 gap: "1px",
-                /* Glass outer frame */
                 ...glassStyle("rgba(14,111,168,0.08)"),
                 borderRadius: "1rem",
                 overflow: "hidden",

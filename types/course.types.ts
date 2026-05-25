@@ -4,24 +4,20 @@ export interface Course {
   id: string;
   courseCode: string;
   name: string;
+  category: string; // e.g. "CAD", "BIM", "FEA"
+  icon?: string | null; // emoji e.g. "📐"
   description?: string | null;
-  credits: number;
+  registrationFee: number; // FRS — default 5000
+  trainingFee: number; // FRS — default 70000
+  durationMonths: number; // default 3
   maxStudents: number;
   status: CourseStatus;
-  departmentId: string;
-  academicTermId: string;
+  batch?: number | null;
   instructorName?: string | null;
   schedule?: string | null;
-  room?: string | null;
-  department?: {
-    id: string;
-    name: string;
-    code: string;
-  };
-  academicTerm?: {
-    id: string;
-    name: string;
-  };
+  createdAt?: string;
+  updatedAt?: string;
+
   _count?: {
     enrollments: number;
   };

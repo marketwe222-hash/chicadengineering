@@ -3,140 +3,16 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Header, Footer } from "@/components/academy";
+import { useCourses } from "@/hooks/useCourse";
+import type { Course } from "@/types";
 
-/* ─── Software Courses — matches register page exactly ──── */
-const SOFTWARE_COURSES = [
-  {
-    id: "lumion",
-    name: "Lumion",
-    software: "Lumion",
-    registrationFee: 5000,
-    trainingFee: 30000,
-    duration: "1 Month",
-    category: "Visualization",
-    description:
-      "3D rendering & real-time visualization for architecture. Master photorealistic rendering and immersive virtual walkthroughs.",
-    gradientFrom: "#f59e0b",
-    gradientTo: "#d97706",
-    icon: "🌅",
-    badge: null,
-  },
-  {
-    id: "excel",
-    name: "Ms Excel",
-    software: "Ms Excel",
-    registrationFee: 5000,
-    trainingFee: 30000,
-    duration: "1 Month",
-    category: "Productivity",
-    description:
-      "Advanced spreadsheets, data analysis & project management. From pivot tables to VBA macros used daily in engineering firms.",
-    gradientFrom: "#22c55e",
-    gradientTo: "#16a34a",
-    icon: "📊",
-    badge: null,
-  },
-  {
-    id: "sap2000",
-    name: "SAP2000",
-    software: "SAP2000",
-    registrationFee: 5000,
-    trainingFee: 50000,
-    duration: "2 Months",
-    category: "Structural Analysis",
-    description:
-      "Structural analysis & design for buildings & bridges. Perform linear and nonlinear analysis of complex structures.",
-    gradientFrom: "#fb923c",
-    gradientTo: "#ea580c",
-    icon: "🔩",
-    badge: null,
-  },
-  {
-    id: "abaqus",
-    name: "ABAQUS",
-    software: "ABAQUS",
-    registrationFee: 5000,
-    trainingFee: 50000,
-    duration: "2 Months",
-    category: "FEA",
-    description:
-      "Finite element analysis for complex structural simulations including nonlinear mechanics, dynamic analysis and fatigue prediction.",
-    gradientFrom: "#e879f9",
-    gradientTo: "#a21caf",
-    icon: "⚙️",
-    badge: null,
-  },
-  {
-    id: "revit",
-    name: "Revit",
-    software: "Revit",
-    registrationFee: 5000,
-    trainingFee: 70000,
-    duration: "3 Months",
-    category: "BIM",
-    description:
-      "Building Information Modeling for architects & engineers. Model complete buildings, generate construction documents and coordinate MEP systems.",
-    gradientFrom: "#7dd3fc",
-    gradientTo: "#0ea5e9",
-    icon: "🏗️",
-    badge: "Popular",
-  },
-  {
-    id: "autocad",
-    name: "AutoCAD",
-    software: "AutoCAD",
-    registrationFee: 5000,
-    trainingFee: 70000,
-    duration: "3 Months",
-    category: "CAD",
-    description:
-      "Industry-standard 2D/3D drafting & design software. Master precision drafting, 3D modeling, annotation, and sheet sets.",
-    gradientFrom: "#ef4444",
-    gradientTo: "#b91c1c",
-    icon: "📐",
-    badge: null,
-  },
-  {
-    id: "archicad",
-    name: "ArchiCAD",
-    software: "ArchiCAD",
-    registrationFee: 5000,
-    trainingFee: 70000,
-    duration: "3 Months",
-    category: "BIM",
-    description:
-      "BIM software focused on architectural design & documentation. Architect-first workflow with parametric objects and teamwork collaboration.",
-    gradientFrom: "#a78bfa",
-    gradientTo: "#7c3aed",
-    icon: "🏛️",
-    badge: null,
-  },
-  {
-    id: "Robot structural",
-    name: "Robot Structural Analysis",
-    software: "Robot Structural Analysis",
-    registrationFee: 10000,
-    trainingFee: 100000,
-    duration: "3 Months",
-    category: "Structural Analysis",
-    description:
-      "Advanced structural analysis software for complex building projects. Perform comprehensive analysis of building structures, including steel, concrete, and timber.",
-    gradientFrom: "#fbbf24",
-    gradientTo: "#f59e0b",
-    icon: "🔩",
-    badge: "Advanced",
-  },
-];
-
-/* ─── Glass helper (matches software page) ─────────────────── */
-/* ─── Programme Data ─────────────────────────────────────────── */
+/* ─── Programmes (static — no DB model yet) ──────────────────── */
 const PROGRAMMES = [
   {
     id: "3-month",
     name: "3-Month Intensive",
     duration: "3 Months",
     price: "Contact us",
-    originalPrice: "",
     badge: "Most Popular",
     description:
       "Perfect for students and professionals looking to quickly gain essential CAD skills for immediate career application.",
@@ -185,7 +61,6 @@ const PROGRAMMES = [
     name: "6-Month Comprehensive",
     duration: "6 Months",
     price: "Contact us",
-    originalPrice: "",
     badge: "Complete Mastery",
     description:
       "The ultimate training experience for complete mastery of civil engineering design tools and professional certification.",
@@ -233,6 +108,23 @@ const PROGRAMMES = [
   },
 ];
 
+/* ─── Derive gradient from category (no hardcoded per-course data) ── */
+const CATEGORY_COLORS: Record<string, { from: string; to: string }> = {
+  CAD: { from: "#ef4444", to: "#b91c1c" },
+  BIM: { from: "#7dd3fc", to: "#0ea5e9" },
+  FEA: { from: "#e879f9", to: "#a21caf" },
+  "Structural Analysis": { from: "#fb923c", to: "#ea580c" },
+  Visualization: { from: "#f59e0b", to: "#d97706" },
+  Productivity: { from: "#22c55e", to: "#16a34a" },
+};
+const DEFAULT_COLORS = { from: "#7dd3fc", to: "#0ea5e9" };
+
+function getCategoryColors(category?: string | null) {
+  if (!category) return DEFAULT_COLORS;
+  return CATEGORY_COLORS[category] ?? DEFAULT_COLORS;
+}
+
+/* ─── Glass helper ───────────────────────────────────────────── */
 const glassStyle = (bg = "rgba(14,111,168,0.12)"): React.CSSProperties => ({
   background: bg,
   backdropFilter: "blur(20px) saturate(180%)",
@@ -242,7 +134,7 @@ const glassStyle = (bg = "rgba(14,111,168,0.12)"): React.CSSProperties => ({
     "0 4px 24px rgba(5,20,40,0.55), 0 1px 0 rgba(255,255,255,0.06) inset",
 });
 
-/* ─── Icons ─────────────────────────────────────────────────── */
+/* ─── Icons ──────────────────────────────────────────────────── */
 function CheckIcon({ color = "#7dd3fc" }: { color?: string }) {
   return (
     <svg
@@ -276,18 +168,19 @@ function ClockIcon() {
     </svg>
   );
 }
-/* ─── Software Course Card ───────────────────────────────────── */
+
+/* ─── Software Course Card — all data from Course schema ─────── */
 function SoftwareCourseCard({
   course,
   selected,
   onSelect,
 }: {
-  course: (typeof SOFTWARE_COURSES)[0];
+  course: Course;
   selected: boolean;
   onSelect: () => void;
 }) {
   const [hovered, setHovered] = useState(false);
-  const totalFee = course.registrationFee + course.trainingFee;
+  const colors = getCategoryColors(course.category);
 
   return (
     <div
@@ -301,30 +194,28 @@ function SoftwareCourseCard({
         transition: "all 0.3s ease",
         transform: hovered || selected ? "translateY(-4px)" : "translateY(0)",
         border: selected
-          ? `2px solid ${course.gradientFrom}`
+          ? `2px solid ${colors.from}`
           : "1px solid rgba(125,211,252,0.18)",
         boxShadow: selected
-          ? `0 0 0 3px ${course.gradientFrom}28, 0 16px 56px rgba(5,20,40,0.70)`
+          ? `0 0 0 3px ${colors.from}28, 0 16px 56px rgba(5,20,40,0.70)`
           : hovered
             ? "0 16px 56px rgba(5,20,40,0.70)"
             : "0 4px 24px rgba(5,20,40,0.55)",
         background: "rgba(7,24,40,0.55)",
         backdropFilter: "blur(20px) saturate(180%)",
         WebkitBackdropFilter: "blur(20px) saturate(180%)",
-        position: "relative",
       }}
     >
       {/* Coloured top stripe */}
       <div
         style={{
-          height: "4px",
-          background: `linear-gradient(90deg, ${course.gradientFrom}, ${course.gradientTo})`,
+          height: 4,
+          background: `linear-gradient(90deg, ${colors.from}, ${colors.to})`,
         }}
       />
 
-      {/* Card body */}
       <div style={{ padding: "1.4rem 1.25rem" }}>
-        {/* Icon + badge row */}
+        {/* Icon + selected check */}
         <div
           style={{
             display: "flex",
@@ -338,43 +229,27 @@ function SoftwareCourseCard({
               width: "2.75rem",
               height: "2.75rem",
               borderRadius: "0.75rem",
-              background: `linear-gradient(135deg, ${course.gradientFrom} 0%, ${course.gradientTo} 100%)`,
+              background: `linear-gradient(135deg, ${colors.from} 0%, ${colors.to} 100%)`,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               fontSize: "1.3rem",
-              boxShadow: `0 4px 16px ${course.gradientFrom}55`,
+              boxShadow: `0 4px 16px ${colors.from}55`,
             }}
           >
-            {course.icon}
+            {course.icon ?? "🖥️"}
           </div>
-          {course.badge && (
-            <div
-              style={{
-                padding: "0.25rem 0.7rem",
-                borderRadius: "999px",
-                background: `linear-gradient(135deg, ${course.gradientFrom} 0%, ${course.gradientTo} 100%)`,
-                fontSize: "0.62rem",
-                fontWeight: 800,
-                color: "#fff",
-                letterSpacing: "0.08em",
-                textTransform: "uppercase" as const,
-              }}
-            >
-              {course.badge}
-            </div>
-          )}
           {selected && (
             <div
               style={{
                 width: "2rem",
                 height: "2rem",
                 borderRadius: "50%",
-                background: `linear-gradient(135deg, ${course.gradientFrom} 0%, ${course.gradientTo} 100%)`,
+                background: `linear-gradient(135deg, ${colors.from} 0%, ${colors.to} 100%)`,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                boxShadow: `0 0 16px ${course.gradientFrom}88`,
+                boxShadow: `0 0 16px ${colors.from}88`,
               }}
             >
               <svg
@@ -393,18 +268,21 @@ function SoftwareCourseCard({
           )}
         </div>
 
+        {/* Category */}
         <p
           style={{
             margin: "0 0 0.2rem",
             fontSize: "0.65rem",
             fontWeight: 800,
-            textTransform: "uppercase" as const,
+            textTransform: "uppercase",
             letterSpacing: "0.1em",
-            color: course.gradientFrom,
+            color: colors.from,
           }}
         >
           {course.category}
         </p>
+
+        {/* Name */}
         <h3
           style={{
             margin: "0 0 0.55rem",
@@ -417,6 +295,8 @@ function SoftwareCourseCard({
         >
           {course.name}
         </h3>
+
+        {/* Description */}
         <p
           style={{
             margin: "0 0 1rem",
@@ -425,7 +305,8 @@ function SoftwareCourseCard({
             lineHeight: 1.65,
           }}
         >
-          {course.description}
+          {course.description ??
+            `Hands-on professional training in ${course.name}.`}
         </p>
 
         {/* Meta row */}
@@ -433,6 +314,7 @@ function SoftwareCourseCard({
           style={{
             display: "flex",
             gap: "0.75rem",
+            flexWrap: "wrap",
             paddingTop: "0.85rem",
             borderTop: "1px solid rgba(125,211,252,0.10)",
             marginBottom: "1rem",
@@ -448,7 +330,10 @@ function SoftwareCourseCard({
             }}
           >
             <ClockIcon />
-            <span style={{ fontWeight: 600 }}>{course.duration}</span>
+            <span style={{ fontWeight: 600 }}>
+              {course.durationMonths} Month
+              {course.durationMonths !== 1 ? "s" : ""}
+            </span>
           </div>
           <div
             style={{
@@ -457,8 +342,19 @@ function SoftwareCourseCard({
               fontWeight: 600,
             }}
           >
-            Reg: {course.registrationFee.toLocaleString()} FRS
+            Reg: {course.registrationFee?.toLocaleString() ?? "—"} FRS
           </div>
+          {course._count && (
+            <div
+              style={{
+                fontSize: "0.72rem",
+                color: "var(--text-secondary)",
+                fontWeight: 600,
+              }}
+            >
+              {course._count.enrollments} enrolled
+            </div>
+          )}
         </div>
 
         {/* Price + CTA */}
@@ -474,11 +370,11 @@ function SoftwareCourseCard({
               style={{
                 fontSize: "1.1rem",
                 fontWeight: 900,
-                color: course.gradientFrom,
+                color: colors.from,
                 letterSpacing: "-0.02em",
               }}
             >
-              {course.trainingFee.toLocaleString()} FRS
+              {course.trainingFee?.toLocaleString() ?? "—"} FRS
             </span>
             <span
               style={{
@@ -495,7 +391,7 @@ function SoftwareCourseCard({
               padding: "0.45rem 1rem",
               borderRadius: "0.6rem",
               background: selected
-                ? `linear-gradient(135deg, ${course.gradientFrom} 0%, ${course.gradientTo} 100%)`
+                ? `linear-gradient(135deg, ${colors.from} 0%, ${colors.to} 100%)`
                 : "rgba(14,111,168,0.18)",
               border: selected ? "none" : "1px solid rgba(125,211,252,0.22)",
               color: selected ? "#fff" : "var(--text-primary)",
@@ -515,33 +411,28 @@ function SoftwareCourseCard({
 /* ─── Programme Card ─────────────────────────────────────────── */
 function ProgrammeCard({ programme }: { programme: (typeof PROGRAMMES)[0] }) {
   const [isExpanded, setIsExpanded] = useState(false);
-
   return (
     <div
       style={{
         ...glassStyle("rgba(14,111,168,0.10)"),
         borderRadius: "1.5rem",
         overflow: "hidden",
-        transition: "all 0.3s ease",
       }}
     >
-      {/* Coloured top bar */}
       <div
         style={{
-          height: "4px",
-          background: `linear-gradient(90deg, ${programme.gradientFrom} 0%, ${programme.gradientTo} 100%)`,
+          height: 4,
+          background: `linear-gradient(90deg, ${programme.gradientFrom}, ${programme.gradientTo})`,
         }}
       />
-
       <div style={{ padding: "2rem" }}>
-        {/* Badge */}
         {programme.badge && (
           <div
             style={{
               display: "inline-block",
               padding: "0.3rem 0.9rem",
               borderRadius: "999px",
-              background: `linear-gradient(135deg, ${programme.gradientFrom} 0%, ${programme.gradientTo} 100%)`,
+              background: `linear-gradient(135deg, ${programme.gradientFrom}, ${programme.gradientTo})`,
               fontSize: "0.65rem",
               fontWeight: 800,
               color: "#fff",
@@ -553,8 +444,6 @@ function ProgrammeCard({ programme }: { programme: (typeof PROGRAMMES)[0] }) {
             {programme.badge}
           </div>
         )}
-
-        {/* Title + icon row */}
         <div
           style={{
             display: "flex",
@@ -568,7 +457,7 @@ function ProgrammeCard({ programme }: { programme: (typeof PROGRAMMES)[0] }) {
               width: "3.25rem",
               height: "3.25rem",
               borderRadius: "1rem",
-              background: `linear-gradient(135deg, ${programme.gradientFrom} 0%, ${programme.gradientTo} 100%)`,
+              background: `linear-gradient(135deg, ${programme.gradientFrom}, ${programme.gradientTo})`,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -606,33 +495,17 @@ function ProgrammeCard({ programme }: { programme: (typeof PROGRAMMES)[0] }) {
             </div>
           </div>
         </div>
-
-        {/* Pricing */}
         <div style={{ marginBottom: "1.5rem" }}>
-          <div
-            style={{ display: "flex", alignItems: "baseline", gap: "0.75rem" }}
+          <span
+            style={{
+              fontSize: "2rem",
+              fontWeight: 900,
+              letterSpacing: "-0.04em",
+              color: programme.gradientFrom,
+            }}
           >
-            <span
-              style={{
-                fontSize: "2rem",
-                fontWeight: 900,
-                letterSpacing: "-0.04em",
-                color: programme.gradientFrom,
-              }}
-            >
-              {programme.price}
-            </span>
-            <span
-              style={{
-                fontSize: "0.9rem",
-                color: "var(--text-muted)",
-                textDecoration: "line-through",
-                fontWeight: 600,
-              }}
-            >
-              {programme.originalPrice || ""}
-            </span>
-          </div>
+            {programme.price}
+          </span>
           <p
             style={{
               margin: "0.2rem 0 0",
@@ -644,7 +517,6 @@ function ProgrammeCard({ programme }: { programme: (typeof PROGRAMMES)[0] }) {
             Early bird discount applied
           </p>
         </div>
-
         <p
           style={{
             margin: "0 0 1.5rem",
@@ -655,8 +527,6 @@ function ProgrammeCard({ programme }: { programme: (typeof PROGRAMMES)[0] }) {
         >
           {programme.description}
         </p>
-
-        {/* Highlights grid */}
         <div style={{ marginBottom: "1.5rem" }}>
           <p
             style={{
@@ -668,7 +538,7 @@ function ProgrammeCard({ programme }: { programme: (typeof PROGRAMMES)[0] }) {
               color: "var(--text-muted)",
             }}
           >
-            What's Included
+            What&apos;s Included
           </p>
           <div
             style={{
@@ -677,7 +547,7 @@ function ProgrammeCard({ programme }: { programme: (typeof PROGRAMMES)[0] }) {
               gap: "0.5rem",
             }}
           >
-            {programme.highlights.map((h: string, j: number) => (
+            {programme.highlights.map((h, j) => (
               <div
                 key={j}
                 style={{
@@ -708,8 +578,6 @@ function ProgrammeCard({ programme }: { programme: (typeof PROGRAMMES)[0] }) {
             ))}
           </div>
         </div>
-
-        {/* Expand toggle */}
         <button
           onClick={() => setIsExpanded(!isExpanded)}
           style={{
@@ -742,8 +610,6 @@ function ProgrammeCard({ programme }: { programme: (typeof PROGRAMMES)[0] }) {
           {isExpanded ? "Show Less" : "View Full Curriculum"}
           <span style={{ opacity: 0.65 }}>{isExpanded ? "−" : "+"}</span>
         </button>
-
-        {/* Expanded curriculum */}
         <div
           style={{
             maxHeight: isExpanded ? "700px" : "0",
@@ -759,7 +625,6 @@ function ProgrammeCard({ programme }: { programme: (typeof PROGRAMMES)[0] }) {
                 fontSize: "0.82rem",
                 fontWeight: 800,
                 color: "var(--text-primary)",
-                letterSpacing: "-0.01em",
               }}
             >
               Curriculum Overview
@@ -794,7 +659,7 @@ function ProgrammeCard({ programme }: { programme: (typeof PROGRAMMES)[0] }) {
                         width: "1.75rem",
                         height: "1.75rem",
                         borderRadius: "50%",
-                        background: `linear-gradient(135deg, ${programme.gradientFrom} 0%, ${programme.gradientTo} 100%)`,
+                        background: `linear-gradient(135deg, ${programme.gradientFrom}, ${programme.gradientTo})`,
                         color: "#fff",
                         display: "flex",
                         alignItems: "center",
@@ -842,8 +707,6 @@ function ProgrammeCard({ programme }: { programme: (typeof PROGRAMMES)[0] }) {
                 </div>
               ))}
             </div>
-
-            {/* Features */}
             <div style={{ marginTop: "1.25rem" }}>
               <p
                 style={{
@@ -879,7 +742,6 @@ function ProgrammeCard({ programme }: { programme: (typeof PROGRAMMES)[0] }) {
                 ))}
               </div>
             </div>
-
             <div
               style={{
                 marginTop: "1.5rem",
@@ -904,12 +766,11 @@ function ProgrammeCard({ programme }: { programme: (typeof PROGRAMMES)[0] }) {
                   padding: "1rem",
                   borderRadius: "0.85rem",
                   border: "none",
-                  background: `linear-gradient(135deg, ${programme.gradientFrom} 0%, ${programme.gradientTo} 100%)`,
+                  background: `linear-gradient(135deg, ${programme.gradientFrom}, ${programme.gradientTo})`,
                   color: "#fff",
                   fontSize: "0.9rem",
                   fontWeight: 800,
                   cursor: "pointer",
-                  boxShadow: `0 4px 20px ${programme.gradientFrom}44`,
                   transition: "all 0.2s ease",
                 }}
                 onMouseEnter={(e) => {
@@ -933,9 +794,12 @@ function ProgrammeCard({ programme }: { programme: (typeof PROGRAMMES)[0] }) {
 export default function ProgrammesPage() {
   const router = useRouter();
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
-  const selectedCourse = SOFTWARE_COURSES.find(
-    (c) => c.id === selectedCourseId,
-  );
+  const { courses, isLoading, error } = useCourses({ status: "ACTIVE" });
+
+  const selectedCourse = courses.find((c) => c.id === selectedCourseId) ?? null;
+  const selectedColors = selectedCourse
+    ? getCategoryColors(selectedCourse.category)
+    : null;
 
   return (
     <>
@@ -945,7 +809,7 @@ export default function ProgrammesPage() {
           fontFamily: "var(--font-sans, system-ui, sans-serif)",
         }}
       >
-        {/* ── Background scene (identical to Software page) ── */}
+        {/* Background */}
         <div
           aria-hidden="true"
           style={{
@@ -963,12 +827,8 @@ export default function ProgrammesPage() {
           style={{
             position: "fixed",
             inset: 0,
-            background: `
-              radial-gradient(ellipse 60% 50% at 20% 30%, rgba(14,111,168,0.20) 0%, transparent 60%),
-              radial-gradient(ellipse 50% 40% at 80% 70%, rgba(99,102,241,0.14) 0%, transparent 55%),
-              radial-gradient(ellipse 40% 35% at 60% 15%, rgba(14,111,168,0.12) 0%, transparent 50%),
-              linear-gradient(145deg, rgba(7,24,40,0.75) 0%, rgba(10,34,54,0.70) 40%, rgba(6,14,24,0.80) 100%)
-            `,
+            background:
+              "radial-gradient(ellipse 60% 50% at 20% 30%, rgba(14,111,168,0.20) 0%, transparent 60%), linear-gradient(145deg, rgba(7,24,40,0.75) 0%, rgba(10,34,54,0.70) 40%, rgba(6,14,24,0.80) 100%)",
             zIndex: -1,
           }}
         />
@@ -995,7 +855,6 @@ export default function ProgrammesPage() {
             >
               Training & Programmes
             </p>
-
             <h1
               style={{
                 fontSize: "clamp(2rem, 5vw, 3.2rem)",
@@ -1020,7 +879,6 @@ export default function ProgrammesPage() {
                 Learning Path
               </span>
             </h1>
-
             <div
               className="hero-grid"
               style={{
@@ -1040,8 +898,7 @@ export default function ProgrammesPage() {
                   }}
                 >
                   Whether you want complete mastery or a focused course on one
-                  tool, we have a path for you. All programmes include hands-on
-                  project work and job placement support.
+                  tool, we have a path for you.
                 </p>
                 <p
                   style={{
@@ -1055,7 +912,7 @@ export default function ProgrammesPage() {
                     Important:
                   </strong>{" "}
                   Students may only enroll in one programme or one software
-                  course at a time to ensure focused, practical results.
+                  course at a time.
                 </p>
                 <div
                   style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}
@@ -1090,8 +947,7 @@ export default function ProgrammesPage() {
                   </a>
                 </div>
               </div>
-
-              {/* Right: pricing summary cards */}
+              {/* Pricing summary — derived from schema defaults */}
               <div
                 style={{
                   display: "grid",
@@ -1142,7 +998,7 @@ export default function ProgrammesPage() {
                         width: "2.25rem",
                         height: "2.25rem",
                         borderRadius: "0.6rem",
-                        background: `linear-gradient(135deg, ${item.from} 0%, ${item.to} 100%)`,
+                        background: `linear-gradient(135deg, ${item.from}, ${item.to})`,
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -1180,59 +1036,6 @@ export default function ProgrammesPage() {
           </div>
         </section>
 
-        {/* ── LEARNING PATH STRIP (identical style to software page) ── */}
-        <section
-          style={{
-            padding: "3rem clamp(1.5rem, 5vw, 3rem)",
-            background: "rgba(14,111,168,0.18)",
-            backdropFilter: "blur(20px) saturate(180%)",
-            WebkitBackdropFilter: "blur(20px) saturate(180%)",
-            borderTop: "1px solid rgba(125,211,252,0.15)",
-            borderBottom: "1px solid rgba(125,211,252,0.10)",
-            boxShadow: "0 1px 0 rgba(255,255,255,0.05) inset",
-          }}
-        >
-          <div
-            style={{
-              maxWidth: "960px",
-              margin: "0 auto",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              textAlign: "center",
-              gap: "0.75rem",
-            }}
-          >
-            <p
-              style={{
-                fontSize: "0.72rem",
-                fontWeight: 700,
-                letterSpacing: "0.14em",
-                textTransform: "uppercase",
-                color: "rgba(125,211,252,0.7)",
-                margin: 0,
-              }}
-            >
-              Our Approach
-            </p>
-            <p
-              style={{
-                fontSize: "clamp(1.1rem, 2.5vw, 1.45rem)",
-                fontWeight: 800,
-                color: "var(--text-primary)",
-                margin: 0,
-                lineHeight: 1.45,
-                maxWidth: "680px",
-                letterSpacing: "-0.02em",
-              }}
-            >
-              "We tailor every course to your pace — whether you join an
-              intensive programme or pick a single software, you graduate
-              career-ready."
-            </p>
-          </div>
-        </section>
-
         {/* ── PROGRAMMES ── */}
         <section
           id="programmes"
@@ -1259,25 +1062,11 @@ export default function ProgrammesPage() {
                   margin: "0 0 0.75rem",
                   color: "var(--text-primary)",
                   letterSpacing: "-0.03em",
-                  lineHeight: 1.1,
                 }}
               >
                 Intensive CAD Training Programmes
               </h2>
-              <p
-                style={{
-                  fontSize: "0.9rem",
-                  color: "var(--text-secondary)",
-                  margin: "0 auto",
-                  maxWidth: "540px",
-                  lineHeight: 1.7,
-                }}
-              >
-                Both programmes cover all 8 tools with hands-on projects and
-                career support. Click any card to view the full curriculum.
-              </p>
             </div>
-
             <div
               style={{
                 display: "grid",
@@ -1292,7 +1081,7 @@ export default function ProgrammesPage() {
           </div>
         </section>
 
-        {/* ── INDIVIDUAL SOFTWARE COURSES ── */}
+        {/* ── INDIVIDUAL COURSES — live from DB via useCourses ── */}
         <section
           id="courses"
           style={{
@@ -1321,7 +1110,6 @@ export default function ProgrammesPage() {
                   margin: "0 0 0.75rem",
                   color: "var(--text-primary)",
                   letterSpacing: "-0.03em",
-                  lineHeight: 1.1,
                 }}
               >
                 One Software at a Time
@@ -1335,32 +1123,82 @@ export default function ProgrammesPage() {
                   lineHeight: 1.7,
                 }}
               >
-                Each course is individually priced based on depth and
-                complexity. Select one to see your payment summary below.
+                {!isLoading && !error && courses.length > 0 && (
+                  <span style={{ color: "var(--sky)", fontWeight: 700 }}>
+                    {courses.length} courses available ·{" "}
+                  </span>
+                )}
+                Select one to see your payment summary below.
               </p>
             </div>
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-                gap: "1.25rem",
-                marginBottom: "2.5rem",
-              }}
-            >
-              {SOFTWARE_COURSES.map((course) => (
-                <SoftwareCourseCard
-                  key={course.id}
-                  course={course}
-                  selected={selectedCourseId === course.id}
-                  onSelect={() =>
-                    setSelectedCourseId(
-                      selectedCourseId === course.id ? null : course.id,
-                    )
-                  }
-                />
-              ))}
-            </div>
+            {/* Loading */}
+            {isLoading && (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+                  gap: "1.25rem",
+                  marginBottom: "2.5rem",
+                }}
+              >
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="skeleton"
+                    style={{ height: 320, borderRadius: "1.25rem" }}
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* Error */}
+            {error && !isLoading && (
+              <div
+                style={{
+                  ...glassStyle(),
+                  borderRadius: "1rem",
+                  padding: "2rem",
+                  textAlign: "center",
+                  marginBottom: "2.5rem",
+                }}
+              >
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: "0.85rem",
+                    color: "var(--error-text)",
+                  }}
+                >
+                  ⚠️ Could not load courses: {error}
+                </p>
+              </div>
+            )}
+
+            {/* Course grid */}
+            {!isLoading && !error && (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+                  gap: "1.25rem",
+                  marginBottom: "2.5rem",
+                }}
+              >
+                {courses.map((course) => (
+                  <SoftwareCourseCard
+                    key={course.id}
+                    course={course}
+                    selected={selectedCourseId === course.id}
+                    onSelect={() =>
+                      setSelectedCourseId(
+                        selectedCourseId === course.id ? null : course.id,
+                      )
+                    }
+                  />
+                ))}
+              </div>
+            )}
 
             {/* Payment panel */}
             <div
@@ -1385,12 +1223,11 @@ export default function ProgrammesPage() {
                     fontSize: "1.05rem",
                     fontWeight: 900,
                     color: "var(--text-primary)",
-                    letterSpacing: "-0.02em",
                   }}
                 >
                   Course Selection Summary
                 </h3>
-                {selectedCourse ? (
+                {selectedCourse && selectedColors ? (
                   <div
                     style={{
                       display: "flex",
@@ -1403,7 +1240,7 @@ export default function ProgrammesPage() {
                         width: "3rem",
                         height: "3rem",
                         borderRadius: "0.75rem",
-                        background: `linear-gradient(135deg, ${selectedCourse.gradientFrom} 0%, ${selectedCourse.gradientTo} 100%)`,
+                        background: `linear-gradient(135deg, ${selectedColors.from}, ${selectedColors.to})`,
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -1411,7 +1248,7 @@ export default function ProgrammesPage() {
                         flexShrink: 0,
                       }}
                     >
-                      {selectedCourse.icon}
+                      {selectedCourse.icon ?? "🖥️"}
                     </div>
                     <div>
                       <p
@@ -1431,10 +1268,11 @@ export default function ProgrammesPage() {
                           color: "var(--text-secondary)",
                         }}
                       >
-                        {selectedCourse.trainingFee.toLocaleString()} FRS
+                        {selectedCourse.trainingFee?.toLocaleString()} FRS
                         training ·{" "}
-                        {selectedCourse.registrationFee.toLocaleString()} FRS
-                        reg · {selectedCourse.duration}
+                        {selectedCourse.registrationFee?.toLocaleString()} FRS
+                        reg · {selectedCourse.durationMonths} month
+                        {selectedCourse.durationMonths !== 1 ? "s" : ""}
                       </p>
                     </div>
                   </div>
@@ -1447,8 +1285,7 @@ export default function ProgrammesPage() {
                       lineHeight: 1.7,
                     }}
                   >
-                    Select a course above to see its details here and unlock the
-                    payment button.
+                    Select a course above to see its details here.
                   </p>
                 )}
               </div>
@@ -1476,7 +1313,7 @@ export default function ProgrammesPage() {
                   >
                     Payment Panel
                   </p>
-                  {selectedCourse ? (
+                  {selectedCourse && selectedColors ? (
                     <>
                       <p
                         style={{
@@ -1496,19 +1333,22 @@ export default function ProgrammesPage() {
                           lineHeight: 1.6,
                         }}
                       >
-                        {selectedCourse.software} · {selectedCourse.category} ·{" "}
-                        {selectedCourse.duration}
+                        {selectedCourse.category} ·{" "}
+                        {selectedCourse.durationMonths} month
+                        {selectedCourse.durationMonths !== 1 ? "s" : ""}
+                        {selectedCourse.instructorName &&
+                          ` · ${selectedCourse.instructorName}`}
                       </p>
                       <p
                         style={{
                           margin: 0,
                           fontSize: "1.6rem",
                           fontWeight: 900,
-                          color: selectedCourse.gradientFrom,
+                          color: selectedColors.from,
                           letterSpacing: "-0.03em",
                         }}
                       >
-                        {selectedCourse.trainingFee.toLocaleString()} FRS
+                        {selectedCourse.trainingFee?.toLocaleString()} FRS
                       </p>
                       <p
                         style={{
@@ -1517,7 +1357,7 @@ export default function ProgrammesPage() {
                           color: "var(--text-secondary)",
                         }}
                       >
-                        + {selectedCourse.registrationFee.toLocaleString()} FRS
+                        + {selectedCourse.registrationFee?.toLocaleString()} FRS
                         registration fee
                       </p>
                     </>
@@ -1530,15 +1370,16 @@ export default function ProgrammesPage() {
                         lineHeight: 1.65,
                       }}
                     >
-                      Choose a course above to reveal the payment button and
-                      reserve your seat.
+                      Choose a course above to reveal the payment button.
                     </p>
                   )}
                 </div>
-
                 <button
                   onClick={() => {
-                    if (selectedCourseId) router.push("/academy/login");
+                    if (selectedCourseId)
+                      router.push(
+                        "/academy/register?courseId=" + selectedCourseId,
+                      );
                   }}
                   disabled={!selectedCourseId}
                   style={{
@@ -1547,154 +1388,22 @@ export default function ProgrammesPage() {
                     padding: "1rem",
                     borderRadius: "0.85rem",
                     border: "none",
-                    background: selectedCourse
-                      ? `linear-gradient(135deg, ${selectedCourse.gradientFrom} 0%, ${selectedCourse.gradientTo} 100%)`
+                    background: selectedColors
+                      ? `linear-gradient(135deg, ${selectedColors.from}, ${selectedColors.to})`
                       : "rgba(125,211,252,0.12)",
                     color: selectedCourse ? "#fff" : "var(--text-muted)",
                     fontSize: "0.9rem",
                     fontWeight: 800,
                     cursor: selectedCourse ? "pointer" : "not-allowed",
-                    boxShadow: selectedCourse
-                      ? `0 4px 20px ${selectedCourse.gradientFrom}44`
-                      : "none",
                     transition: "all 0.2s ease",
                     opacity: selectedCourse ? 1 : 0.55,
                   }}
                 >
                   {selectedCourse
-                    ? `Enroll — ${selectedCourse.trainingFee.toLocaleString()} FRS`
+                    ? `Enroll — ${selectedCourse.trainingFee?.toLocaleString()} FRS`
                     : "Select a course first"}
                 </button>
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── WHY CHOOSE US ── */}
-        <section
-          style={{
-            padding: "5rem clamp(1.5rem, 5vw, 3rem)",
-            borderTop: "1px solid rgba(125,211,252,0.10)",
-          }}
-        >
-          <div style={{ maxWidth: "960px", margin: "0 auto" }}>
-            <div style={{ marginBottom: "3rem", textAlign: "center" }}>
-              <p
-                style={{
-                  fontSize: "0.72rem",
-                  fontWeight: 700,
-                  letterSpacing: "0.14em",
-                  color: "var(--sky, #7dd3fc)",
-                  textTransform: "uppercase",
-                  margin: "0 0 0.6rem",
-                }}
-              >
-                Why Choose CHICAD
-              </p>
-              <h2
-                style={{
-                  fontSize: "clamp(1.5rem, 3vw, 2.2rem)",
-                  fontWeight: 900,
-                  margin: 0,
-                  color: "var(--text-primary)",
-                  letterSpacing: "-0.03em",
-                }}
-              >
-                Your Success is Our Mission
-              </h2>
-            </div>
-
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-                gap: "1px",
-                ...glassStyle("rgba(14,111,168,0.08)"),
-                borderRadius: "1rem",
-                overflow: "hidden",
-              }}
-            >
-              {[
-                {
-                  icon: "🎓",
-                  title: "Expert Faculty",
-                  desc: "Learn from certified professionals with decades of civil engineering and architecture experience.",
-                },
-                {
-                  icon: "🏗️",
-                  title: "Real-World Projects",
-                  desc: "Work on actual construction case studies from Cameroonian infrastructure developments.",
-                },
-                {
-                  icon: "💼",
-                  title: "Career Support",
-                  desc: "Job placement assistance with connections to leading construction firms across Cameroon.",
-                },
-                {
-                  icon: "🌟",
-                  title: "Industry Recognition",
-                  desc: "Certifications recognised by engineering councils and construction companies nationwide.",
-                },
-                {
-                  icon: "🤝",
-                  title: "Small Class Sizes",
-                  desc: "Maximum 15 students per class ensures personalised attention and practical experience.",
-                },
-                {
-                  icon: "🚀",
-                  title: "Modern Facilities",
-                  desc: "State-of-the-art computer labs with licensed software and high-speed internet.",
-                },
-              ].map((item, i) => (
-                <div
-                  key={i}
-                  style={{
-                    background: "rgba(7,24,40,0.45)",
-                    backdropFilter: "blur(20px) saturate(160%)",
-                    WebkitBackdropFilter: "blur(20px) saturate(160%)",
-                    padding: "1.75rem 1.5rem",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "0.75rem",
-                    borderRight:
-                      i % 3 < 2 ? "1px solid rgba(125,211,252,0.08)" : "none",
-                    borderBottom:
-                      i < 3 ? "1px solid rgba(125,211,252,0.08)" : "none",
-                    transition: "background 0.2s",
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLDivElement).style.background =
-                      "rgba(14,111,168,0.18)";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLDivElement).style.background =
-                      "rgba(7,24,40,0.45)";
-                  }}
-                >
-                  <span style={{ fontSize: "1.4rem" }}>{item.icon}</span>
-                  <p
-                    style={{
-                      margin: 0,
-                      fontSize: "0.95rem",
-                      fontWeight: 800,
-                      color: "var(--text-primary)",
-                      letterSpacing: "-0.01em",
-                    }}
-                  >
-                    {item.title}
-                  </p>
-                  <p
-                    style={{
-                      margin: 0,
-                      fontSize: "0.8rem",
-                      color: "var(--text-secondary)",
-                      lineHeight: 1.6,
-                    }}
-                  >
-                    {item.desc}
-                  </p>
-                </div>
-              ))}
             </div>
           </div>
         </section>
@@ -1706,7 +1415,7 @@ export default function ProgrammesPage() {
         * { box-sizing: border-box; }
         html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
         @media (max-width: 640px) {
-          .hero-grid { grid-template-columns: 1fr !important; }
+          .hero-grid  { grid-template-columns: 1fr !important; }
           .payment-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
