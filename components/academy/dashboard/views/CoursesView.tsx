@@ -2,6 +2,8 @@
 
 import ProgressBar from "@/components/ui/ProgressBar";
 import Tag from "@/components/ui/Tag";
+import CourseResourcesView from "@/components/academy/dashboard/views/CourseResourcesView";
+import { useState } from "react";
 
 interface DashboardCourse {
   id: string;
@@ -21,6 +23,28 @@ interface CoursesViewProps {
 }
 
 export default function CoursesView({ courses }: CoursesViewProps) {
+  // When set, show the resource browser for that course
+  const [resourceCourse, setResourceCourse] = useState<DashboardCourse | null>(
+    null,
+  );
+
+  // ── Resource view ──────────────────────────────────────────────────────
+  if (resourceCourse) {
+    return (
+      <CourseResourcesView
+        course={{
+          id: resourceCourse.id,
+          name: resourceCourse.name,
+          icon: resourceCourse.icon,
+          color: resourceCourse.color,
+          category: resourceCourse.category,
+        }}
+        onBack={() => setResourceCourse(null)}
+      />
+    );
+  }
+
+  // ── Empty state ────────────────────────────────────────────────────────
   if (courses.length === 0) {
     return (
       <div
@@ -37,6 +61,7 @@ export default function CoursesView({ courses }: CoursesViewProps) {
     );
   }
 
+  // ── Course grid ────────────────────────────────────────────────────────
   return (
     <div
       className="animate-fade-in"
@@ -56,13 +81,16 @@ export default function CoursesView({ courses }: CoursesViewProps) {
             style={{
               overflow: "hidden",
               animationDelay: `${i * 60}ms`,
-              transition: "transform var(--transition-base), box-shadow var(--transition-base)",
+              transition:
+                "transform var(--transition-base), box-shadow var(--transition-base)",
             }}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLDivElement).style.transform = "translateY(-2px)";
+              (e.currentTarget as HTMLDivElement).style.transform =
+                "translateY(-2px)";
             }}
             onMouseLeave={(e) => {
-              (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
+              (e.currentTarget as HTMLDivElement).style.transform =
+                "translateY(0)";
             }}
           >
             {/* Course banner */}
@@ -83,6 +111,43 @@ export default function CoursesView({ courses }: CoursesViewProps) {
               >
                 <Tag label={c.category} color={c.color} />
               </div>
+
+              {/* Resources shortcut — top-right of banner */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setResourceCourse(c);
+                }}
+                title="View course resources"
+                style={{
+                  position: "absolute",
+                  top: "0.6rem",
+                  right: "0.7rem",
+                  padding: "0.28rem 0.65rem",
+                  borderRadius: 7,
+                  border: `1px solid color-mix(in srgb, ${c.color} 40%, transparent)`,
+                  background: `color-mix(in srgb, ${c.color} 12%, var(--glass-bg-subtle))`,
+                  color: c.color,
+                  fontSize: "0.62rem",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.28rem",
+                  backdropFilter: "blur(6px)",
+                  transition: "all var(--transition-base)",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background =
+                    `color-mix(in srgb, ${c.color} 22%, var(--glass-bg-subtle))`;
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background =
+                    `color-mix(in srgb, ${c.color} 12%, var(--glass-bg-subtle))`;
+                }}
+              >
+                📁 Resources
+              </button>
             </div>
 
             {/* Course body */}
@@ -135,17 +200,58 @@ export default function CoursesView({ courses }: CoursesViewProps) {
                 </span>
               </div>
 
-              <button
-                className="btn-primary"
-                style={{
-                  width: "100%",
-                  padding: "0.58rem",
-                  fontSize: "0.75rem",
-                  fontWeight: 800,
-                }}
-              >
-                ▶ Continue — {c.currentLessonName}
-              </button>
+              {/* Action row */}
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <button
+                  className="btn-primary"
+                  style={{
+                    flex: 1,
+                    padding: "0.58rem",
+                    fontSize: "0.75rem",
+                    fontWeight: 800,
+                  }}
+                >
+                  ▶ Continue — {c.currentLessonName}
+                </button>
+
+                {/* Secondary resources button in the card body */}
+                <button
+                  onClick={() => setResourceCourse(c)}
+                  title="View resources"
+                  style={{
+                    padding: "0.58rem 0.75rem",
+                    borderRadius: 9,
+                    border: "1px solid var(--glass-border)",
+                    background: "var(--glass-bg-subtle)",
+                    color: "var(--text-secondary)",
+                    fontSize: "0.82rem",
+                    cursor: "pointer",
+                    flexShrink: 0,
+                    transition: "all var(--transition-base)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLButtonElement).style.background =
+                      `color-mix(in srgb, ${c.color} 14%, transparent)`;
+                    (e.currentTarget as HTMLButtonElement).style.borderColor =
+                      `color-mix(in srgb, ${c.color} 40%, transparent)`;
+                    (e.currentTarget as HTMLButtonElement).style.color =
+                      c.color;
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLButtonElement).style.background =
+                      "var(--glass-bg-subtle)";
+                    (e.currentTarget as HTMLButtonElement).style.borderColor =
+                      "var(--glass-border)";
+                    (e.currentTarget as HTMLButtonElement).style.color =
+                      "var(--text-secondary)";
+                  }}
+                >
+                  📁
+                </button>
+              </div>
             </div>
           </div>
         ))}
