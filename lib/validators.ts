@@ -1,8 +1,6 @@
 import { z } from "zod";
 
 // ── Auth ──────────────────────────────────────────────────────
-// ── Auth ──────────────────────────────────────────────────────
-// ── Auth ──────────────────────────────────────────────────────
 export const loginSchema = z.object({
   identifier: z
     .string()
@@ -10,9 +8,9 @@ export const loginSchema = z.object({
     .trim()
     .transform((val) => {
       // Emails are case-insensitive → lowercase
-      // Student IDs must stay uppercase → don't transform
+      // Student IDs (e.g. 26CDA0009) → uppercase
       if (val.includes("@")) return val.toLowerCase();
-      return val.toUpperCase(); // "aca-2026-0001" → "ACA-2026-0001"
+      return val.toUpperCase();
     }),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
@@ -44,6 +42,7 @@ export const publicRegisterSchema = z.object({
   background: z.enum(["STUDENT", "GRADUATE", "PROFESSIONAL"]).optional(),
   school: z.string().min(1, "School or workplace is required"),
   fieldOfStudy: z.string().min(1, "Field of study is required"),
+  courseId: z.string().min(1, "Please select a course"), // ← add
 
   // Motivation (Step 3)
   whyEnrolled: z.string().min(1, "Please share your motivation"),

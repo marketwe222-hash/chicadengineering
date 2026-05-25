@@ -41,7 +41,7 @@ const inputBase: CSSProperties = {
 };
 
 /* ─── Constants ─────────────────────────────────────────────── */
-const STUDENT_ID_PATTERN = /^[A-Z]{2,}-\d{4}-\d{4}$/i;
+const STUDENT_ID_PATTERN = /^\d{2}CDA\d{4}$/i;
 
 /* ─── Background ─────────────────────────────────────────────── */
 function BgScene() {
@@ -334,8 +334,8 @@ export default function LoginPage() {
 
     if (!studentId.trim()) {
       errors.studentId = "Student ID is required";
-    } else if (!STUDENT_ID_PATTERN.test(studentId.trim())) {
-      errors.studentId = "Invalid format (e.g., ACA-2024-0001)";
+    } else if (!STUDENT_ID_PATTERN.test(studentId.trim().toUpperCase())) {
+      errors.studentId = "Invalid format (e.g., 26CDA0009)";
     }
 
     if (!password) {
@@ -347,7 +347,6 @@ export default function LoginPage() {
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   };
-
   const validateSignup = () => {
     const errors: typeof fieldErrors = {};
 
@@ -357,8 +356,8 @@ export default function LoginPage() {
 
     if (!studentId.trim()) {
       errors.studentId = "Student ID is required";
-    } else if (!STUDENT_ID_PATTERN.test(studentId.trim())) {
-      errors.studentId = "Invalid format (e.g., ACA-2024-0001)";
+    } else if (!STUDENT_ID_PATTERN.test(studentId.trim().toUpperCase())) {
+      errors.studentId = "Invalid format (e.g., 26CDA0009)"; // updated hint
     }
 
     if (!email.trim()) {
@@ -691,7 +690,7 @@ export default function LoginPage() {
                       setStudentId(e.target.value);
                       setFieldErrors({ ...fieldErrors, studentId: undefined });
                     }}
-                    placeholder="ACA-2024-0001"
+                    placeholder="e.g., xxCDAxxxx"
                     icon="🪪"
                     error={fieldErrors.studentId}
                   />

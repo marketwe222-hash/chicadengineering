@@ -22,6 +22,7 @@ export async function POST(req: NextRequest) {
       email,
       phone,
       city,
+      courseId, // ← now consumed
       background,
       school,
       fieldOfStudy,
@@ -32,6 +33,23 @@ export async function POST(req: NextRequest) {
       followsSocial,
       joinChallenge,
     } = parsed.data;
+
+    // Verify the course exists and is active
+    const course = await prisma.course.findUnique({
+      where: { id: courseId },
+    });
+    if (!course) {
+      return NextResponse.json(
+        { message: "Selected course not found" },
+        { status: 404 },
+      );
+    }
+    if (course.status !== "ACTIVE") {
+      return NextResponse.json(
+        { message: "This course is no longer accepting registrations" },
+        { status: 400 },
+      );
+    }
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
@@ -45,32 +63,50 @@ export async function POST(req: NextRequest) {
     const defaultPassword = "chicad123";
     const passwordHash = await hashPassword(defaultPassword);
 
-    const user = await prisma.user.create({
-      data: {
-        email,
-        passwordHash,
-        role: "STUDENT",
-        student: {
-          create: {
-            studentId,
-            firstName,
-            lastName,
-            phone,
-            city,
-            background: background ?? null,
-            school,
-            fieldOfStudy,
-            whyEnrolled,
-            skillLevel: skillLevel ?? null,
-            howHeard,
-            referrer,
-            followsSocial,
-            joinChallenge,
-            batch: 11,
+    // Create user + student + enrollment in one transaction
+    const user = await prisma.$transaction(async (tx) => {
+      const newUser = await tx.user.create({
+        data: {
+          email,
+          passwordHash,
+          role: "STUDENT",
+          student: {
+            create: {
+              studentId,
+              firstName,
+              lastName,
+              phone,
+              city,
+              background: background ?? null,
+              school,
+              fieldOfStudy,
+              whyEnrolled,
+              skillLevel: skillLevel ?? null,
+              howHeard,
+              referrer,
+              followsSocial,
+              joinChallenge,
+              batch: 11,
+              // Create the enrollment record here
+              enrollments: {
+                create: {
+                  courseId,
+                  status: "ACTIVE",
+                },
+              },
+            },
           },
         },
-      },
-      include: { student: true },
+        include: {
+          student: {
+            include: {
+              enrollments: { include: { course: true } },
+            },
+          },
+        },
+      });
+
+      return newUser;
     });
 
     return NextResponse.json(
@@ -79,6 +115,11 @@ export async function POST(req: NextRequest) {
         userId: user.id,
         studentId,
         defaultPassword,
+        course: {
+          id: course.id,
+          name: course.name,
+          registrationFee: course.registrationFee,
+        },
       },
       { status: 201 },
     );
