@@ -45,7 +45,7 @@ function LogoButton() {
     logoSrc =
       theme === "light"
         ? "/images/logosmalllight.png"
-        : "/images/logosmallblue.png";
+        : "https://pub-608e7a106efa47bda7aae56ff6f486a3.r2.dev/FinalLogo.png";
 
     if (breakpoints.xs) logoWidth = 70;
     else if (breakpoints.sm) logoWidth = 85;

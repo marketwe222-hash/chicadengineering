@@ -53,7 +53,7 @@ function LogoButton() {
     logoSrc =
       theme === "light"
         ? "/images/logosmalllight.png"
-        : "/images/logosmallblue.png";
+        : "https://pub-608e7a106efa47bda7aae56ff6f486a3.r2.dev/FinalLogo.png";
   }
 
   // Sizes per breakpoint
