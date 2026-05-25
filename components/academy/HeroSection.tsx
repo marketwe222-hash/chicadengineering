@@ -37,6 +37,7 @@ const SLIDES = [
     accentVar: "var(--sky-light)",
   },
 ];
+
 /* ─── Breakpoint hook ─────────────────────────────────────── */
 function useBreakpoint() {
   const [width, setWidth] = useState(1400);
@@ -206,43 +207,49 @@ export function HeroSection({ onSignIn }: { onSignIn: () => void }) {
           paddingLeft: contentPaddingX,
           paddingRight: contentPaddingX,
           paddingBottom: isMobile ? "5.5rem" : "2rem",
-          maxWidth: isMobile ? "100%" : "70%",
+          maxWidth: isMobile ? "100%" : "min(80%, 900px)",
           boxSizing: "border-box",
+          overflow: "visible",
+          width: "100%",
         }}
       >
         {/* Headline */}
         <h1
           key={`h-${current}`}
+          className="hero-headline"
           style={{
             fontSize: isSmall
-              ? "clamp(2rem, 9vw, 2.8rem)"
+              ? "clamp(1.8rem, 8vw, 2.5rem)"
               : isMobile
-                ? "clamp(2.4rem, 8vw, 3.5rem)"
-                : "clamp(2.2rem, 3.8vw, 4rem)",
+                ? "clamp(2rem, 7vw, 3rem)"
+                : "clamp(2rem, 3.2vw, 3.5rem)",
             fontWeight: 900,
-            lineHeight: 1.0,
-            letterSpacing: "-0.04em",
+            lineHeight: 1.1,
+            letterSpacing: "-0.03em",
             color: "#fff",
             margin: `0 0 ${isSmall ? "1rem" : "1.6rem"}`,
             animation: "fadeSlideUp 0.6s 0.3s both",
+            overflow: "visible",
+            whiteSpace: "normal",
+            wordBreak: "break-word",
+            maxWidth: "100%",
           }}
         >
           {slide.headline.map((line, i) => (
-            <span key={i} style={{ display: "block" }}>
-              {i === 0 ? (
-                <span
-                  style={{
-                    background: `linear-gradient(135deg, #fff 0%, ${slide.accentVar} 100%)`,
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    backgroundClip: "text",
-                  }}
-                >
-                  {line}
-                </span>
-              ) : (
-                line
-              )}
+            <span
+              key={i}
+              style={{
+                display: "block",
+                color: "#ffffff",
+                // Force-override any global .text-gradient-* or .animate-gold-shimmer
+                // classes that set -webkit-text-fill-color: transparent
+                WebkitTextFillColor: "white",
+                background: "none",
+                WebkitBackgroundClip: "border-box",
+                backgroundClip: "border-box",
+              }}
+            >
+              {line}
             </span>
           ))}
         </h1>
@@ -278,7 +285,8 @@ export function HeroSection({ onSignIn }: { onSignIn: () => void }) {
               animation: "fadeSlideUp 0.6s 0.45s both",
             }}
           >
-            {slide.sub.slice(0, 90)}…
+            {/* FIX 5: bumped from 90 → 100 chars to avoid mid-word cuts */}
+            {slide.sub.slice(0, 100)}…
           </p>
         )}
 
@@ -431,6 +439,15 @@ export function HeroSection({ onSignIn }: { onSignIn: () => void }) {
         @keyframes fadeSlideUp    { from { opacity:0; transform:translateY(1.5rem) } to { opacity:1; transform:none } }
         @keyframes progressBar    { from { width:0% } to { width:100% } }
         @keyframes pulse          { 0%,100% { opacity:1 } 50% { opacity:0.4 } }
+
+        /* Neutralise any global gradient-text utility applied to hero h1 spans */
+        .hero-headline span {
+          -webkit-text-fill-color: white !important;
+          background: none !important;
+          -webkit-background-clip: unset !important;
+          background-clip: unset !important;
+          color: white !important;
+        }
       `}</style>
     </section>
   );
