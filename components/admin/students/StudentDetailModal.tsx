@@ -277,6 +277,62 @@ export function StudentDetailModal({ student: s, onClose, onRefresh }: Props) {
           >
             🏅 Issue Certificate
           </button>
+          <button
+            onClick={async () => {
+              const confirmed = window.confirm(
+                `Withdraw ${s.firstName} ${s.lastName}? The student record will be kept but marked as withdrawn.`,
+              );
+              if (!confirmed) return;
+
+              await fetch(`/api/students/${s.id}`, {
+                method: "PUT",
+                credentials: "include",
+              });
+
+              onRefresh();
+              onClose();
+            }}
+            style={{
+              padding: "0.5rem 1rem",
+              borderRadius: 8,
+              border: "1px solid rgba(245,158,11,0.3)",
+              background: "rgba(245,158,11,0.1)",
+              color: "#fbbf24",
+              fontSize: "0.72rem",
+              fontWeight: 700,
+              cursor: "pointer",
+            }}
+          >
+            ↩️ Withdraw Student
+          </button>
+          <button
+            onClick={async () => {
+              const confirmed = window.confirm(
+                `⚠️ PERMANENTLY DELETE ${s.firstName} ${s.lastName}? This action cannot be undone. All student data will be removed from the database.`,
+              );
+              if (!confirmed) return;
+
+              await fetch(`/api/students/${s.id}`, {
+                method: "DELETE",
+                credentials: "include",
+              });
+
+              onRefresh();
+              onClose();
+            }}
+            style={{
+              padding: "0.5rem 1rem",
+              borderRadius: 8,
+              border: "1px solid rgba(239,68,68,0.5)",
+              background: "rgba(239,68,68,0.15)",
+              color: "#ff6b6b",
+              fontSize: "0.72rem",
+              fontWeight: 700,
+              cursor: "pointer",
+            }}
+          >
+            🗑️ Delete Permanently
+          </button>
         </div>
       </div>
     </div>

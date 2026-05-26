@@ -133,7 +133,36 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 }
 
 // ── DELETE /api/students/:studentId ───────────────────────────
+// This actually deletes the student from the database
 export async function DELETE(_req: NextRequest, { params }: Params) {
+  try {
+    await requireAdmin();
+    const { studentId } = await params;
+
+    const student = await prisma.student.delete({
+      where: { id: studentId },
+    });
+
+    return NextResponse.json({
+      message: "Student deleted successfully",
+      data: student,
+    });
+  } catch (err: unknown) {
+    if (err instanceof Error && err.message === "UNAUTHORIZED") {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+    if (err instanceof Error && err.message === "FORBIDDEN") {
+      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+    }
+
+    console.error("[DELETE_STUDENT]", err);
+    return NextResponse.json({ message: "Server error" }, { status: 500 });
+  }
+}
+
+// ── PUT /api/students/:studentId/withdraw ──────────────────────
+// This marks the student as withdrawn without deleting
+export async function PUT(_req: NextRequest, { params }: Params) {
   try {
     await requireAdmin();
     const { studentId } = await params;
@@ -155,7 +184,7 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
       return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
 
-    console.error("[DELETE_STUDENT]", err);
+    console.error("[WITHDRAW_STUDENT]", err);
     return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
 }

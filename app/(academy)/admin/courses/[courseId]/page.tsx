@@ -180,6 +180,7 @@ export function CourseDetailView({
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
   const [savingMedia, setSavingMedia] = useState(false);
   const [mediaError, setMediaError] = useState("");
+  const [deletingMediaId, setDeletingMediaId] = useState<string | null>(null);
 
   const load = () => {
     setLoading(true);
@@ -296,6 +297,35 @@ export function CourseDetailView({
       setMediaError(err.message);
     } finally {
       setSavingMedia(false);
+    }
+  };
+
+  const handleDeleteMedia = async (mediaId: string) => {
+    if (!window.confirm("Delete this media item?")) return;
+    setDeletingMediaId(mediaId);
+    setMediaError("");
+
+    try {
+      const res = await fetch(
+        `/api/courses/${courseId}/media/${mediaId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        },
+      );
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error ?? "Failed to delete media");
+      }
+      setCourse((prev) =>
+        prev
+          ? { ...prev, media: prev.media.filter((item) => item.id !== mediaId) }
+          : prev,
+      );
+    } catch (err: any) {
+      setMediaError(err.message || "Failed to delete media");
+    } finally {
+      setDeletingMediaId(null);
     }
   };
 
@@ -1522,11 +1552,11 @@ export function CourseDetailView({
               }}
             >
               {course.media.map((m) => (
-                <a
+                <div
                   key={m.id}
-                  href={m.fileUrl}
-                  target="_blank"
-                  rel="noreferrer"
+                  onClick={() =>
+                    window.open(m.fileUrl, "_blank", "noreferrer")
+                  }
                   style={{
                     display: "flex",
                     gap: "0.85rem",
@@ -1535,7 +1565,7 @@ export function CourseDetailView({
                     background: "var(--surface)",
                     border: "1px solid var(--border)",
                     borderRadius: 12,
-                    textDecoration: "none",
+                    cursor: "pointer",
                   }}
                 >
                   <div
@@ -1616,9 +1646,31 @@ export function CourseDetailView({
                       >
                         {m.isPublished ? "Published" : "Draft"}
                       </span>
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleDeleteMedia(m.id);
+                        }}
+                        disabled={deletingMediaId === m.id}
+                        style={{
+                          marginLeft: "auto",
+                          border: "1px solid var(--border)",
+                          borderRadius: 7,
+                          background: "var(--surface2)",
+                          color: "var(--text2)",
+                          padding: "0.3rem 0.65rem",
+                          fontSize: "0.65rem",
+                          fontWeight: 700,
+                          cursor:
+                            deletingMediaId === m.id ? "not-allowed" : "pointer",
+                        }}
+                      >
+                        {deletingMediaId === m.id ? "Deleting…" : "Delete"}
+                      </button>
                     </div>
                   </div>
-                </a>
+                </div>
               ))}
             </div>
           )}

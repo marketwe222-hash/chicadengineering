@@ -17,6 +17,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (identifier: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  deleteUser: (userId: string) => Promise<void>; // ← add to interface
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -76,6 +77,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     router.refresh(); // ← add this
   }, [router]);
 
+  const deleteUser = useCallback(
+    async (userId: string) => {
+      const res = await fetch(`/api/auth/users/${userId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Failed to delete user");
+      }
+
+      // If the deleted user is the currently logged-in user, log them out
+      if (user?.id === userId) {
+        setUser(null);
+        router.push("/academy");
+        router.refresh();
+      }
+    },
+    [user, router],
+  );
+
   return (
     <AuthContext.Provider
       value={{
@@ -84,6 +106,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticated: !!user,
         login,
         logout,
+        deleteUser,
       }}
     >
       {children}
