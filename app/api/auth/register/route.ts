@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/auth";
 import { publicRegisterSchema } from "@/lib/validators";
 import { generateStudentId } from "@/lib/generateStudentId";
+import { sendRegistrationEmails } from "@/lib/emailjs";
 
 export async function POST(req: NextRequest) {
   try {
@@ -108,6 +109,34 @@ export async function POST(req: NextRequest) {
 
       return newUser;
     });
+
+    const adminEmails = (
+      await prisma.admin.findMany({
+        select: {
+          user: {
+            select: {
+              email: true,
+            },
+          },
+        },
+      })
+    )
+      .map((admin) => admin.user.email)
+      .filter((email): email is string => Boolean(email));
+
+    try {
+      await sendRegistrationEmails({
+        name: `${firstName} ${lastName}`,
+        email,
+        phone,
+        studentId,
+        password: defaultPassword,
+        courseName: course.name,
+        adminEmails,
+      });
+    } catch (emailError) {
+      console.error("[REGISTER][EMAIL] Email sending failed:", emailError);
+    }
 
     return NextResponse.json(
       {
