@@ -681,6 +681,16 @@ function CourseSelector({
 
 /* ─── Form Steps ─────────────────────────────────────────────── */
 function Step1({ data, set }: { data: FormData; set: SetFn }) {
+  const ALLOWED_DOMAINS = [
+    "gmail.com",
+    "yahoo.com",
+    "outlook.com",
+    "icloud.com",
+  ];
+  const emailDomain = data.email.split("@")[1]?.toLowerCase();
+  const emailInvalid =
+    data.email.includes("@") && !ALLOWED_DOMAINS.includes(emailDomain);
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
       <Field label="Full Name / Nom Complet *">
@@ -702,9 +712,23 @@ function Step1({ data, set }: { data: FormData; set: SetFn }) {
         <Input
           value={data.email}
           onChange={(e) => set("email", e.target.value)}
-          placeholder="you@example.com"
+          placeholder="you@gmail.com"
           type="email"
         />
+        {emailInvalid && (
+          <p
+            style={{
+              margin: "0.4rem 0 0",
+              fontSize: "0.75rem",
+              color: "#f87171",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.3rem",
+            }}
+          >
+            ⚠️ Please use Gmail, Yahoo, Outlook, or iCloud.
+          </p>
+        )}
       </Field>
       <Field label="City / Ville *">
         <Input
@@ -1146,9 +1170,27 @@ export default function RegisterPage() {
     if (qId) set("courseId", qId);
   }, []);
 
+  const ALLOWED_DOMAINS = [
+    "gmail.com",
+    "yahoo.com",
+    "outlook.com",
+    "icloud.com",
+  ];
+
+  const isValidEmail = (email: string) => {
+    const domain = email.split("@")[1]?.toLowerCase();
+    return ALLOWED_DOMAINS.includes(domain);
+  };
+
   const canNext = () => {
     if (step === 1)
-      return !!(data.fullName && data.phone && data.email && data.city);
+      return !!(
+        data.fullName &&
+        data.phone &&
+        data.email &&
+        data.city &&
+        isValidEmail(data.email)
+      );
     if (step === 2) return !!(data.status && data.school && data.field);
     if (step === 3)
       return !!(data.whyEnrolled && data.howHeard && data.referrer);
@@ -1216,6 +1258,7 @@ export default function RegisterPage() {
     }
   };
 
+  /* ── Success Screen ── */
   /* ── Success Screen ── */
   if (submitted) {
     return (
@@ -1296,7 +1339,7 @@ export default function RegisterPage() {
                   color: "var(--text-secondary, rgba(180,210,240,0.75))",
                   lineHeight: 1.7,
                   fontSize: "0.88rem",
-                  margin: "0 0 1.5rem",
+                  margin: "0 0 0.85rem",
                 }}
               >
                 Welcome to CHICAD Academy! Pay your registration fee of{" "}
@@ -1306,6 +1349,17 @@ export default function RegisterPage() {
                 to MoMo{" "}
                 <strong style={{ color: "#fde68a" }}>673 422 430</strong> and
                 send the screenshot via WhatsApp.
+              </p>
+              <p
+                style={{
+                  color: "rgba(125,211,252,0.85)",
+                  lineHeight: 1.7,
+                  fontSize: "0.88rem",
+                  margin: "0 0 1.5rem",
+                }}
+              >
+                📧 Your login details have been sent to
+                <strong style={{ color: "#7dd3fc" }}>{data.email}</strong>.
               </p>
               <a
                 href="https://chat.whatsapp.com/FESw1ckjav52EL5r4cSMtV"
@@ -1344,7 +1398,6 @@ export default function RegisterPage() {
       </>
     );
   }
-
   /* ── Software Selection Phase ── */
   if (phase === "select") {
     return (
