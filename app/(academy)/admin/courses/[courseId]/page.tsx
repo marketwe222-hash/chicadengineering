@@ -181,6 +181,9 @@ export function CourseDetailView({
   const [savingMedia, setSavingMedia] = useState(false);
   const [mediaError, setMediaError] = useState("");
   const [deletingMediaId, setDeletingMediaId] = useState<string | null>(null);
+  const [publishingMediaId, setPublishingMediaId] = useState<string | null>(
+    null,
+  );
 
   const load = () => {
     setLoading(true);
@@ -306,13 +309,10 @@ export function CourseDetailView({
     setMediaError("");
 
     try {
-      const res = await fetch(
-        `/api/courses/${courseId}/media/${mediaId}`,
-        {
-          method: "DELETE",
-          credentials: "include",
-        },
-      );
+      const res = await fetch(`/api/courses/${courseId}/media/${mediaId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
       if (!res.ok) {
         const data = await res.json();
         throw new Error(data.error ?? "Failed to delete media");
@@ -326,6 +326,46 @@ export function CourseDetailView({
       setMediaError(err.message || "Failed to delete media");
     } finally {
       setDeletingMediaId(null);
+    }
+  };
+
+  const handlePublishMedia = async (mediaId: string) => {
+    if (
+      !window.confirm(
+        "Publish this video now? It will become visible to students.",
+      )
+    )
+      return;
+    setPublishingMediaId(mediaId);
+    setMediaError("");
+
+    try {
+      const res = await fetch(`/api/courses/${courseId}/media/${mediaId}`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isPublished: true }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error ?? "Failed to publish media");
+      }
+
+      setCourse((prev) =>
+        prev
+          ? {
+              ...prev,
+              media: prev.media.map((item) =>
+                item.id === mediaId ? { ...item, isPublished: true } : item,
+              ),
+            }
+          : prev,
+      );
+    } catch (err: any) {
+      setMediaError(err.message || "Failed to publish media");
+    } finally {
+      setPublishingMediaId(null);
     }
   };
 
@@ -1554,9 +1594,7 @@ export function CourseDetailView({
               {course.media.map((m) => (
                 <div
                   key={m.id}
-                  onClick={() =>
-                    window.open(m.fileUrl, "_blank", "noreferrer")
-                  }
+                  onClick={() => window.open(m.fileUrl, "_blank", "noreferrer")}
                   style={{
                     display: "flex",
                     gap: "0.85rem",
@@ -1646,6 +1684,33 @@ export function CourseDetailView({
                       >
                         {m.isPublished ? "Published" : "Draft"}
                       </span>
+                      {m.type === "VIDEO" && !m.isPublished && (
+                        <button
+                          type="button"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            handlePublishMedia(m.id);
+                          }}
+                          disabled={publishingMediaId === m.id}
+                          style={{
+                            border: "1px solid rgba(34,197,94,0.4)",
+                            borderRadius: 7,
+                            background: "rgba(34,197,94,0.12)",
+                            color: "#4ade80",
+                            padding: "0.3rem 0.65rem",
+                            fontSize: "0.65rem",
+                            fontWeight: 700,
+                            cursor:
+                              publishingMediaId === m.id
+                                ? "not-allowed"
+                                : "pointer",
+                          }}
+                        >
+                          {publishingMediaId === m.id
+                            ? "Publishing…"
+                            : "Publish now"}
+                        </button>
+                      )}
                       <button
                         type="button"
                         onClick={(event) => {
@@ -1654,7 +1719,8 @@ export function CourseDetailView({
                         }}
                         disabled={deletingMediaId === m.id}
                         style={{
-                          marginLeft: "auto",
+                          marginLeft:
+                            m.type === "VIDEO" && !m.isPublished ? 4 : "auto",
                           border: "1px solid var(--border)",
                           borderRadius: 7,
                           background: "var(--surface2)",
@@ -1663,7 +1729,9 @@ export function CourseDetailView({
                           fontSize: "0.65rem",
                           fontWeight: 700,
                           cursor:
-                            deletingMediaId === m.id ? "not-allowed" : "pointer",
+                            deletingMediaId === m.id
+                              ? "not-allowed"
+                              : "pointer",
                         }}
                       >
                         {deletingMediaId === m.id ? "Deleting…" : "Delete"}

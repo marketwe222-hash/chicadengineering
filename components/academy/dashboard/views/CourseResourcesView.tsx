@@ -57,6 +57,7 @@ export default function CourseResourcesView({ course, onBack }: Props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [filter, setFilter] = useState<CourseMedia["type"] | "ALL">("ALL");
+  const [selectedVideo, setSelectedVideo] = useState<CourseMedia | null>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -340,39 +341,47 @@ export default function CourseResourcesView({ course, onBack }: Props) {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(2, 1fr)",
+            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
             gap: "0.85rem",
           }}
         >
           {visible.map((m, i) => {
             const meta = TYPE_META[m.type];
-            return (
-              <a
-                key={m.id}
-                href={m.fileUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="glass"
-                style={{
-                  display: "flex",
-                  gap: "0.9rem",
-                  alignItems: "flex-start",
-                  padding: "1rem 1.1rem",
-                  textDecoration: "none",
-                  borderRadius: 14,
-                  transition:
-                    "transform var(--transition-base), box-shadow var(--transition-base)",
-                  animationDelay: `${i * 40}ms`,
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.transform =
-                    "translateY(-2px)";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.transform =
-                    "translateY(0)";
-                }}
-              >
+            const isVideo = m.type === "VIDEO";
+            const commonStyle = {
+              display: "flex",
+              gap: "0.9rem",
+              alignItems: "flex-start",
+              padding: "1rem 1.1rem",
+              borderRadius: 14,
+              transition:
+                "transform var(--transition-base), box-shadow var(--transition-base)",
+              animationDelay: `${i * 40}ms`,
+              width: "100%",
+              textAlign: "left" as const,
+              background: "transparent",
+              border: "none",
+            };
+
+            const sharedProps = {
+              className: "glass",
+              style: {
+                ...commonStyle,
+                textDecoration: "none",
+                cursor: isVideo ? "pointer" : "auto",
+              },
+              onMouseEnter: (e: React.MouseEvent<HTMLElement>) => {
+                (e.currentTarget as HTMLElement).style.transform =
+                  "translateY(-2px)";
+              },
+              onMouseLeave: (e: React.MouseEvent<HTMLElement>) => {
+                (e.currentTarget as HTMLElement).style.transform =
+                  "translateY(0)";
+              },
+            };
+
+            const content = (
+              <>
                 {/* Icon badge */}
                 <div
                   style={{
@@ -405,19 +414,48 @@ export default function CourseResourcesView({ course, onBack }: Props) {
                   >
                     {meta.label}
                   </p>
-                  <p
+                  <div
                     style={{
-                      fontSize: "0.82rem",
-                      fontWeight: 700,
-                      color: "var(--text-primary)",
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
                       marginBottom: "0.2rem",
+                      minWidth: 0,
                     }}
                   >
-                    {m.title}
-                  </p>
+                    <p
+                      style={{
+                        fontSize: "0.82rem",
+                        fontWeight: 700,
+                        color: "var(--text-primary)",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        margin: 0,
+                        minWidth: 0,
+                        flex: 1,
+                      }}
+                    >
+                      {m.title}
+                    </p>
+                    {isVideo && (
+                      <span
+                        style={{
+                          fontSize: "0.6rem",
+                          fontWeight: 700,
+                          color: "var(--surface)",
+                          background: meta.accent,
+                          borderRadius: 999,
+                          padding: "0.2rem 0.5rem",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.08em",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        Play
+                      </span>
+                    )}
+                  </div>
                   {m.description && (
                     <p
                       style={{
@@ -478,11 +516,124 @@ export default function CourseResourcesView({ course, onBack }: Props) {
                     opacity: 0.8,
                   }}
                 >
-                  ↗
+                  {isVideo ? "▶" : "↗"}
                 </div>
+              </>
+            );
+
+            return isVideo ? (
+              <button
+                key={m.id}
+                {...sharedProps}
+                type="button"
+                onClick={() => setSelectedVideo(m)}
+              >
+                {content}
+              </button>
+            ) : (
+              <a
+                key={m.id}
+                {...sharedProps}
+                href={m.fileUrl}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {content}
               </a>
             );
           })}
+        </div>
+      )}
+
+      {selectedVideo && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "var(--overlay-heavy)", // ← was "--var(--overlay-heavy)"
+            backdropFilter: "blur(6px)",
+            WebkitBackdropFilter: "blur(6px)",
+            display: "flex",
+            alignItems: "flex-start",
+            justifyContent: "center",
+            zIndex: 1000,
+            padding: "0.5rem 1.5rem 1.5rem",
+            pointerEvents: "auto",
+          }}
+          onClick={() => setSelectedVideo(null)} // ← click outside to close ✓
+        >
+          <div
+            style={{
+              position: "relative",
+              zIndex: 10000,
+              width: "100%",
+              maxWidth: 960,
+              background: "var(--glass-bg-strong)", // ← was var(--surface)
+              backdropFilter: "var(--glass-blur)",
+              WebkitBackdropFilter: "var(--glass-blur)",
+              border: "1px solid var(--glass-border)",
+              borderRadius: 18,
+              overflow: "hidden",
+              boxShadow: "var(--glass-shadow-lg)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "0.95rem 1rem",
+                background: "var(--overlay-heavy)", // ← was var(--surface2)
+                borderBottom: "1px solid var(--glass-border)", // ← was var(--border)
+              }}
+            >
+              <div>
+                <div
+                  style={{
+                    fontSize: "0.95rem",
+                    fontWeight: 800,
+                    color: "var(--text-primary)",
+                  }}
+                >
+                  {selectedVideo.title}
+                </div>
+                <div
+                  style={{
+                    fontSize: "0.75rem",
+                    color: "var(--text-muted)",
+                    marginTop: 2,
+                  }}
+                >
+                  Video preview
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedVideo(null)}
+                style={{
+                  border: "none",
+                  background: "transparent",
+                  color: "var(--text-muted)", // ← was var(--text3)
+                  fontSize: "1.1rem",
+                  cursor: "pointer",
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            <video
+              src={selectedVideo.fileUrl}
+              controls
+              autoPlay
+              style={{
+                width: "100%",
+                maxHeight: "calc(100vh - 140px)",
+                background: "#000", // ← was "--var(--surface)"
+                display: "block",
+              }}
+            />
+          </div>
         </div>
       )}
     </div>

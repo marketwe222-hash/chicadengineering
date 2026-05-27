@@ -3,6 +3,48 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ courseId: string; mediaId: string }> },
+) {
+  const { courseId, mediaId } = await params;
+
+  try {
+    const body = await request.json();
+
+    const media = await prisma.courseMedia.findUnique({
+      where: { id: mediaId },
+      select: { courseId: true },
+    });
+
+    if (!media || media.courseId !== courseId) {
+      return NextResponse.json(
+        { error: "Media item not found" },
+        { status: 404 },
+      );
+    }
+
+    if (typeof body.isPublished !== "boolean") {
+      return NextResponse.json(
+        { error: "isPublished boolean is required" },
+        { status: 400 },
+      );
+    }
+
+    const updated = await prisma.courseMedia.update({
+      where: { id: mediaId },
+      data: { isPublished: body.isPublished },
+    });
+
+    return NextResponse.json(updated);
+  } catch {
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
+  }
+}
+
 export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ courseId: string; mediaId: string }> },
