@@ -5,9 +5,9 @@ import {
   CompleteMultipartUploadCommand,
   AbortMultipartUploadCommand,
 } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { r2 } from "@/lib/r2";
 
-// Store active multipart uploads in memory (in production, use a database/cache)
 const activeUploads: Record<
   string,
   {
@@ -17,140 +17,115 @@ const activeUploads: Record<
   }
 > = {};
 
-/**
- * Chunked upload API for large files
- * Supports three actions: init, upload, complete
- */
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const action = body.action;
+    const { action } = body;
 
-    // ── INIT: Start multipart upload
+    // ── INIT: start multipart upload, return uploadId + sessionId
     if (action === "init") {
       const { fileName, fileType } = body;
       const key = `uploads/${Date.now()}-${fileName.replace(/\s+/g, "-")}`;
 
-      const initCmd = new CreateMultipartUploadCommand({
+      const cmd = new CreateMultipartUploadCommand({
         Bucket: process.env.R2_BUCKET_NAME!,
         Key: key,
         ContentType: fileType,
       });
+      const { UploadId } = await r2.send(cmd);
 
-      const uploadData = await r2.send(initCmd);
-
-      const sessionId = Math.random().toString(36).substr(2, 9);
-      activeUploads[sessionId] = {
-        uploadId: uploadData.UploadId!,
-        key,
-        parts: [],
-      };
+      const sessionId = crypto.randomUUID();
+      activeUploads[sessionId] = { uploadId: UploadId!, key, parts: [] };
 
       return NextResponse.json({
         sessionId,
-        uploadId: uploadData.UploadId,
+        uploadId: UploadId,
         key,
         publicUrl: `${process.env.NEXT_PUBLIC_R2_PUBLIC_URL}/${key}`,
       });
     }
 
-    // ── UPLOAD: Upload a chunk
-    if (action === "upload") {
-      const { uploadSessionId, chunkNumber, chunkData } = body;
+    // ── PRESIGN: return a presigned PUT URL for one chunk
+    if (action === "presign") {
+      const { uploadSessionId, chunkNumber } = body;
       const session = activeUploads[uploadSessionId];
-
-      if (!session) {
+      if (!session)
         return NextResponse.json(
-          { error: "Upload session not found" },
+          { error: "Session not found" },
           { status: 404 },
         );
-      }
 
-      if (!chunkNumber || !chunkData) {
-        return NextResponse.json(
-          { error: "Chunk number or data not provided" },
-          { status: 400 },
-        );
-      }
-
-      // Decode base64 to buffer
-      const chunkBuffer = Buffer.from(chunkData, "base64");
-
-      const uploadCmd = new UploadPartCommand({
+      const cmd = new UploadPartCommand({
         Bucket: process.env.R2_BUCKET_NAME!,
         Key: session.key,
         UploadId: session.uploadId,
         PartNumber: chunkNumber,
-        Body: chunkBuffer,
       });
 
-      const uploadData = await r2.send(uploadCmd);
+      // URL valid for 1 hour — browser uploads directly to R2
+      const presignedUrl = await getSignedUrl(r2, cmd, { expiresIn: 3600 });
 
-      // Store part info for completion
-      session.parts.push({
-        ETag: uploadData.ETag!,
-        PartNumber: chunkNumber,
-      });
-
-      // Sort by part number
-      session.parts.sort((a, b) => a.PartNumber - b.PartNumber);
-
-      return NextResponse.json({
-        success: true,
-        chunkNumber,
-        etag: uploadData.ETag,
-      });
+      return NextResponse.json({ presignedUrl });
     }
 
-    // ── COMPLETE: Finish multipart upload
+    // ── RECORD_PART: store the ETag returned by R2 after a direct PUT
+    if (action === "record_part") {
+      const { uploadSessionId, chunkNumber, etag } = body;
+      const session = activeUploads[uploadSessionId];
+      if (!session)
+        return NextResponse.json(
+          { error: "Session not found" },
+          { status: 404 },
+        );
+
+      session.parts.push({ ETag: etag, PartNumber: chunkNumber });
+      session.parts.sort((a, b) => a.PartNumber - b.PartNumber);
+
+      return NextResponse.json({ success: true });
+    }
+
+    // ── COMPLETE: finish the multipart upload
     if (action === "complete") {
       const { uploadSessionId } = body;
       const session = activeUploads[uploadSessionId];
-
-      if (!session) {
+      if (!session)
         return NextResponse.json(
-          { error: "Upload session not found" },
+          { error: "Session not found" },
           { status: 404 },
         );
-      }
 
-      const completeCmd = new CompleteMultipartUploadCommand({
+      const cmd = new CompleteMultipartUploadCommand({
         Bucket: process.env.R2_BUCKET_NAME!,
         Key: session.key,
         UploadId: session.uploadId,
-        MultipartUpload: {
-          Parts: session.parts,
-        },
+        MultipartUpload: { Parts: session.parts },
       });
+      await r2.send(cmd);
 
-      await r2.send(completeCmd);
-
-      // Clean up session
+      const { key, uploadId: _uid } = session;
       delete activeUploads[uploadSessionId];
 
       return NextResponse.json({
         success: true,
-        key: session.key,
-        publicUrl: `${process.env.NEXT_PUBLIC_R2_PUBLIC_URL}/${session.key}`,
+        key,
+        publicUrl: `${process.env.NEXT_PUBLIC_R2_PUBLIC_URL}/${key}`,
       });
     }
 
-    // ── ABORT: Cancel multipart upload
+    // ── ABORT
     if (action === "abort") {
       const { uploadSessionId } = body;
       const session = activeUploads[uploadSessionId];
-
       if (session) {
-        const abortCmd = new AbortMultipartUploadCommand({
-          Bucket: process.env.R2_BUCKET_NAME!,
-          Key: session.key,
-          UploadId: session.uploadId,
-        });
-
-        await r2.send(abortCmd);
+        await r2.send(
+          new AbortMultipartUploadCommand({
+            Bucket: process.env.R2_BUCKET_NAME!,
+            Key: session.key,
+            UploadId: session.uploadId,
+          }),
+        );
         delete activeUploads[uploadSessionId];
       }
-
       return NextResponse.json({ success: true });
     }
 

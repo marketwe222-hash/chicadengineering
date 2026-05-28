@@ -85,7 +85,7 @@ async function uploadChunked(
   const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
   let uploadedBytes = 0;
 
-  // Step 1: Initialize multipart upload
+  // 1. Init
   const initRes = await fetch("/api/upload/chunked", {
     method: "POST",
     credentials: "include",
@@ -96,102 +96,100 @@ async function uploadChunked(
       fileType: file.type,
     }),
   });
-
-  if (!initRes.ok) {
-    throw new Error("Failed to initialize chunked upload");
-  }
-
+  if (!initRes.ok) throw new Error("Failed to initialize chunked upload");
   const { sessionId, key, publicUrl } = await initRes.json();
 
   try {
-    // Step 2: Upload each chunk sequentially with retry logic
     for (let chunkNum = 1; chunkNum <= totalChunks; chunkNum++) {
       const start = (chunkNum - 1) * CHUNK_SIZE;
-      const end = Math.min(start + CHUNK_SIZE, file.size);
-      const chunk = file.slice(start, end);
+      const chunk = file.slice(start, Math.min(start + CHUNK_SIZE, file.size));
 
-      // Retry logic for failed chunks
       let retries = 3;
-      let lastError: Error | null = null;
-
       while (retries > 0) {
         try {
-          // Convert chunk to base64 for JSON transmission
-          const arrayBuffer = await chunk.arrayBuffer();
-          const base64 = btoa(
-            String.fromCharCode(...new Uint8Array(arrayBuffer)),
-          );
-
-          const uploadRes = await fetch("/api/upload/chunked", {
+          // 2. Get a presigned URL for this chunk
+          const presignRes = await fetch("/api/upload/chunked", {
             method: "POST",
             credentials: "include",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              action: "upload",
+              action: "presign",
               uploadSessionId: sessionId,
               chunkNumber: chunkNum,
-              chunkData: base64,
+            }),
+          });
+          if (!presignRes.ok) throw new Error("Failed to get presigned URL");
+          const { presignedUrl } = await presignRes.json();
+
+          // 3. PUT the raw bytes directly to R2 — no base64, no server proxy
+          const etag = await new Promise<string>((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open("PUT", presignedUrl);
+            // Do NOT set Content-Type — the presigned URL already encodes it,
+            // and an extra header breaks the signature.
+            xhr.upload.onprogress = (e) => {
+              if (e.lengthComputable && onProgress) {
+                onProgress({
+                  loaded: uploadedBytes + e.loaded,
+                  total: file.size,
+                  percent: Math.round(
+                    ((uploadedBytes + e.loaded) / file.size) * 100,
+                  ),
+                });
+              }
+            };
+            xhr.onload = () => {
+              if (xhr.status === 200) {
+                resolve(xhr.getResponseHeader("ETag") ?? "");
+              } else {
+                reject(new Error(`PUT failed: ${xhr.status}`));
+              }
+            };
+            xhr.onerror = () => reject(new Error("Network error"));
+            xhr.send(chunk);
+          });
+
+          // 4. Tell the server about this part's ETag
+          await fetch("/api/upload/chunked", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "record_part",
+              uploadSessionId: sessionId,
+              chunkNumber: chunkNum,
+              etag,
             }),
           });
 
-          if (!uploadRes.ok) {
-            throw new Error(
-              `Chunk ${chunkNum} upload failed: ${uploadRes.status}`,
-            );
-          }
-
-          await uploadRes.json();
           uploadedBytes += chunk.size;
-
-          // Report progress
-          if (onProgress) {
-            onProgress({
-              loaded: uploadedBytes,
-              total: file.size,
-              percent: Math.round((uploadedBytes / file.size) * 100),
-            });
-          }
-
-          break; // Success, move to next chunk
+          onProgress?.({
+            loaded: uploadedBytes,
+            total: file.size,
+            percent: Math.round((uploadedBytes / file.size) * 100),
+          });
+          break;
         } catch (err) {
-          lastError = err as Error;
           retries--;
-
-          if (retries > 0) {
-            // Wait before retrying (exponential backoff)
-            await new Promise((resolve) =>
-              setTimeout(resolve, 1000 * (4 - retries)),
+          if (retries === 0) {
+            await abortChunkedUpload(sessionId);
+            throw new Error(
+              `Chunk ${chunkNum} failed after 3 retries: ${(err as Error).message}`,
             );
           }
+          await new Promise((r) => setTimeout(r, 1000 * (4 - retries)));
         }
-      }
-
-      if (retries === 0 && lastError) {
-        // Failed after all retries
-        await abortChunkedUpload(sessionId);
-        throw new Error(
-          `Failed to upload chunk ${chunkNum} after 3 retries: ${lastError.message}`,
-        );
       }
     }
 
-    // Step 3: Complete multipart upload
+    // 5. Complete
     const completeRes = await fetch("/api/upload/chunked", {
       method: "POST",
       credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Session-Id": sessionId,
-      },
-      body: JSON.stringify({
-        action: "complete",
-        uploadSessionId: sessionId,
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "complete", uploadSessionId: sessionId }),
     });
-
-    if (!completeRes.ok) {
-      throw new Error("Failed to complete upload");
-    }
+    if (!completeRes.ok) throw new Error("Failed to complete upload");
 
     return {
       id: key,
@@ -201,7 +199,6 @@ async function uploadChunked(
       fileType: file.type,
     };
   } catch (err) {
-    // Abort upload on failure
     await abortChunkedUpload(sessionId).catch(() => {});
     throw err;
   }
