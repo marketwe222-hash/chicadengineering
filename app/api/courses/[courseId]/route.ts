@@ -52,6 +52,8 @@ export async function PATCH(
         schedule: body.schedule ?? undefined,
         batch: body.batch ?? undefined,
         status: body.status ?? undefined,
+        logoImage: body.logoImage ?? undefined,
+        images: body.images ?? undefined,
       },
     });
 

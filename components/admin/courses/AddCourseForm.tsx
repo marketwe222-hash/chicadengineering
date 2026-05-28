@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { uploadToR2 } from "@/lib/uploadUtils";
 import {
   SectionLabel,
   FormField,
@@ -35,9 +36,14 @@ export function AddCourseForm({ setView, onRefresh, editCourse }: Props) {
     schedule: editCourse?.schedule ?? "",
     batch: editCourse?.batch != null ? String(editCourse.batch) : "",
     status: editCourse?.status ?? "ACTIVE",
+    logoImage: editCourse?.logoImage ?? "",
+    images: editCourse?.images ?? "",
   });
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const [uploadProgress, setUploadProgress] = useState("");
+  const logoInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (!editCourse) return;
@@ -56,10 +62,55 @@ export function AddCourseForm({ setView, onRefresh, editCourse }: Props) {
       schedule: editCourse.schedule ?? "",
       batch: editCourse.batch != null ? String(editCourse.batch) : "",
       status: editCourse.status ?? "ACTIVE",
+      logoImage: editCourse.logoImage ?? "",
+      images: editCourse.images ?? "",
     });
   }, [editCourse]);
 
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setUploadProgress("Uploading logo...");
+    try {
+      const uploaded = await uploadToR2(file);
+      setForm((f) => ({ ...f, logoImage: uploaded.url }));
+      setUploadProgress("");
+    } catch (err: any) {
+      setError(`Logo upload failed: ${err.message}`);
+      setUploadProgress("");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleImagesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setUploading(true);
+    setUploadProgress(`Uploading 0/${files.length} images...`);
+    try {
+      const uploadedUrls: string[] = [];
+      for (let i = 0; i < files.length; i++) {
+        setUploadProgress(`Uploading ${i + 1}/${files.length} images...`);
+        const uploaded = await uploadToR2(files[i]);
+        uploadedUrls.push(uploaded.url);
+      }
+      const currentImages = form.images
+        ? form.images.split(",").filter((u: string) => u.trim())
+        : [];
+      const allImages = [...currentImages, ...uploadedUrls];
+      setForm((f) => ({ ...f, images: allImages.join(",") }));
+      setUploadProgress("");
+    } catch (err: any) {
+      setError(`Images upload failed: ${err.message}`);
+      setUploadProgress("");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const previewColor = categoryColor(form.category);
 
@@ -91,6 +142,8 @@ export function AddCourseForm({ setView, onRefresh, editCourse }: Props) {
           schedule: form.schedule.trim() || null,
           batch: form.batch ? Number(form.batch) : null,
           status: form.status,
+          logoImage: form.logoImage.trim() || null,
+          images: form.images.trim() || null,
         }),
       });
       if (!res.ok) {
@@ -256,6 +309,198 @@ export function AddCourseForm({ setView, onRefresh, editCourse }: Props) {
                   onChange={(e) => set("description", e.target.value)}
                 />
               </FormField>
+            </div>
+          </SectionBlock>
+
+          {/* Images */}
+          <SectionBlock color="#a855f7" label="Course Images">
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.85rem",
+              }}
+            >
+              <FormField label="Logo Image (Optional)">
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "0.6rem",
+                    alignItems: "flex-start",
+                  }}
+                >
+                  <input
+                    ref={logoInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoUpload}
+                    disabled={uploading}
+                    style={{
+                      ...inputStyle,
+                      flex: 1,
+                      cursor: uploading ? "not-allowed" : "pointer",
+                    }}
+                  />
+                  {form.logoImage && (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: "0.45rem",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 50,
+                          height: 50,
+                          borderRadius: 8,
+                          background: "var(--surface2)",
+                          border: "1px solid var(--border)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          overflow: "hidden",
+                        }}
+                      >
+                        <img
+                          src={form.logoImage}
+                          alt="Logo"
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                          }}
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => logoInputRef.current?.click()}
+                        disabled={uploading}
+                        style={{
+                          padding: "0.25rem 0.7rem",
+                          borderRadius: 7,
+                          border: "1px solid var(--border)",
+                          background: "var(--surface2)",
+                          color: "var(--text2)",
+                          fontSize: "0.72rem",
+                          cursor: uploading ? "not-allowed" : "pointer",
+                        }}
+                      >
+                        Replace
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </FormField>
+
+              <FormField label="Course Images (Optional)">
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleImagesUpload}
+                  disabled={uploading}
+                  style={{
+                    ...inputStyle,
+                    cursor: uploading ? "not-allowed" : "pointer",
+                  }}
+                />
+              </FormField>
+
+              {uploadProgress && (
+                <div style={{ fontSize: "0.75rem", color: "var(--text2)" }}>
+                  ⏳ {uploadProgress}
+                </div>
+              )}
+
+              {form.images && (
+                <div>
+                  <div
+                    style={{
+                      fontSize: "0.75rem",
+                      fontWeight: 600,
+                      color: "var(--text2)",
+                      marginBottom: "0.5rem",
+                    }}
+                  >
+                    Uploaded Images (
+                    {
+                      form.images.split(",").filter((u: string) => u.trim())
+                        .length
+                    }
+                    )
+                  </div>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns:
+                        "repeat(auto-fill, minmax(60px, 1fr))",
+                      gap: "0.5rem",
+                    }}
+                  >
+                    {form.images
+                      .split(",")
+                      .filter((u: string) => u.trim())
+                      .map((url: string, idx: number) => (
+                        <div
+                          key={idx}
+                          style={{
+                            width: "100%",
+                            aspectRatio: "1",
+                            borderRadius: 8,
+                            background: "var(--surface2)",
+                            border: "1px solid var(--border)",
+                            overflow: "hidden",
+                            position: "relative",
+                          }}
+                        >
+                          <img
+                            src={url}
+                            alt={`Course ${idx}`}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                            }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const urls = form.images
+                                .split(",")
+                                .filter((u: string) => u.trim())
+                                .filter((_: string, i: number) => i !== idx);
+                              setForm((f) => ({
+                                ...f,
+                                images: urls.join(","),
+                              }));
+                            }}
+                            style={{
+                              position: "absolute",
+                              top: "4px",
+                              right: "4px",
+                              padding: "0.18rem 0.35rem",
+                              background: "rgba(239,68,68,0.95)",
+                              color: "white",
+                              border: "none",
+                              borderRadius: 999,
+                              fontSize: "10px",
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              gap: "0.2rem",
+                            }}
+                          >
+                            × Delete
+                          </button>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
             </div>
           </SectionBlock>
 

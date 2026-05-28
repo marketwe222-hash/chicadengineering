@@ -56,6 +56,8 @@ export interface AdminCourse {
   batch: number | null;
   instructorName: string | null;
   schedule: string | null;
+  logoImage: string | null;
+  images: string | null;
   _count: { enrollments: number; lessons: number };
 }
 

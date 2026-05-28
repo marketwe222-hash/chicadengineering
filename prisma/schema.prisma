@@ -261,6 +261,8 @@ model Course {
   category        String                // e.g. "CAD", "BIM", "FEA"
   icon            String?               // emoji e.g. "📐"
   description     String?
+  logoImage       String?               // optional course logo image URL
+  images          String?               // optional course images (JSON array or comma-separated URLs)
   registrationFee Int          @default(5000)   // FRS
   trainingFee     Int          @default(70000)  // FRS
   durationMonths  Int          @default(3)

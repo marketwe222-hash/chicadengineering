@@ -40,6 +40,8 @@ export async function POST(req: Request) {
         maxStudents: Number(body.maxStudents ?? 30),
         batch: body.batch ? Number(body.batch) : null,
         instructorName: body.instructorName ?? null,
+        logoImage: body.logoImage ?? null,
+        images: body.images ?? null,
         status: "ACTIVE",
       },
     });
