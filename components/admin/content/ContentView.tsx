@@ -20,10 +20,10 @@ type GalleryImage = {
 
 const CATEGORY_OPTIONS = [
   "Academy",
-  "Events",
-  "Campus",
-  "Projects",
-  "Announcements",
+  "Student Projects",
+  "Workshops & Training",
+  "Graduations & Ceremonies",
+  "Site Visits & Field Trips",
 ];
 
 export function ContentView() {
