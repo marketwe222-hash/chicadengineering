@@ -175,6 +175,7 @@ export default function Header({ onSignIn }: HeaderProps) {
     { href: "/academy/about", label: "About" },
     { href: "/academy/software", label: "Software" },
     { href: "/academy/programmes", label: "Programmes" },
+    { href: "/academy/gallery", label: "Gallery" },
   ];
 
   const roleLabel =

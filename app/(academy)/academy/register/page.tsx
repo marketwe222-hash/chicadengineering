@@ -1259,7 +1259,6 @@ export default function RegisterPage() {
   };
 
   /* ── Success Screen ── */
-  /* ── Success Screen ── */
   if (submitted) {
     return (
       <>

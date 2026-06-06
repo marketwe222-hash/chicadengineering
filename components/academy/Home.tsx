@@ -136,24 +136,24 @@ const TESTIMONIALS = [
 
 const INSTRUCTORS = [
   {
-    initials: "JA",
-    name: "Jean-Paul Abanda",
+    initials: "CIC",
+    name: "Chi Ivo Chi",
     title: "Lead CAD Instructor",
-    bio: "12 years structural engineering practice. Autodesk Certified Professional in Revit and AutoCAD.",
+    bio: "12 years structural engineering practice. Autodesk Certified Professional in Revit and AutoCAD, Robot, ABAQUS",
     color: "#0ea5e9",
   },
   {
-    initials: "MN",
-    name: "Marie-Claire Nguema",
-    title: "Architectural BIM Specialist",
-    bio: "Former principal architect at Studio Bâtir. Expert in ArchiCAD, BIM coordination and Lumion visualisation.",
+    initials: "MKF",
+    name: "Makoubo Krystie Fongang",
+    title: "Architectural Specialist",
+    bio: "Former principal architect at Studio Bâtir. Expert in Revit Architecture, Lumion visualisation.",
     color: "#ec4899",
   },
   {
-    initials: "BF",
-    name: "Blaise Fouda",
+    initials: "WSM",
+    name: "Watat Samuel Micheal",
     title: "Structural Analysis Expert",
-    bio: "PhD Civil Engineering, University of Yaoundé I. Specialist in SAP2000, ETABS and seismic design.",
+    bio: "Masters in Civil Engineering, Specialist in Revit, Autocad, Robot",
     color: "#10b981",
   },
 ];

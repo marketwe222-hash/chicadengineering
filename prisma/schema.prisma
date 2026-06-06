@@ -244,6 +244,7 @@ model Admin {
   profileImage String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  galleryImages GalleryImage[]  // ← add this
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -311,6 +312,30 @@ model CourseMedia {
   @@index([courseId])
   @@index([type])
   @@map("course_media")
+}
+
+// ─────────────────────────────────────────
+// GALLERY IMAGES
+// ─────────────────────────────────────────
+
+model GalleryImage {
+  id          String   @id @default(cuid())
+  adminId     String
+  title       String
+  description String?
+  category    String?  // e.g. Academy, Events, Campus
+  imageUrl    String
+  altText     String?
+  order       Int      @default(0)
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  admin Admin @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([adminId])
+  @@index([category])
+  @@map("gallery_images")
 }
 
 // ─────────────────────────────────────────
