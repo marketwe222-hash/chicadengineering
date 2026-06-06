@@ -81,8 +81,16 @@ export async function sendRegistrationEmails(
   ];
 
   if (data.adminEmails?.length) {
-    const uniqueAdminEmails = Array.from(
-      new Set(data.adminEmails.filter(Boolean)),
+    // Normalize (trim + lowercase) and dedupe admin emails to avoid duplicate sends
+    const normalized = data.adminEmails
+      .filter(Boolean)
+      .map((e) => String(e).trim().toLowerCase());
+
+    const uniqueAdminEmails = Array.from(new Set(normalized));
+
+    console.debug(
+      "[EmailJS] Sending admin notifications to:",
+      uniqueAdminEmails,
     );
 
     uniqueAdminEmails.forEach((adminEmail) => {
