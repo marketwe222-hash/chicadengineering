@@ -77,7 +77,10 @@ export function ContentView() {
       const spaceAbove = rect.top;
       const preferredHeight = 220; // same as maxHeight
       // open up if there's more space above or below is too small
-      if (spaceBelow < Math.min(160, preferredHeight) && spaceAbove > spaceBelow) {
+      if (
+        spaceBelow < Math.min(160, preferredHeight) &&
+        spaceAbove > spaceBelow
+      ) {
         setOpenUp(true);
       } else {
         setOpenUp(false);
@@ -136,8 +139,18 @@ export function ContentView() {
           disabled={disabled}
           style={buttonStyle as any}
         >
-          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{value}</span>
-          <span style={{ marginLeft: 8, opacity: 0.85 }}>{open ? "▴" : "▾"}</span>
+          <span
+            style={{
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {value}
+          </span>
+          <span style={{ marginLeft: 8, opacity: 0.85 }}>
+            {open ? "▴" : "▾"}
+          </span>
         </button>
 
         {open && (
@@ -156,10 +169,12 @@ export function ContentView() {
                   color: "var(--text)",
                 }}
                 onMouseEnter={(e) =>
-                  ((e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.03)")
+                  ((e.currentTarget as HTMLElement).style.background =
+                    "rgba(255,255,255,0.03)")
                 }
                 onMouseLeave={(e) =>
-                  ((e.currentTarget as HTMLElement).style.background = "transparent")
+                  ((e.currentTarget as HTMLElement).style.background =
+                    "transparent")
                 }
               >
                 {c}
