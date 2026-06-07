@@ -147,11 +147,42 @@ const glassStyle = (bg = "rgba(14,111,168,0.12)"): React.CSSProperties => ({
     "0 4px 24px rgba(5,20,40,0.55), 0 1px 0 rgba(255,255,255,0.06) inset",
 });
 
-/* ─── Software Card ───────────────────────────────────────── */
-function isPlainUrl(value: string) {
-  return /^(https?:\/\/|\/\/).+/i.test(value.trim());
+/* ─── Category icon helper ────────────────────────────────── */
+// Renders an <img> if the value looks like a URL, otherwise renders the emoji
+function CategoryIcon({
+  logoImage,
+  icon,
+  size = 28,
+}: {
+  logoImage?: string | null;
+  icon?: string | null;
+  size?: number;
+}) {
+  const src = logoImage?.trim();
+  if (src) {
+    return (
+      <img
+        src={src}
+        alt=""
+        style={{
+          width: size,
+          height: size,
+          objectFit: "contain",
+          borderRadius: "0.3rem",
+          flexShrink: 0,
+        }}
+      />
+    );
+  }
+  // fallback: emoji or default
+  return (
+    <span style={{ fontSize: size * 0.65 + "px", lineHeight: 1 }}>
+      {icon ?? "🖥️"}
+    </span>
+  );
 }
 
+/* ─── Software Card ───────────────────────────────────────── */
 function SoftwareCard({ course }: { course: Course }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const { gradientFrom, gradientTo, level } = getVisual(course.category);
@@ -162,11 +193,7 @@ function SoftwareCard({ course }: { course: Course }) {
     .map((line) => line.trim())
     .filter(Boolean);
 
-  const firstLineIsUrl =
-    descriptionLines.length > 0 && isPlainUrl(descriptionLines[0]);
-  const textLines = firstLineIsUrl
-    ? descriptionLines.slice(1)
-    : descriptionLines;
+  const textLines = descriptionLines;
   const blurb = textLines[0] ?? "";
   const features =
     textLines.length > 1
@@ -492,18 +519,34 @@ export default function SoftwarePage() {
   } = useCourses({ status: "ACTIVE" });
   const courses = rawCourses ?? [];
 
-  // Derive unique categories from live data for the hero pills
+  // Derive unique categories from live data for the hero pills.
+  // Carries both logoImage and icon so the pill can prefer logoImage.
   const categories = Array.from(
     courses
-      .reduce((map, c) => {
-        const existing = map.get(c.category);
-        map.set(c.category, {
-          name: c.category,
-          icon: c.icon ?? "🖥️",
-          count: (existing?.count ?? 0) + 1,
-        });
-        return map;
-      }, new Map<string, { name: string; icon: string; count: number }>())
+      .reduce(
+        (map, c) => {
+          const existing = map.get(c.category);
+          map.set(c.category, {
+            name: c.category,
+            // Keep the first non-empty logoImage found for this category
+            logoImage:
+              existing?.logoImage ?? (c.logoImage?.trim() || undefined),
+            // Keep the first non-empty icon found for this category
+            icon: existing?.icon ?? (c.icon?.trim() || undefined),
+            count: (existing?.count ?? 0) + 1,
+          });
+          return map;
+        },
+        new Map<
+          string,
+          {
+            name: string;
+            logoImage?: string;
+            icon?: string;
+            count: number;
+          }
+        >(),
+      )
       .values(),
   );
 
@@ -694,7 +737,12 @@ export default function SoftwarePage() {
                           gap: "0.6rem",
                         }}
                       >
-                        <span style={{ fontSize: "1.1rem" }}>{cat.icon}</span>
+                        {/* ✅ FIX: prefer logoImage, fall back to icon emoji */}
+                        <CategoryIcon
+                          logoImage={cat.logoImage}
+                          icon={cat.icon}
+                          size={28}
+                        />
                         <div>
                           <span
                             style={{
