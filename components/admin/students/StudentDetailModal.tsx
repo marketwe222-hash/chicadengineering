@@ -19,7 +19,10 @@ export function StudentDetailModal({ student: s, onClose, onRefresh }: Props) {
     onClose();
   };
 
-  const handleRemoveEnrollment = async (enrollmentId: string, courseName: string) => {
+  const handleRemoveEnrollment = async (
+    enrollmentId: string,
+    courseName: string,
+  ) => {
     const confirmed = window.confirm(
       `Remove ${courseName} from ${s.firstName} ${s.lastName}'s enrollments?`,
     );
