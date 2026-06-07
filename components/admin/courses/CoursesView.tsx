@@ -3,6 +3,7 @@
 "use client";
 import { Tag } from "@/components/admin/shared";
 import { categoryColor, fmtMoney } from "@/components/admin/shared";
+import { CourseLogo } from "@/components/ui/CourseLogo";
 import type { AdminCourse } from "@/hooks/useAdminDashboard";
 import type { View } from "@/components/admin/dashboard";
 
@@ -91,7 +92,12 @@ export function CoursesView({
                     borderBottom: "1px solid var(--border2)",
                   }}
                 >
-                  <span style={{ fontSize: "2.4rem" }}>{c.icon ?? "📐"}</span>
+                  <CourseLogo
+                    logoImage={c.logoImage}
+                    icon={c.icon}
+                    size={40}
+                    style={{ background: "transparent" }}
+                  />
                   <div
                     style={{
                       position: "absolute",

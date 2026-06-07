@@ -4,3 +4,4 @@ export { Badge } from "./Badge";
 export { Avatar } from "./Avatar";
 export { Input } from "./Input";
 export { Spinner } from "./Spinner";
+export { CourseLogo } from "./CourseLogo";

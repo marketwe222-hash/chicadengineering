@@ -402,7 +402,7 @@ export function CourseDetailView({
             gap: "1rem",
           }}
         >
-          <span style={{ fontSize: "3rem" }}>{course.icon ?? "📐"}</span>
+          <span style={{ fontSize: "3rem" }}>{course.logoImage ?? "📐"}</span>
           <div>
             <div
               style={{

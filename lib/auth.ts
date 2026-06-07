@@ -116,7 +116,7 @@ export async function getCurrentUser() {
             certificates: {
               include: {
                 course: {
-                  select: { id: true, name: true, icon: true },
+                  select: { id: true, name: true, icon: true, logoImage: true },
                 },
               },
             },

@@ -6,6 +6,7 @@ export interface Course {
   name: string;
   category: string; // e.g. "CAD", "BIM", "FEA"
   icon?: string | null; // emoji e.g. "📐"
+  logoImage?: string | null;
   description?: string | null;
   registrationFee: number; // FRS — default 5000
   trainingFee: number; // FRS — default 70000

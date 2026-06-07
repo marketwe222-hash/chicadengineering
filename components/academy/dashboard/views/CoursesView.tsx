@@ -2,6 +2,7 @@
 
 import ProgressBar from "@/components/ui/ProgressBar";
 import Tag from "@/components/ui/Tag";
+import { CourseLogo } from "@/components/ui/CourseLogo";
 import CourseResourcesView from "@/components/academy/dashboard/views/CourseResourcesView";
 import { useState } from "react";
 
@@ -9,6 +10,7 @@ interface DashboardCourse {
   id: string;
   color: string;
   icon: string;
+  logoImage?: string | null;
   category: string;
   name: string;
   currentLessonOrder: number;
@@ -36,6 +38,7 @@ export default function CoursesView({ courses }: CoursesViewProps) {
           id: resourceCourse.id,
           name: resourceCourse.name,
           icon: resourceCourse.icon,
+          logoImage: resourceCourse.logoImage,
           color: resourceCourse.color,
           category: resourceCourse.category,
         }}
@@ -105,7 +108,12 @@ export default function CoursesView({ courses }: CoursesViewProps) {
                 borderBottom: "1px solid var(--glass-border-subtle)",
               }}
             >
-              <span style={{ fontSize: "2.5rem" }}>{c.icon}</span>
+              <CourseLogo
+                logoImage={c.logoImage}
+                icon={c.icon}
+                size={56}
+                style={{ fontSize: "2.5rem", background: "transparent" }}
+              />
               <div
                 style={{ position: "absolute", top: "0.6rem", left: "0.7rem" }}
               >

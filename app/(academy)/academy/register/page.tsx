@@ -1,5 +1,6 @@
 "use client";
 import { Header, Footer } from "@/components/academy";
+import { CourseLogo } from "@/components/ui/CourseLogo";
 import { useRouter } from "next/navigation";
 import {
   useState,
@@ -358,11 +359,15 @@ function CourseSelector({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: "2.1rem",
                 boxShadow: `0 0 28px ${v.glow}`,
               }}
             >
-              {expandedCourse.icon ?? "🖥️"}
+              <CourseLogo
+                logoImage={expandedCourse.logoImage}
+                icon={expandedCourse.icon}
+                size={66}
+                style={{ background: "transparent" }}
+              />
             </div>
             <div style={{ flex: 1 }}>
               <div
@@ -500,7 +505,12 @@ function CourseSelector({
             e.currentTarget.style.transform = "translateY(0)";
           }}
         >
-          Register for {expandedCourse.name} {expandedCourse.icon ?? "🖥️"} →
+          Register for {expandedCourse.name} <CourseLogo
+            logoImage={expandedCourse.logoImage}
+            icon={expandedCourse.icon}
+            size={24}
+            style={{ background: "transparent", verticalAlign: "text-bottom" }}
+          /> →
         </button>
       </div>
     );
@@ -605,8 +615,13 @@ function CourseSelector({
                   borderRadius: "1rem 1rem 0 0",
                 }}
               />
-              <div style={{ fontSize: "1.7rem", marginBottom: "0.55rem" }}>
-                {course.icon ?? "🖥️"}
+              <div style={{ marginBottom: "0.55rem" }}>
+                <CourseLogo
+                  logoImage={course.logoImage}
+                  icon={course.icon}
+                  size={40}
+                  style={{ background: "transparent", fontSize: "1.7rem" }}
+                />
               </div>
               <div
                 style={{
@@ -1320,7 +1335,12 @@ export default function RegisterPage() {
                     marginBottom: "1rem",
                   }}
                 >
-                  <span>{selectedCourse.icon ?? "🖥️"}</span>
+                  <CourseLogo
+                    logoImage={selectedCourse.logoImage}
+                    icon={selectedCourse.icon}
+                    size={24}
+                    style={{ background: "transparent" }}
+                  />
                   <span
                     style={{
                       fontSize: "0.85rem",
@@ -1539,9 +1559,12 @@ export default function RegisterPage() {
                     marginBottom: "0.35rem",
                   }}
                 >
-                  <span style={{ fontSize: "1.3rem" }}>
-                    {selectedCourse.icon ?? "🖥️"}
-                  </span>
+                  <CourseLogo
+                    logoImage={selectedCourse.logoImage}
+                    icon={selectedCourse.icon}
+                    size={28}
+                    style={{ background: "transparent" }}
+                  />
                   <div>
                     <div
                       style={{

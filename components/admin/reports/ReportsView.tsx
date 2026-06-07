@@ -1,6 +1,7 @@
 "use client";
 import { SectionLabel, ProgressBar, Tag } from "@/components/admin/shared";
 import { categoryColor, fmtMoney } from "@/components/admin/shared";
+import { CourseLogo } from "@/components/ui/CourseLogo";
 import type { AdminStudent, AdminCourse } from "@/hooks/useAdminDashboard";
 
 interface Props {
@@ -87,12 +88,21 @@ export function ReportsView({ students, courses }: Props) {
                     >
                       <span
                         style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "0.35rem",
                           fontSize: "0.76rem",
                           fontWeight: 600,
                           color: "var(--text)",
                         }}
                       >
-                        {c.icon ?? "📐"} {c.name}
+                        <CourseLogo
+                          logoImage={c.logoImage}
+                          icon={c.icon}
+                          size={24}
+                          style={{ background: "transparent" }}
+                        />
+                        {c.name}
                       </span>
                       <span
                         style={{

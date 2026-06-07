@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Header, Footer } from "@/components/academy";
+import { CourseLogo } from "@/components/ui/CourseLogo";
 import { useCourses } from "@/hooks/useCourse";
 import type { Course } from "@/types";
 
@@ -205,16 +206,22 @@ function SoftwareCard({ course }: { course: Course }) {
               width: "3rem",
               height: "3rem",
               borderRadius: "0.75rem",
-              background: `linear-gradient(135deg, ${gradientFrom} 0%, ${gradientTo} 100%)`,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "1.4rem",
               flexShrink: 0,
               boxShadow: `0 4px 16px ${gradientFrom}44`,
             }}
           >
-            {course.icon ?? "🖥️"}
+            <CourseLogo
+              logoImage={course.logoImage}
+              icon={course.icon}
+              size={40}
+              style={{
+                background: `linear-gradient(135deg, ${gradientFrom} 0%, ${gradientTo} 100%)`,
+                fontSize: "1.4rem",
+              }}
+            />
           </div>
 
           <div style={{ flex: 1 }}>

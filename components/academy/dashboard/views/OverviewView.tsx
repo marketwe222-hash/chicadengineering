@@ -3,6 +3,7 @@
 import ProgressRing from "@/components/ui/ProgressRing";
 import ProgressBar from "@/components/ui/ProgressBar";
 import Tag from "@/components/ui/Tag";
+import { CourseLogo } from "@/components/ui/CourseLogo";
 import type { View } from "@/components/academy/dashboard/StudentSidebarNav";
 
 interface OverviewCourse {
@@ -11,6 +12,7 @@ interface OverviewCourse {
   currentLessonOrder: number;
   totalLessons: number;
   icon: string;
+  logoImage?: string | null;
   currentLessonName: string;
   progress: number;
   currentLessonDuration: string;
@@ -293,14 +295,15 @@ export default function OverviewView({ data, setView }: OverviewViewProps) {
                   borderBottom: "1px solid var(--glass-border-subtle)",
                 }}
               >
-                <span
+                <CourseLogo
+                  logoImage={activeCourse.logoImage}
+                  icon={activeCourse.icon}
+                  size={60}
                   style={{
-                    fontSize: "3rem",
+                    background: "transparent",
                     filter: `drop-shadow(0 0 12px ${activeCourse.color}66)`,
                   }}
-                >
-                  {activeCourse.icon}
-                </span>
+                />
                 <div
                   style={{
                     position: "absolute",

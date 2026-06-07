@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { CourseLogo } from "@/components/ui/CourseLogo";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -20,6 +21,7 @@ interface CourseInfo {
   id: string;
   name: string;
   icon: string;
+  logoImage?: string | null;
   color: string;
   category: string;
 }
@@ -108,16 +110,21 @@ export default function CourseResourcesView({ course, onBack }: Props) {
               width: 48,
               height: 48,
               borderRadius: 12,
-              background: `color-mix(in srgb, ${course.color} 18%, transparent)`,
-              border: `1px solid color-mix(in srgb, ${course.color} 35%, transparent)`,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "1.6rem",
               flexShrink: 0,
             }}
           >
-            {course.icon}
+            <CourseLogo
+              logoImage={course.logoImage}
+              icon={course.icon}
+              size={48}
+              style={{
+                background: `color-mix(in srgb, ${course.color} 18%, transparent)`,
+                border: `1px solid color-mix(in srgb, ${course.color} 35%, transparent)`,
+              }}
+            />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <p

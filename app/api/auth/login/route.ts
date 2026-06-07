@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
             certificates: {
               include: {
                 course: {
-                  select: { id: true, name: true, icon: true },
+                  select: { id: true, name: true, icon: true, logoImage: true },
                 },
               },
             },
@@ -186,6 +186,7 @@ export async function POST(req: NextRequest) {
                     name: e.course.name,
                     category: e.course.category,
                     icon: e.course.icon ?? null,
+                    logoImage: e.course.logoImage ?? null,
                     durationMonths: e.course.durationMonths,
                     lessons: e.course.lessons.map((l) => ({
                       id: l.id,
@@ -205,6 +206,7 @@ export async function POST(req: NextRequest) {
                     id: c.course.id,
                     name: c.course.name,
                     icon: c.course.icon ?? null,
+                    logoImage: c.course.logoImage ?? null,
                   },
                 })),
 

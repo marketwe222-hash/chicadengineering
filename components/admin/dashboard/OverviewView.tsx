@@ -6,6 +6,7 @@ import {
   Tag,
 } from "@/components/admin/shared";
 import { categoryColor, fmtMoney, fmtDate } from "@/components/admin/shared";
+import { CourseLogo } from "@/components/ui/CourseLogo";
 import type {
   AdminStudent,
   AdminCourse,
@@ -199,12 +200,21 @@ export function OverviewView({ setView, stats, students, courses }: Props) {
                   >
                     <span
                       style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "0.35rem",
                         fontSize: "0.72rem",
                         fontWeight: 600,
                         color: "var(--text)",
                       }}
                     >
-                      {c.icon ?? "📐"} {c.name}
+                      <CourseLogo
+                        logoImage={c.logoImage}
+                        icon={c.icon}
+                        size={22}
+                        style={{ background: "transparent" }}
+                      />
+                      {c.name}
                     </span>
                     <span
                       style={{

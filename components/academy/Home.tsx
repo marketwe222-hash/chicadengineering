@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { HeroSection } from "./HeroSection";
 import { Header, Footer } from "@/components/academy";
+import { CourseLogo } from "@/components/ui/CourseLogo";
 import { useCourses } from "@/hooks/useCourse";
 
 /* ─── Glass surface helper ─────────────────────────────────────────────────── */
@@ -1052,11 +1053,15 @@ export default function Home({
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
-                          fontSize: "1.1rem",
                           flexShrink: 0,
                         }}
                       >
-                        {course.icon ?? "🖥️"}
+                        <CourseLogo
+                          logoImage={course.logoImage}
+                          icon={course.icon}
+                          size={32}
+                          style={{ background: "transparent", fontSize: "1.1rem" }}
+                        />
                       </div>
                       <div>
                         <p

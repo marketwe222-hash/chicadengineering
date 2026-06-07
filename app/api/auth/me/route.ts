@@ -66,6 +66,7 @@ export async function GET() {
                     name: e.course.name,
                     category: e.course.category,
                     icon: e.course.icon ?? null,
+                    logoImage: e.course.logoImage ?? null,
                     durationMonths: e.course.durationMonths,
                     lessons: e.course.lessons.map((l) => ({
                       id: l.id,
@@ -85,6 +86,7 @@ export async function GET() {
                     id: c.course.id,
                     name: c.course.name,
                     icon: c.course.icon ?? null,
+                    logoImage: c.course.logoImage ?? null,
                   },
                 })),
 

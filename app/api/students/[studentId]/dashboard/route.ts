@@ -75,6 +75,7 @@ export async function GET(
         name: enrollment.course.name,
         category: enrollment.course.category,
         icon: enrollment.course.icon ?? "📐",
+        logoImage: enrollment.course.logoImage ?? null,
         color: categoryColor(enrollment.course.category),
         currentLessonOrder: currentLesson
           ? currentLesson.order + 1

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Header, Footer } from "@/components/academy";
+import { CourseLogo } from "@/components/ui/CourseLogo";
 import { useCourses } from "@/hooks/useCourse";
 import type { Course } from "@/types";
 
@@ -229,15 +230,20 @@ function SoftwareCourseCard({
               width: "2.75rem",
               height: "2.75rem",
               borderRadius: "0.75rem",
-              background: `linear-gradient(135deg, ${colors.from} 0%, ${colors.to} 100%)`,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "1.3rem",
               boxShadow: `0 4px 16px ${colors.from}55`,
             }}
           >
-            {course.icon ?? "🖥️"}
+            <CourseLogo
+              logoImage={course.logoImage}
+              icon={course.icon}
+              size={44}
+              style={{
+                background: `linear-gradient(135deg, ${colors.from} 0%, ${colors.to} 100%)`,
+              }}
+            />
           </div>
           {selected && (
             <div
@@ -1240,15 +1246,20 @@ export default function ProgrammesPage() {
                         width: "3rem",
                         height: "3rem",
                         borderRadius: "0.75rem",
-                        background: `linear-gradient(135deg, ${selectedColors.from}, ${selectedColors.to})`,
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        fontSize: "1.3rem",
                         flexShrink: 0,
                       }}
                     >
-                      {selectedCourse.icon ?? "🖥️"}
+                      <CourseLogo
+                        logoImage={selectedCourse.logoImage}
+                        icon={selectedCourse.icon}
+                        size={48}
+                        style={{
+                          background: `linear-gradient(135deg, ${selectedColors.from}, ${selectedColors.to})`,
+                        }}
+                      />
                     </div>
                     <div>
                       <p
