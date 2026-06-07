@@ -4,14 +4,8 @@ import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Header, Footer } from "@/components/academy";
-
-/* ─── Types ──────────────────────────────────────────────────── */
-type GalleryItem = {
-  id: string;
-  title: string;
-  src: string;
-  category?: string;
-};
+import { useDebounce } from "@/hooks/useDebounce";
+import { useGallery, type GalleryItem } from "@/hooks/useGallery";
 
 /* ─── Categories ─────────────────────────────────────────────── */
 // The 5 official gallery categories. Add more here as needed.
@@ -24,124 +18,6 @@ export const GALLERY_CATEGORIES = [
 ] as const;
 
 export type GalleryCategory = (typeof GALLERY_CATEGORIES)[number];
-
-/* ─── Data ───────────────────────────────────────────────────── */
-// Replace placeholder images with your real photos.
-// src accepts any URL or /public path (e.g. "/gallery/project-1.jpg").
-// Ensure next.config.js remotePatterns allows any external domains used.
-const GALLERY_ITEMS: GalleryItem[] = [
-  /* ── Academy (general) ── */
-  {
-    id: "academy-1",
-    title: "Academy Overview",
-    src: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80",
-    category: "Academy",
-  },
-  {
-    id: "academy-2",
-    title: "Learning Environment",
-    src: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=1200&q=80",
-    category: "Academy",
-  },
-  {
-    id: "academy-3",
-    title: "Student Life",
-    src: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80",
-    category: "Academy",
-  },
-
-  /* ── Student Projects ── */
-  {
-    id: "project-1",
-    title: "AutoCAD Floor Plan — Batch 3",
-    src: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1200&q=80",
-    category: "Student Projects",
-  },
-  {
-    id: "project-2",
-    title: "Revit BIM Model — Commercial Block",
-    src: "https://images.unsplash.com/photo-1545259741-2ea3ebf61fa3?auto=format&fit=crop&w=1200&q=80",
-    category: "Student Projects",
-  },
-  {
-    id: "project-3",
-    title: "Lumion Visualization — Residential",
-    src: "https://images.unsplash.com/photo-1486325212027-8081e485255e?auto=format&fit=crop&w=1200&q=80",
-    category: "Student Projects",
-  },
-  {
-    id: "project-4",
-    title: "SAP2000 Structural Analysis",
-    src: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80",
-    category: "Student Projects",
-  },
-
-  /* ── Workshops & Training ── */
-  {
-    id: "workshop-1",
-    title: "AutoCAD Intensive — March 2025",
-    src: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80",
-    category: "Workshops & Training",
-  },
-  {
-    id: "workshop-2",
-    title: "BIM Masterclass with Industry Expert",
-    src: "https://images.unsplash.com/photo-1560439514-4e9645039924?auto=format&fit=crop&w=1200&q=80",
-    category: "Workshops & Training",
-  },
-  {
-    id: "workshop-3",
-    title: "Excel for Engineers — Hands-on Lab",
-    src: "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1200&q=80",
-    category: "Workshops & Training",
-  },
-  {
-    id: "workshop-4",
-    title: "FEA Simulation Workshop",
-    src: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80",
-    category: "Workshops & Training",
-  },
-
-  /* ── Graduations & Ceremonies ── */
-  {
-    id: "grad-1",
-    title: "Cohort 5 Certificate Ceremony",
-    src: "https://images.unsplash.com/photo-1627556704302-624286467c65?auto=format&fit=crop&w=1200&q=80",
-    category: "Graduations & Ceremonies",
-  },
-  {
-    id: "grad-2",
-    title: "Top Student Awards — 2024",
-    src: "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1200&q=80",
-    category: "Graduations & Ceremonies",
-  },
-  {
-    id: "grad-3",
-    title: "6-Month Programme Graduation",
-    src: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1200&q=80",
-    category: "Graduations & Ceremonies",
-  },
-
-  /* ── Site Visits & Field Trips ── */
-  {
-    id: "site-1",
-    title: "Construction Site Visit — Bastos",
-    src: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1200&q=80",
-    category: "Site Visits & Field Trips",
-  },
-  {
-    id: "site-2",
-    title: "Bridge Inspection Field Trip",
-    src: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=1200&q=80",
-    category: "Site Visits & Field Trips",
-  },
-  {
-    id: "site-3",
-    title: "High-Rise Structural Tour",
-    src: "https://images.unsplash.com/photo-1486325212027-8081e485255e?auto=format&fit=crop&w=1200&q=80",
-    category: "Site Visits & Field Trips",
-  },
-];
 
 /* ─── Helpers ────────────────────────────────────────────────── */
 function normalize(s: string) {
@@ -157,16 +33,6 @@ const glassStyle = (bg = "rgba(14,111,168,0.12)"): React.CSSProperties => ({
   boxShadow:
     "0 4px 24px rgba(5,20,40,0.55), 0 1px 0 rgba(255,255,255,0.06) inset",
 });
-
-// Debounce hook — avoids filtering on every keystroke
-function useDebounce<T>(value: T, delay = 200): T {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const id = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(id);
-  }, [value, delay]);
-  return debounced;
-}
 
 /* ─── Category accent colours ───────────────────────────────── */
 // Each category gets a unique pill colour + icon for the filter bar and card badge.
@@ -262,18 +128,36 @@ const GalleryCard = ({
           overflow: "hidden",
         }}
       >
-        <Image
-          src={item.src}
-          alt={item.title}
-          fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          priority={priority}
-          style={{
-            objectFit: "cover",
-            transition: "transform 0.45s ease",
-            transform: hovered ? "scale(1.05)" : "scale(1)",
-          }}
-        />
+        {item.src ? (
+          <Image
+            src={item.src}
+            alt={item.title}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            priority={priority}
+            style={{
+              objectFit: "cover",
+              transition: "transform 0.45s ease",
+              transform: hovered ? "scale(1.05)" : "scale(1)",
+            }}
+          />
+        ) : (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: "rgba(7,24,40,0.65)",
+              color: "rgba(255,255,255,0.85)",
+              padding: "1rem",
+              textAlign: "center",
+            }}
+          >
+            <span>No image available</span>
+          </div>
+        )}
         {/* Overlay on hover */}
         <div
           aria-hidden="true"
@@ -615,54 +499,46 @@ export default function GalleryPage() {
   const router = useRouter();
   const [rawQuery, setRawQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
+  const [page, setPage] = useState(1);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
-  // Debounce search so filtering doesn't fire on every keystroke
   const query = useDebounce(rawQuery, 180);
 
-  // Derive unique categories once
-  const categories = useMemo(() => {
-    const set = new Set<string>();
-    for (const item of GALLERY_ITEMS) {
-      if (item.category) set.add(item.category);
-    }
-    return ["All", ...Array.from(set).sort((a, b) => a.localeCompare(b))];
-  }, []);
+  const { gallery, pagination, isLoading, error } = useGallery({
+    page,
+    pageSize: 12,
+    search: query,
+    category: activeCategory === "All" ? undefined : activeCategory,
+  });
 
-  // Filter items
-  const filtered = useMemo(() => {
-    const q = normalize(query);
-    return GALLERY_ITEMS.filter((item) => {
-      const matchesCategory =
-        activeCategory === "All" || item.category === activeCategory;
-      const matchesQuery =
-        !q ||
-        normalize(item.title).includes(q) ||
-        normalize(item.category ?? "").includes(q);
-      return matchesCategory && matchesQuery;
-    });
-  }, [activeCategory, query]);
-
-  // Stable lightbox index within filtered list
-  const selectedIndex = useMemo(
-    () => filtered.findIndex((x) => x.id === selectedId),
-    [filtered, selectedId],
+  const categories = useMemo(
+    () => ["All", ...Array.from(GALLERY_CATEGORIES)],
+    [],
   );
 
-  const selectedItem = selectedIndex >= 0 ? filtered[selectedIndex] : null;
+  useEffect(() => {
+    setPage(1);
+  }, [query, activeCategory]);
+
+  const selectedIndex = useMemo(
+    () => gallery.findIndex((item) => item.id === selectedId),
+    [gallery, selectedId],
+  );
+
+  const selectedItem = selectedIndex >= 0 ? gallery[selectedIndex] : null;
 
   const openItem = useCallback((id: string) => setSelectedId(id), []);
   const closeLightbox = useCallback(() => setSelectedId(null), []);
 
   const goNext = useCallback(() => {
-    if (selectedIndex < filtered.length - 1)
-      setSelectedId(filtered[selectedIndex + 1].id);
-  }, [selectedIndex, filtered]);
+    if (selectedIndex < gallery.length - 1)
+      setSelectedId(gallery[selectedIndex + 1].id);
+  }, [selectedIndex, gallery]);
 
   const goPrev = useCallback(() => {
-    if (selectedIndex > 0) setSelectedId(filtered[selectedIndex - 1].id);
-  }, [selectedIndex, filtered]);
+    if (selectedIndex > 0) setSelectedId(gallery[selectedIndex - 1].id);
+  }, [selectedIndex, gallery]);
 
   // "/" shortcut to focus search
   useEffect(() => {
@@ -776,7 +652,7 @@ export default function GalleryPage() {
                 A curated collection of projects, events, and highlights from
                 the Academy.{" "}
                 <span style={{ color: "#7dd3fc", fontWeight: 700 }}>
-                  {GALLERY_ITEMS.length} items
+                  {pagination.total} items
                 </span>{" "}
                 across{" "}
                 <span style={{ color: "#7dd3fc", fontWeight: 700 }}>
@@ -931,27 +807,12 @@ export default function GalleryPage() {
                   >
                     <span aria-hidden="true">{accent.icon}</span>
                     {cat}
-                    {cat !== "All" && (
-                      <span
-                        style={{
-                          opacity: 0.65,
-                          fontWeight: 700,
-                          fontSize: "0.7rem",
-                          background: "rgba(0,0,0,0.22)",
-                          borderRadius: "999px",
-                          padding: "0 0.4rem",
-                          lineHeight: "1.5",
-                        }}
-                      >
-                        {GALLERY_ITEMS.filter((i) => i.category === cat).length}
-                      </span>
-                    )}
                   </button>
                 );
               })}
 
               {/* Results count */}
-              {filtered.length !== GALLERY_ITEMS.length && (
+              {(query || activeCategory !== "All") && (
                 <span
                   style={{
                     marginLeft: "auto",
@@ -961,13 +822,65 @@ export default function GalleryPage() {
                     alignSelf: "center",
                   }}
                 >
-                  {filtered.length} result{filtered.length !== 1 ? "s" : ""}
+                  {pagination.total} result{pagination.total !== 1 ? "s" : ""}
                 </span>
               )}
             </div>
 
-            {/* Empty state */}
-            {filtered.length === 0 && (
+            {error && (
+              <div
+                style={{
+                  ...glassStyle("rgba(220,38,38,0.10)"),
+                  borderRadius: "1.25rem",
+                  padding: "3rem 2rem",
+                  textAlign: "center",
+                }}
+              >
+                <p
+                  style={{
+                    margin: "0 0 0.5rem",
+                    fontSize: "1rem",
+                    fontWeight: 800,
+                    color: "var(--text-primary)",
+                  }}
+                >
+                  Unable to load gallery
+                </p>
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: "0.85rem",
+                    color: "var(--text-secondary)",
+                  }}
+                >
+                  {error}
+                </p>
+              </div>
+            )}
+
+            {isLoading && gallery.length === 0 && (
+              <div
+                style={{
+                  ...glassStyle("rgba(14,111,168,0.10)"),
+                  borderRadius: "1.25rem",
+                  padding: "3rem 2rem",
+                  textAlign: "center",
+                }}
+              >
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: "1rem",
+                    fontWeight: 800,
+                    color: "var(--text-primary)",
+                  }}
+                >
+                  Loading gallery…
+                </p>
+              </div>
+            )}
+
+            {pagination.total === 0 && !isLoading && !error && (
               <div
                 style={{
                   ...glassStyle("rgba(14,111,168,0.10)"),
@@ -1017,25 +930,81 @@ export default function GalleryPage() {
               </div>
             )}
 
-            {/* Grid */}
-            {filtered.length > 0 && (
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-                  gap: "1.25rem",
-                }}
-              >
-                {filtered.map((item, i) => (
-                  <GalleryCard
-                    key={item.id}
-                    item={item}
-                    // Prioritize loading the first 6 visible images
-                    priority={i < 6}
-                    onClick={() => openItem(item.id)}
-                  />
-                ))}
-              </div>
+            {pagination.total > 0 && (
+              <>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+                    gap: "1.25rem",
+                  }}
+                >
+                  {gallery.map((item, i) => (
+                    <GalleryCard
+                      key={item.id}
+                      item={item}
+                      priority={i < 6}
+                      onClick={() => openItem(item.id)}
+                    />
+                  ))}
+                </div>
+
+                {pagination.totalPages > 1 && (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      gap: "1rem",
+                      marginTop: "2rem",
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    <span
+                      style={{
+                        color: "var(--text-secondary)",
+                        fontWeight: 700,
+                      }}
+                    >
+                      Page {pagination.page} of {pagination.totalPages}
+                    </span>
+                    <div style={{ display: "flex", gap: "0.75rem" }}>
+                      <button
+                        onClick={() => setPage((current) => Math.max(1, current - 1))}
+                        disabled={!pagination.hasPrev}
+                        style={{
+                          padding: "0.75rem 1.25rem",
+                          borderRadius: "0.75rem",
+                          border: "1px solid rgba(125,211,252,0.20)",
+                          background: "rgba(14,111,168,0.14)",
+                          color: "#fff",
+                          fontWeight: 700,
+                          cursor: pagination.hasPrev ? "pointer" : "not-allowed",
+                        }}
+                      >
+                        Previous
+                      </button>
+                      <button
+                        onClick={() =>
+                          setPage((current) => Math.min(pagination.totalPages, current + 1))
+                        }
+                        disabled={!pagination.hasNext}
+                        style={{
+                          padding: "0.75rem 1.25rem",
+                          borderRadius: "0.75rem",
+                          border: "1px solid rgba(125,211,252,0.20)",
+                          background: "rgba(14,111,168,0.14)",
+                          color: "#fff",
+                          fontWeight: 700,
+                          cursor: pagination.hasNext ? "pointer" : "not-allowed",
+                        }}
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </section>
@@ -1047,7 +1016,7 @@ export default function GalleryPage() {
       {selectedItem && (
         <Lightbox
           item={selectedItem}
-          total={filtered.length}
+          total={gallery.length}
           currentIndex={selectedIndex}
           onClose={closeLightbox}
           onPrev={goPrev}
