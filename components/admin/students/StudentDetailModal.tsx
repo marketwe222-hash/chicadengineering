@@ -19,6 +19,28 @@ export function StudentDetailModal({ student: s, onClose, onRefresh }: Props) {
     onClose();
   };
 
+  const handleRemoveEnrollment = async (enrollmentId: string, courseName: string) => {
+    const confirmed = window.confirm(
+      `Remove ${courseName} from ${s.firstName} ${s.lastName}'s enrollments?`,
+    );
+    if (!confirmed) return;
+
+    const response = await fetch(`/api/students/${s.id}/enrollments`, {
+      method: "DELETE",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ enrollmentId }),
+    });
+
+    if (!response.ok) {
+      const result = await response.json();
+      window.alert(result.error || "Failed to remove enrollment");
+      return;
+    }
+
+    onRefresh();
+  };
+
   return (
     <div
       style={{
@@ -192,38 +214,124 @@ export function StudentDetailModal({ student: s, onClose, onRefresh }: Props) {
           ))}
         </div>
 
-        {/* Progress bars */}
-        {s.enrollments.map((e) => (
-          <div key={e.id} style={{ marginBottom: "0.75rem" }}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                marginBottom: 5,
-              }}
-            >
-              <span style={{ fontSize: "0.65rem", color: "var(--text3)" }}>
-                {e.course.name} Progress
-              </span>
-              <span
+        {/* Enrolled courses */}
+        <div style={{ marginBottom: "1rem" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: "0.85rem",
+            }}
+          >
+            <div>
+              <div
                 style={{
-                  fontSize: "0.65rem",
-                  color: "var(--sky)",
-                  fontFamily: "var(--mono)",
+                  fontSize: "0.85rem",
+                  fontWeight: 700,
+                  color: "var(--text)",
                 }}
               >
-                {e.progress}%
-              </span>
+                Enrolled Courses
+              </div>
+              <div
+                style={{
+                  fontSize: "0.75rem",
+                  color: "var(--text3)",
+                }}
+              >
+                Manage the student’s active course enrollments.
+              </div>
             </div>
-            <ProgressBar
-              value={e.progress}
-              color={categoryColor(e.course.category)}
-              height={6}
-            />
           </div>
-        ))}
 
-        {/* Actions */}
+          <div style={{ display: "grid", gap: "0.75rem" }}>
+            {s.enrollments.map((e) => (
+              <div
+                key={e.id}
+                style={{
+                  background: "var(--surface2)",
+                  border: "1px solid var(--border2)",
+                  borderRadius: 12,
+                  padding: "0.85rem 1rem",
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto",
+                  gap: "0.75rem",
+                  alignItems: "center",
+                }}
+              >
+                <div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                      marginBottom: "0.45rem",
+                    }}
+                  >
+                    <Tag
+                      label={e.course.category}
+                      color={categoryColor(e.course.category)}
+                    />
+                    <div
+                      style={{
+                        fontSize: "0.85rem",
+                        fontWeight: 700,
+                        color: "var(--text)",
+                      }}
+                    >
+                      {e.course.name}
+                    </div>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.75rem",
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: "0.75rem",
+                        color: "var(--text3)",
+                      }}
+                    >
+                      Progress: {e.progress}%
+                    </span>
+                    <span
+                      style={{
+                        fontSize: "0.75rem",
+                        color: "var(--text3)",
+                      }}
+                    >
+                      Status: {e.status}
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => handleRemoveEnrollment(e.id, e.course.name)}
+                  style={{
+                    padding: "0.55rem 0.85rem",
+                    borderRadius: 10,
+                    border: "1px solid rgba(239,68,68,0.4)",
+                    background: "rgba(239,68,68,0.12)",
+                    color: "#ef4444",
+                    fontSize: "0.78rem",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    minWidth: 118,
+                  }}
+                >
+                  Remove course
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Progress bars */}
         <div
           style={{
             display: "flex",

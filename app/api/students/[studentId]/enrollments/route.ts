@@ -72,3 +72,49 @@ export async function POST(req: NextRequest, { params }: Params) {
     );
   }
 }
+
+export async function DELETE(req: NextRequest, { params }: Params) {
+  try {
+    const { studentId } = await params;
+    const user = await requireAuth();
+
+    if (user.role !== "ADMIN" && user.student?.id !== studentId) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const body = await req.json();
+    const enrollmentId = body?.enrollmentId;
+
+    if (typeof enrollmentId !== "string" || !enrollmentId.trim()) {
+      return NextResponse.json(
+        { error: "enrollmentId is required" },
+        { status: 400 },
+      );
+    }
+
+    const enrollment = await prisma.enrollment.findUnique({
+      where: { id: enrollmentId },
+      include: { course: true },
+    });
+
+    if (!enrollment || enrollment.studentId !== studentId) {
+      return NextResponse.json(
+        { error: "Enrollment not found" },
+        { status: 404 },
+      );
+    }
+
+    await prisma.enrollment.delete({ where: { id: enrollmentId } });
+
+    return NextResponse.json({
+      message: "Enrollment removed successfully",
+      data: { courseId: enrollment.courseId },
+    });
+  } catch (error) {
+    console.error("[REMOVE_ENROLLMENT]", error);
+    return NextResponse.json(
+      { error: "Unable to remove enrollment" },
+      { status: 500 },
+    );
+  }
+}
