@@ -1060,7 +1060,10 @@ export default function Home({
                           logoImage={course.logoImage}
                           icon={course.icon}
                           size={32}
-                          style={{ background: "transparent", fontSize: "1.1rem" }}
+                          style={{
+                            background: "transparent",
+                            fontSize: "1.1rem",
+                          }}
                         />
                       </div>
                       <div>

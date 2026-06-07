@@ -505,12 +505,14 @@ function CourseSelector({
             e.currentTarget.style.transform = "translateY(0)";
           }}
         >
-          Register for {expandedCourse.name} <CourseLogo
+          Register for {expandedCourse.name}{" "}
+          <CourseLogo
             logoImage={expandedCourse.logoImage}
             icon={expandedCourse.icon}
             size={24}
             style={{ background: "transparent", verticalAlign: "text-bottom" }}
-          /> →
+          />{" "}
+          →
         </button>
       </div>
     );
