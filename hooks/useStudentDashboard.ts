@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuthContext } from "@/context/AuthContext";
 
 export interface DashboardLesson {
@@ -41,23 +41,34 @@ export function useStudentDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const load = useCallback(async () => {
     const studentId = user?.student?.id;
     if (!studentId) return;
 
     setLoading(true);
-    fetch(`/api/students/${studentId}/dashboard`, { credentials: "include" })
-      .then((r) => {
-        if (!r.ok) throw new Error("Failed to load dashboard");
-        return r.json();
-      })
-      .then((d) => {
-        setData(d);
-        setError(null);
-      })
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false));
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/students/${studentId}/dashboard`, {
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to load dashboard");
+      }
+
+      const payload = await response.json();
+      setData(payload);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load dashboard");
+    } finally {
+      setLoading(false);
+    }
   }, [user?.student?.id]);
 
-  return { data, loading, error };
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  return { data, loading, error, refetch: load };
 }

@@ -7,6 +7,7 @@ import { useAuthContext } from "@/context/AuthContext";
 export type View =
   | "overview"
   | "courses"
+  | "enroll"
   | "lessons"
   | "certificates"
   | "resources"
@@ -55,6 +56,7 @@ export default function StudentSidebarNav({
   const mainNav: NavItem[] = [
     { id: "overview", label: "Overview", icon: "⊞" },
     { id: "courses", label: "My Courses", icon: "📚", badge: activeCount },
+    { id: "enroll", label: "Enroll", icon: "✚" },
     { id: "lessons", label: "Lessons", icon: "▶️" },
     { id: "certificates", label: "Certificates", icon: "🎓" },
     { id: "resources", label: "Resources", icon: "📁" },

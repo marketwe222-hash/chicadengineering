@@ -148,20 +148,34 @@ const glassStyle = (bg = "rgba(14,111,168,0.12)"): React.CSSProperties => ({
 });
 
 /* ─── Software Card ───────────────────────────────────────── */
+function isPlainUrl(value: string) {
+  return /^(https?:\/\/|\/\/).+/i.test(value.trim());
+}
+
 function SoftwareCard({ course }: { course: Course }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const { gradientFrom, gradientTo, level } = getVisual(course.category);
 
-  // description may contain a pipe-separated feature list after a newline,
-  // or fall back gracefully if not present
-  const [blurb, ...featureLines] = (course.description ?? "").split("\n");
-  // Support both newline-separated and comma-separated feature lists
+  const rawDescription = course.description?.trim() ?? "";
+  const descriptionLines = rawDescription
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  const firstLineIsUrl =
+    descriptionLines.length > 0 && isPlainUrl(descriptionLines[0]);
+  const textLines = firstLineIsUrl
+    ? descriptionLines.slice(1)
+    : descriptionLines;
+  const blurb = textLines[0] ?? "";
   const features =
-    featureLines.length > 0
-      ? featureLines
+    textLines.length > 1
+      ? textLines
           .flatMap((l) => l.split(",").map((s) => s.trim()))
           .filter(Boolean)
       : [];
+
+  const logoSrc = course.logoImage?.trim();
 
   const duration =
     course.durationMonths === 1 ? "1 Month" : `${course.durationMonths} Months`;
@@ -214,7 +228,7 @@ function SoftwareCard({ course }: { course: Course }) {
             }}
           >
             <CourseLogo
-              logoImage={course.logoImage}
+              logoImage={logoSrc}
               icon={course.icon}
               size={40}
               style={{

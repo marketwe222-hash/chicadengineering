@@ -12,6 +12,7 @@ import LessonsView from "@/components/academy/dashboard/views/LessonsView";
 import CertificatesView from "@/components/academy/dashboard/views/CertificatesView";
 import ResourcesView from "@/components/academy/dashboard/views/ResourcesView";
 import ProfileView from "@/components/academy/dashboard/views/ProfileView";
+import EnrollView from "@/components/academy/dashboard/views/EnrollView";
 
 const PAGE_META: Record<View, { title: string; sub: string }> = {
   overview: { title: "Overview", sub: "Your learning at a glance" },
@@ -22,6 +23,7 @@ const PAGE_META: Record<View, { title: string; sub: string }> = {
     sub: "Your earned & in-progress certificates",
   },
   resources: { title: "Resources", sub: "Downloads, guides & materials" },
+  enroll: { title: "Enroll in Course", sub: "Choose a new course to join" },
   profile: { title: "My Profile", sub: "Your student information" },
 };
 
@@ -29,7 +31,7 @@ export default function StudentLayout() {
   const [view, setView] = useState<View>("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const { data, loading, error } = useStudentDashboard();
+  const { data, loading, error, refetch } = useStudentDashboard();
   const { user } = useAuthContext();
   const student = user?.student;
 
@@ -228,6 +230,7 @@ export default function StudentLayout() {
 
             <button
               className="btn-primary"
+              onClick={() => setView("enroll")}
               style={{
                 padding: "0.42rem 0.9rem",
                 fontSize: "0.72rem",
@@ -251,6 +254,16 @@ export default function StudentLayout() {
             <OverviewView data={data} setView={setView} />
           )}
           {view === "courses" && <CoursesView courses={data.courses} />}
+          {view === "enroll" && (
+            <EnrollView
+              studentId={student?.id ?? ""}
+              enrolledIds={data.courses.map((course) => course.id)}
+              onEnrolled={() => {
+                refetch();
+                setView("courses");
+              }}
+            />
+          )}
           {view === "lessons" && <LessonsView lessons={data.allLessons} />}
           {view === "certificates" && <div>Certificates</div>}
           {view === "resources" && <ResourcesView />}
