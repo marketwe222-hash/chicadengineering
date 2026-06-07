@@ -130,7 +130,9 @@ export function useGallery(params: {
     return `/api/gallery?${searchParams.toString()}`;
   }, [params.page, params.pageSize, params.search, params.category]);
 
-  const [fallbackData, setFallbackData] = useState<GalleryApiResponse | undefined>();
+  const [fallbackData, setFallbackData] = useState<
+    GalleryApiResponse | undefined
+  >();
 
   useEffect(() => {
     const cached = readCache<GalleryApiResponse>(query);
@@ -141,7 +143,8 @@ export function useGallery(params: {
 
   const { data, error, isLoading, mutate } = useSWR<GalleryApiResponse>(
     query,
-    async (url) => mapGalleryResponse(await fetcher<GalleryApiResponseRaw>(url)),
+    async (url) =>
+      mapGalleryResponse(await fetcher<GalleryApiResponseRaw>(url)),
     {
       fallbackData,
       revalidateOnFocus: false,

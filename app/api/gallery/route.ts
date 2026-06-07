@@ -48,10 +48,7 @@ export async function GET(req: NextRequest) {
 
     const galleryImages = await prisma.galleryImage.findMany({
       where,
-      orderBy: [
-        { order: "asc" },
-        { createdAt: "desc" },
-      ],
+      orderBy: [{ order: "asc" }, { createdAt: "desc" }],
       skip: (currentPage - 1) * pageSize,
       take: pageSize,
     });
@@ -68,6 +65,9 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error) {
-    return NextResponse.json({ error: "Unable to load gallery." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Unable to load gallery." },
+      { status: 500 },
+    );
   }
 }

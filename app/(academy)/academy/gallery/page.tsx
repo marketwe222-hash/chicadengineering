@@ -935,7 +935,8 @@ export default function GalleryPage() {
                 <div
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+                    gridTemplateColumns:
+                      "repeat(auto-fill, minmax(280px, 1fr))",
                     gap: "1.25rem",
                   }}
                 >
@@ -970,7 +971,9 @@ export default function GalleryPage() {
                     </span>
                     <div style={{ display: "flex", gap: "0.75rem" }}>
                       <button
-                        onClick={() => setPage((current) => Math.max(1, current - 1))}
+                        onClick={() =>
+                          setPage((current) => Math.max(1, current - 1))
+                        }
                         disabled={!pagination.hasPrev}
                         style={{
                           padding: "0.75rem 1.25rem",
@@ -979,14 +982,18 @@ export default function GalleryPage() {
                           background: "rgba(14,111,168,0.14)",
                           color: "#fff",
                           fontWeight: 700,
-                          cursor: pagination.hasPrev ? "pointer" : "not-allowed",
+                          cursor: pagination.hasPrev
+                            ? "pointer"
+                            : "not-allowed",
                         }}
                       >
                         Previous
                       </button>
                       <button
                         onClick={() =>
-                          setPage((current) => Math.min(pagination.totalPages, current + 1))
+                          setPage((current) =>
+                            Math.min(pagination.totalPages, current + 1),
+                          )
                         }
                         disabled={!pagination.hasNext}
                         style={{
@@ -996,7 +1003,9 @@ export default function GalleryPage() {
                           background: "rgba(14,111,168,0.14)",
                           color: "#fff",
                           fontWeight: 700,
-                          cursor: pagination.hasNext ? "pointer" : "not-allowed",
+                          cursor: pagination.hasNext
+                            ? "pointer"
+                            : "not-allowed",
                         }}
                       >
                         Next
