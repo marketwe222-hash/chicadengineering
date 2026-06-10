@@ -7,6 +7,7 @@ import { Tag, categoryColor } from "@/components/admin/shared";
 import { VideoUpload } from "@/components/admin/shared/VideoUpload";
 import { ImageUpload } from "@/components/admin/shared/ImageUpload";
 import { DocumentUpload } from "@/components/admin/shared/DocumentUpload";
+import { CourseLogo } from "@/components/ui/CourseLogo";
 import type { UploadedFile } from "@/lib/uploadUtils";
 import type { AdminCourse } from "@/hooks/useAdminDashboard";
 
@@ -402,7 +403,12 @@ export function CourseDetailView({
             gap: "1rem",
           }}
         >
-          <span style={{ fontSize: "3rem" }}>{course.logoImage ?? "📐"}</span>
+          <CourseLogo
+            logoImage={course.logoImage}
+            icon={course.icon ?? "📐"}
+            size="xl"
+            alt={course.name}
+          />
           <div>
             <div
               style={{
