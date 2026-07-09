@@ -301,6 +301,11 @@ export function AdminSidebarNav({
   if (isMobile) {
     return (
       <>
+        <style>{`
+          @media (max-width: 768px) {
+            .admin-main { padding-top: 3.5rem !important; }
+          }
+        `}</style>
         {open && (
           <div
             onClick={() => setOpen(false)}
@@ -312,6 +317,33 @@ export function AdminSidebarNav({
             }}
           />
         )}
+
+        {/* Hamburger button — fixed top-left */}
+        <button
+          onClick={() => setOpen(true)}
+          style={{
+            position: "fixed",
+            top: 12,
+            left: 12,
+            zIndex: 35,
+            width: 38,
+            height: 38,
+            borderRadius: 10,
+            border: "1px solid var(--border2)",
+            background: "#0f172a",
+            color: "var(--text2)",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "1.2rem",
+            boxShadow: "0 2px 12px rgba(0,0,0,0.3)",
+          }}
+        >
+          ☰
+        </button>
+
+        {/* Sliding sidebar */}
         <div
           style={{
             position: "fixed",
@@ -319,88 +351,44 @@ export function AdminSidebarNav({
             left: 0,
             bottom: 0,
             zIndex: 50,
-            width: 240,
-            background: "var(--surface)",
-            borderRight: "1px solid var(--border)",
+            width: 256,
+            background: "#0f172a",
+            borderRight: "1px solid rgba(255,255,255,0.06)",
             display: "flex",
             flexDirection: "column",
             transform: open ? "translateX(0)" : "translateX(-100%)",
-            transition: "transform 0.28s ease",
+            transition: "transform 0.26s cubic-bezier(0.34,1.56,0.64,1)",
+            boxShadow: open ? "4px 0 30px rgba(0,0,0,0.5)" : "none",
           }}
         >
-          <SidebarContent />
-        </div>
-
-        {/* Bottom bar */}
-        <div
-          style={{
-            position: "fixed",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            zIndex: 30,
-            height: 56,
-            background: "var(--surface)",
-            borderTop: "1px solid var(--border)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-around",
-          }}
-        >
-          <button
-            onClick={() => setOpen(true)}
+          {/* Close button inside sidebar header */}
+          <div
             style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
               display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 2,
-              color: "var(--text2)",
+              justifyContent: "flex-end",
+              padding: "0.6rem 0.6rem 0",
             }}
           >
-            <span style={{ fontSize: "1.1rem" }}>☰</span>
-            <span
+            <button
+              onClick={() => setOpen(false)}
               style={{
-                fontSize: "0.5rem",
-                fontWeight: 700,
-                textTransform: "uppercase",
+                width: 30,
+                height: 30,
+                borderRadius: 8,
+                border: "1px solid var(--border2)",
+                background: "transparent",
+                color: "var(--text3)",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "0.85rem",
               }}
             >
-              Menu
-            </span>
-          </button>
-          {nav.slice(0, 4).map((item) => {
-            const active = view === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => setView(item.id)}
-                style={{
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: 2,
-                  color: active ? "#dc2626" : "var(--text2)",
-                }}
-              >
-                <span style={{ fontSize: "1.1rem" }}>{item.icon}</span>
-                <span
-                  style={{
-                    fontSize: "0.5rem",
-                    fontWeight: 700,
-                    textTransform: "uppercase",
-                  }}
-                >
-                  {item.label.split(" ")[0]}
-                </span>
-              </button>
-            );
-          })}
+              ✕
+            </button>
+          </div>
+          <SidebarContent />
         </div>
       </>
     );
