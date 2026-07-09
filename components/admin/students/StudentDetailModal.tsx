@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { Tag, ProgressBar } from "@/components/admin/shared";
 import { categoryColor, fmtDate } from "@/components/admin/shared";
 import type { AdminStudent } from "@/hooks/useAdminDashboard";
@@ -10,6 +11,13 @@ interface Props {
 }
 
 export function StudentDetailModal({ student: s, onClose, onRefresh }: Props) {
+  const [showSettings, setShowSettings] = useState(false);
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [passwordSaving, setPasswordSaving] = useState(false);
+
   const handleConfirmPayment = async (paymentId: string) => {
     await fetch(`/api/payments/${paymentId}/confirm`, {
       method: "PATCH",
@@ -17,6 +25,45 @@ export function StudentDetailModal({ student: s, onClose, onRefresh }: Props) {
     });
     onRefresh();
     onClose();
+  };
+
+  const resetPasswordForm = () => {
+    setShowPasswordForm(false);
+    setPassword("");
+    setConfirmPassword("");
+    setPasswordError("");
+  };
+
+  const handleChangePassword = async () => {
+    setPasswordError("");
+
+    if (password.length < 6) {
+      setPasswordError("Password must be at least 6 characters");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setPasswordError("Passwords do not match");
+      return;
+    }
+
+    setPasswordSaving(true);
+
+    const res = await fetch(`/api/students/${s.id}/password`, {
+      method: "PATCH",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password }),
+    });
+
+    setPasswordSaving(false);
+
+    if (!res.ok) {
+      const data = await res.json();
+      setPasswordError(data.error || "Failed to change password");
+      return;
+    }
+
+    resetPasswordForm();
   };
 
   const handleRemoveEnrollment = async (
@@ -69,6 +116,7 @@ export function StudentDetailModal({ student: s, onClose, onRefresh }: Props) {
           boxShadow: "0 20px 60px rgba(0,0,0,0.7)",
           maxHeight: "90vh",
           overflowY: "auto",
+          position: "relative",
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -139,24 +187,338 @@ export function StudentDetailModal({ student: s, onClose, onRefresh }: Props) {
               </div>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            style={{
-              width: 30,
-              height: 30,
-              borderRadius: "50%",
-              border: "1px solid var(--border)",
-              background: "var(--surface2)",
-              color: "var(--text3)",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            ✕
-          </button>
+          <div style={{ display: "flex", gap: "0.4rem" }}>
+            <button
+              onClick={() => {
+                setShowSettings(!showSettings);
+                resetPasswordForm();
+              }}
+              style={{
+                width: 30,
+                height: 30,
+                borderRadius: "50%",
+                border: showSettings
+                  ? "1px solid rgba(168,85,247,0.4)"
+                  : "1px solid var(--border)",
+                background: showSettings
+                  ? "rgba(168,85,247,0.12)"
+                  : "var(--surface2)",
+                color: showSettings ? "#c084fc" : "var(--text3)",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "0.9rem",
+              }}
+            >
+              ⚙
+            </button>
+            <button
+              onClick={onClose}
+              style={{
+                width: 30,
+                height: 30,
+                borderRadius: "50%",
+                border: "1px solid var(--border)",
+                background: "var(--surface2)",
+                color: "var(--text3)",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              ✕
+            </button>
+          </div>
         </div>
+
+        {/* Settings modal */}
+        {showSettings && (
+          <>
+            <div
+              style={{
+                position: "fixed",
+                inset: 0,
+                zIndex: 51,
+              }}
+              onClick={() => {
+                setShowSettings(false);
+                resetPasswordForm();
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                top: "4.5rem",
+                right: "1.5rem",
+                zIndex: 52,
+                background: "#0f172a",
+                border: "1px solid var(--border)",
+                borderRadius: 12,
+                padding: "0.85rem",
+                minWidth: 220,
+                boxShadow: "0 12px 40px rgba(0,0,0,0.5)",
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.35rem",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div
+                style={{
+                  fontSize: "0.58rem",
+                  fontWeight: 700,
+                  color: "var(--text3)",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.09em",
+                  padding: "0.3rem 0.5rem 0.4rem",
+                }}
+              >
+                Student Actions
+              </div>
+
+              {s.payments[0]?.status === "PENDING" && (
+                <button
+                  onClick={() => handleConfirmPayment(s.payments[0].id)}
+                  style={{
+                    padding: "0.5rem 0.7rem",
+                    borderRadius: 8,
+                    border: "none",
+                    background: "rgba(34,197,94,0.1)",
+                    color: "#4ade80",
+                    fontSize: "0.75rem",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    textAlign: "left",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.45rem",
+                  }}
+                >
+                  ✓ Confirm Payment
+                </button>
+              )}
+
+              <button
+                style={{
+                  padding: "0.5rem 0.7rem",
+                  borderRadius: 8,
+                  border: "none",
+                  background: "var(--surface2)",
+                  color: "var(--sky)",
+                  fontSize: "0.75rem",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  textAlign: "left",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.45rem",
+                }}
+              >
+                📧 Send Email
+              </button>
+
+              {!showPasswordForm ? (
+                <button
+                  onClick={() => setShowPasswordForm(true)}
+                  style={{
+                    padding: "0.5rem 0.7rem",
+                    borderRadius: 8,
+                    border: "none",
+                    background: "rgba(168,85,247,0.1)",
+                    color: "#c084fc",
+                    fontSize: "0.75rem",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    textAlign: "left",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.45rem",
+                  }}
+                >
+                  🔑 Change Password
+                </button>
+              ) : (
+                <div
+                  style={{
+                    background: "rgba(168,85,247,0.06)",
+                    borderRadius: 8,
+                    padding: "0.65rem",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "0.45rem",
+                  }}
+                >
+                  <input
+                    type="password"
+                    placeholder="New password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    style={{
+                      padding: "0.5rem 0.65rem",
+                      borderRadius: 6,
+                      border: "1px solid rgba(168,85,247,0.25)",
+                      background: "rgba(7,24,40,0.45)",
+                      color: "var(--text)",
+                      fontSize: "0.75rem",
+                      outline: "none",
+                    }}
+                  />
+                  <input
+                    type="password"
+                    placeholder="Confirm password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    style={{
+                      padding: "0.5rem 0.65rem",
+                      borderRadius: 6,
+                      border: "1px solid rgba(168,85,247,0.25)",
+                      background: "rgba(7,24,40,0.45)",
+                      color: "var(--text)",
+                      fontSize: "0.75rem",
+                      outline: "none",
+                    }}
+                  />
+                  {passwordError && (
+                    <div
+                      style={{
+                        fontSize: "0.65rem",
+                        color: "#f87171",
+                        fontWeight: 600,
+                      }}
+                    >
+                      ⚠️ {passwordError}
+                    </div>
+                  )}
+                  <div style={{ display: "flex", gap: "0.35rem" }}>
+                    <button
+                      onClick={handleChangePassword}
+                      disabled={passwordSaving}
+                      style={{
+                        flex: 1,
+                        padding: "0.4rem 0",
+                        borderRadius: 6,
+                        border: "none",
+                        background: passwordSaving
+                          ? "rgba(168,85,247,0.3)"
+                          : "linear-gradient(135deg,#a855f7,#7c3aed)",
+                        color: "#fff",
+                        fontSize: "0.7rem",
+                        fontWeight: 700,
+                        cursor: passwordSaving ? "not-allowed" : "pointer",
+                      }}
+                    >
+                      {passwordSaving ? "Saving…" : "Save"}
+                    </button>
+                    <button
+                      onClick={resetPasswordForm}
+                      style={{
+                        padding: "0.4rem 0.6rem",
+                        borderRadius: 6,
+                        border: "1px solid var(--border)",
+                        background: "var(--surface2)",
+                        color: "var(--text2)",
+                        fontSize: "0.7rem",
+                        fontWeight: 600,
+                        cursor: "pointer",
+                      }}
+                    >
+                      Back
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <button
+                style={{
+                  padding: "0.5rem 0.7rem",
+                  borderRadius: 8,
+                  border: "none",
+                  background: "rgba(245,158,11,0.1)",
+                  color: "#fbbf24",
+                  fontSize: "0.75rem",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  textAlign: "left",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.45rem",
+                }}
+              >
+                🏅 Issue Certificate
+              </button>
+
+              <div style={{ borderTop: "1px solid var(--border2)", margin: "0.2rem 0" }} />
+
+              <button
+                onClick={async () => {
+                  const confirmed = window.confirm(
+                    `Withdraw ${s.firstName} ${s.lastName}? The student record will be kept but marked as withdrawn.`,
+                  );
+                  if (!confirmed) return;
+
+                  await fetch(`/api/students/${s.id}`, {
+                    method: "PUT",
+                    credentials: "include",
+                  });
+
+                  onRefresh();
+                  onClose();
+                }}
+                style={{
+                  padding: "0.5rem 0.7rem",
+                  borderRadius: 8,
+                  border: "none",
+                  background: "rgba(245,158,11,0.1)",
+                  color: "#fbbf24",
+                  fontSize: "0.75rem",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  textAlign: "left",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.45rem",
+                }}
+              >
+                ↩️ Withdraw Student
+              </button>
+
+              <button
+                onClick={async () => {
+                  const confirmed = window.confirm(
+                    `⚠️ PERMANENTLY DELETE ${s.firstName} ${s.lastName}? This action cannot be undone. All student data will be removed from the database.`,
+                  );
+                  if (!confirmed) return;
+
+                  await fetch(`/api/students/${s.id}`, {
+                    method: "DELETE",
+                    credentials: "include",
+                  });
+
+                  onRefresh();
+                  onClose();
+                }}
+                style={{
+                  padding: "0.5rem 0.7rem",
+                  borderRadius: 8,
+                  border: "none",
+                  background: "rgba(239,68,68,0.12)",
+                  color: "#ff6b6b",
+                  fontSize: "0.75rem",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  textAlign: "left",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.45rem",
+                }}
+              >
+                🗑️ Delete Permanently
+              </button>
+            </div>
+          </>
+        )}
 
         {/* Detail grid */}
         <div
@@ -332,118 +694,6 @@ export function StudentDetailModal({ student: s, onClose, onRefresh }: Props) {
               </div>
             ))}
           </div>
-        </div>
-
-        {/* Progress bars */}
-        <div
-          style={{
-            display: "flex",
-            gap: "0.55rem",
-            flexWrap: "wrap",
-            marginTop: "0.5rem",
-          }}
-        >
-          {s.payments[0]?.status === "PENDING" && (
-            <button
-              onClick={() => handleConfirmPayment(s.payments[0].id)}
-              style={{
-                padding: "0.5rem 1rem",
-                borderRadius: 8,
-                border: "1px solid rgba(34,197,94,0.3)",
-                background: "rgba(34,197,94,0.1)",
-                color: "#4ade80",
-                fontSize: "0.72rem",
-                fontWeight: 700,
-                cursor: "pointer",
-              }}
-            >
-              ✓ Confirm Payment
-            </button>
-          )}
-          <button
-            style={{
-              padding: "0.5rem 1rem",
-              borderRadius: 8,
-              border: "1px solid var(--border)",
-              background: "var(--surface2)",
-              color: "var(--sky)",
-              fontSize: "0.72rem",
-              fontWeight: 700,
-              cursor: "pointer",
-            }}
-          >
-            📧 Send Email
-          </button>
-          <button
-            style={{
-              padding: "0.5rem 1rem",
-              borderRadius: 8,
-              border: "1px solid rgba(245,158,11,0.3)",
-              background: "rgba(245,158,11,0.1)",
-              color: "#fbbf24",
-              fontSize: "0.72rem",
-              fontWeight: 700,
-              cursor: "pointer",
-            }}
-          >
-            🏅 Issue Certificate
-          </button>
-          <button
-            onClick={async () => {
-              const confirmed = window.confirm(
-                `Withdraw ${s.firstName} ${s.lastName}? The student record will be kept but marked as withdrawn.`,
-              );
-              if (!confirmed) return;
-
-              await fetch(`/api/students/${s.id}`, {
-                method: "PUT",
-                credentials: "include",
-              });
-
-              onRefresh();
-              onClose();
-            }}
-            style={{
-              padding: "0.5rem 1rem",
-              borderRadius: 8,
-              border: "1px solid rgba(245,158,11,0.3)",
-              background: "rgba(245,158,11,0.1)",
-              color: "#fbbf24",
-              fontSize: "0.72rem",
-              fontWeight: 700,
-              cursor: "pointer",
-            }}
-          >
-            ↩️ Withdraw Student
-          </button>
-          <button
-            onClick={async () => {
-              const confirmed = window.confirm(
-                `⚠️ PERMANENTLY DELETE ${s.firstName} ${s.lastName}? This action cannot be undone. All student data will be removed from the database.`,
-              );
-              if (!confirmed) return;
-
-              await fetch(`/api/students/${s.id}`, {
-                method: "DELETE",
-                credentials: "include",
-              });
-
-              onRefresh();
-              onClose();
-            }}
-            style={{
-              padding: "0.5rem 1rem",
-              borderRadius: 8,
-              border: "1px solid rgba(239,68,68,0.5)",
-              background: "rgba(239,68,68,0.15)",
-              color: "#ff6b6b",
-              fontSize: "0.72rem",
-              fontWeight: 700,
-              cursor: "pointer",
-            }}
-          >
-            🗑️ Delete Permanently
-          </button>
         </div>
       </div>
     </div>

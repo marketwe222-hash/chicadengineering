@@ -4,6 +4,7 @@ import { CourseLogo } from "@/components/ui/CourseLogo";
 import { useRouter } from "next/navigation";
 import {
   useState,
+  useRef,
   ChangeEvent,
   CSSProperties,
   ReactNode,
@@ -1162,6 +1163,7 @@ export default function RegisterPage() {
   const [data, setData] = useState(INITIAL);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const submittingRef = useRef(false);
   const router = useRouter();
 
   // Fetch live courses — only ACTIVE ones
@@ -1217,6 +1219,8 @@ export default function RegisterPage() {
   };
 
   const handleSubmit = async () => {
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     try {
       setLoading(true);
       const names = data.fullName.trim().split(" ");
@@ -1271,6 +1275,7 @@ export default function RegisterPage() {
       console.error(err);
       alert("Something went wrong. Please try again.");
     } finally {
+      submittingRef.current = false;
       setLoading(false);
     }
   };
