@@ -114,35 +114,13 @@ export default function AdminDashboardPage() {
         className="admin-main"
         style={{
           flex: 1,
-          padding: "1.5rem",
-          overflowY: "auto",
+          paddingTop: "1.5rem",
+          paddingRight: "1.5rem",
           paddingBottom: "5rem",
+          paddingLeft: "1.5rem",
+          overflowY: "auto",
         }}
       >
-        {/* Page title */}
-        <div style={{ marginBottom: "1.25rem" }}>
-          <h1
-            style={{
-              fontSize: "1.15rem",
-              fontWeight: 900,
-              color: "var(--text)",
-              letterSpacing: "-0.03em",
-              margin: 0,
-            }}
-          >
-            {view === "overview" && "Dashboard Overview"}
-            {view === "students" && "Students"}
-            {view === "courses" && pageView === "detail" && "Course Details"}
-            {view === "courses" && pageView === "list" && "Courses"}
-            {view === "editcourse" && "Edit Course"}
-            {view === "payments" && "Payments"}
-            {view === "reports" && "Reports & Analytics"}
-            {view === "content" && "Content Management"}
-            {view === "addstudent" && "Add New Student"}
-            {view === "addcourse" && "Create New Course"}
-            {view === "settings" && "Settings"}
-          </h1>
-        </div>
         {/* View router */}
         {view === "overview" && (
           <OverviewView

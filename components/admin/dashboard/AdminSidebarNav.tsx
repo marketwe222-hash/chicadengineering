@@ -24,6 +24,9 @@ interface Props {
   pendingCount: number;
 }
 
+const PAD_X = "1.1rem";
+const TOPBAR_H = 56;
+
 export function AdminSidebarNav({
   view,
   setView,
@@ -49,6 +52,29 @@ export function AdminSidebarNav({
     ? `${user.admin.firstName[0]}${user.admin.lastName[0]}`.toUpperCase()
     : "AD";
   const adminRole = user?.role === "SUPER_ADMIN" ? "Super Admin" : "Admin";
+
+  const pageTitle =
+    view === "overview"
+      ? "Dashboard Overview"
+      : view === "students"
+        ? "Students"
+        : view === "courses"
+          ? "Courses"
+          : view === "editcourse"
+            ? "Edit Course"
+            : view === "payments"
+              ? "Payments"
+              : view === "reports"
+                ? "Reports & Analytics"
+                : view === "content"
+                  ? "Content Management"
+                  : view === "addstudent"
+                    ? "Add New Student"
+                    : view === "addcourse"
+                      ? "Create New Course"
+                      : view === "settings"
+                        ? "Settings"
+                        : "";
 
   const nav: {
     id: View;
@@ -99,25 +125,37 @@ export function AdminSidebarNav({
           setOpen(false);
         }}
         style={{
+          position: "relative",
           display: "flex",
           alignItems: "center",
-          gap: "0.6rem",
-          padding: "0.58rem 0.7rem",
+          gap: "0.65rem",
+          padding: "0.56rem 0.65rem 0.56rem 0.85rem",
           borderRadius: 8,
-          marginBottom: "0.12rem",
-          background: active ? "rgba(220,38,38,0.15)" : "transparent",
-          border: active
-            ? "1px solid rgba(220,38,38,0.28)"
-            : "1px solid transparent",
+          marginBottom: "0.15rem",
+          background: active ? "rgba(220,38,38,0.12)" : "transparent",
           cursor: "pointer",
+          transition: "background 0.15s ease",
         }}
       >
         <span
           style={{
-            fontSize: "0.88rem",
+            position: "absolute",
+            left: 0,
+            top: "18%",
+            bottom: "18%",
+            width: 3,
+            borderRadius: 2,
+            background: active ? "#dc2626" : "transparent",
+            transition: "background 0.15s ease",
+          }}
+        />
+        <span
+          style={{
+            fontSize: "0.85rem",
             width: 16,
             textAlign: "center",
             flexShrink: 0,
+            opacity: active ? 1 : 0.85,
           }}
         >
           {icon}
@@ -128,6 +166,7 @@ export function AdminSidebarNav({
             fontWeight: active ? 700 : 500,
             color: active ? "var(--text)" : "var(--text2)",
             flex: 1,
+            letterSpacing: "0.01em",
           }}
         >
           {label}
@@ -146,6 +185,7 @@ export function AdminSidebarNav({
               padding: "0.08rem 0.42rem",
               borderRadius: "1rem",
               fontFamily: "var(--mono)",
+              lineHeight: 1.5,
             }}
           >
             {badge}
@@ -155,120 +195,56 @@ export function AdminSidebarNav({
     );
   }
 
+  /* ── Shared sidebar content (logo + nav + logout) ── */
   function SidebarContent() {
     return (
       <>
-        {/* Logo */}
-        <div>
-          <Link href="/academy">
+        {/* Logo (replaces the old profile section) */}
+        <div
+          style={{
+            borderBottom: "1px solid var(--border2)",
+          }}
+        >
+          <Link href="/academy" style={{ display: "inline-block" }}>
             <Image
               src="https://pub-608e7a106efa47bda7aae56ff6f486a3.r2.dev/FinalLogo.png"
               alt="CHICAD"
-              width={200}
+              width={100}
               height={100}
             />
           </Link>
         </div>
 
-        {/* Admin profile */}
-        <div
+        {/* Nav */}
+        <nav
           style={{
-            padding: "0.85rem 1rem",
-            borderBottom: "1px solid var(--border2)",
+            padding: `0.9rem ${PAD_X}`,
+            flex: 1,
+            overflowY: "auto",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-            <div
-              style={{
-                width: 36,
-                height: 36,
-                borderRadius: "50%",
-                background: "rgba(220,38,38,0.18)",
-                border: "1.5px solid rgba(220,38,38,0.45)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "0.78rem",
-                fontWeight: 800,
-                color: "#dc2626",
-                flexShrink: 0,
-                fontFamily: "var(--mono)",
-              }}
-            >
-              {adminInitials}
-            </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div
-                style={{
-                  fontSize: "0.78rem",
-                  fontWeight: 700,
-                  color: "var(--text)",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
-                {adminName}
-              </div>
-              <div
-                style={{
-                  fontSize: "0.6rem",
-                  color: "var(--text3)",
-                  fontFamily: "var(--mono)",
-                }}
-              >
-                {adminRole}
-              </div>
-            </div>
-          </div>
-          <div
-            style={{
-              marginTop: "0.5rem",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.35rem",
-            }}
-          >
-            <div
-              style={{
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                background: "#dc2626",
-                boxShadow: "0 0 5px #dc2626",
-                animation: "pulse-dot 2s infinite",
-              }}
-            />
-            <span
-              style={{
-                fontSize: "0.6rem",
-                fontWeight: 700,
-                color: "#dc2626",
-                letterSpacing: "0.06em",
-              }}
-            >
-              Admin Access
-            </span>
-          </div>
-        </div>
-
-        {/* Nav */}
-        <nav style={{ padding: "0.65rem 0.7rem", flex: 1, overflowY: "auto" }}>
           <SectionLabel>Dashboard</SectionLabel>
-          {nav.map((item) => (
-            <NavItem key={item.id} {...item} />
-          ))}
-          <div style={{ marginTop: "1rem" }}>
-            <SectionLabel>Management</SectionLabel>
-            {manage.map((item) => (
+          <div style={{ marginTop: "0.4rem" }}>
+            {nav.map((item) => (
               <NavItem key={item.id} {...item} />
             ))}
+          </div>
+          <div style={{ marginTop: "1.35rem" }}>
+            <SectionLabel>Management</SectionLabel>
+            <div style={{ marginTop: "0.4rem" }}>
+              {manage.map((item) => (
+                <NavItem key={item.id} {...item} />
+              ))}
+            </div>
           </div>
         </nav>
 
         {/* Logout */}
         <div
-          style={{ padding: "0.7rem", borderTop: "1px solid var(--border2)" }}
+          style={{
+            padding: `0.85rem ${PAD_X}`,
+            borderTop: "1px solid var(--border2)",
+          }}
         >
           <div
             className="nav-item"
@@ -276,10 +252,11 @@ export function AdminSidebarNav({
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "0.6rem",
-              padding: "0.55rem 0.7rem",
+              gap: "0.65rem",
+              padding: "0.55rem 0.65rem 0.55rem 0.85rem",
               borderRadius: 8,
               cursor: "pointer",
+              transition: "background 0.15s ease",
             }}
           >
             <span style={{ fontSize: "0.85rem" }}>🚪</span>
@@ -292,120 +269,200 @@ export function AdminSidebarNav({
     );
   }
 
-  /* ── Mobile ── */
-  if (isMobile) {
+  /* ── Top Bar ── */
+  function TopBar() {
     return (
-      <>
-        <style>{`
-          @media (max-width: 768px) {
-            .admin-main { padding-top: 3.5rem !important; }
-          }
-        `}</style>
-        {open && (
-          <div
-            onClick={() => setOpen(false)}
-            style={{
-              position: "fixed",
-              inset: 0,
-              zIndex: 40,
-              background: "rgba(0,0,0,0.55)",
-            }}
-          />
-        )}
-
-        {/* Hamburger button — fixed top-left */}
-        <button
-          onClick={() => setOpen(true)}
-          style={{
-            position: "fixed",
-            top: 12,
-            left: 12,
-            zIndex: 35,
-            width: 38,
-            height: 38,
-            borderRadius: 10,
-            border: "1px solid var(--border2)",
-            background: "#0f172a",
-            color: "var(--text2)",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "1.2rem",
-            boxShadow: "0 2px 12px rgba(0,0,0,0.3)",
-          }}
-        >
-          ☰
-        </button>
-
-        {/* Sliding sidebar */}
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: isMobile ? 0 : 220,
+          right: 0,
+          height: TOPBAR_H,
+          zIndex: 30,
+          background: "#0f172a",
+          borderBottom: "1px solid rgba(255,255,255,0.06)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: isMobile ? "0 1rem 0 3.5rem" : "0 1.5rem 0 1rem",
+        }}
+      >
         <div
           style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            bottom: 0,
-            zIndex: 50,
-            width: 256,
+            fontSize: "0.95rem",
+            fontWeight: 800,
+            color: "var(--text)",
+            letterSpacing: "-0.02em",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {pageTitle}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.65rem" }}>
+          <div
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: "50%",
+              background: "rgba(220,38,38,0.18)",
+              border: "1.5px solid rgba(220,38,38,0.45)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "0.7rem",
+              fontWeight: 800,
+              color: "#dc2626",
+              flexShrink: 0,
+              fontFamily: "var(--mono)",
+            }}
+          >
+            {adminInitials}
+          </div>
+          <div style={{ display: isMobile ? "none" : "block" }}>
+            <div
+              style={{
+                fontSize: "0.75rem",
+                fontWeight: 700,
+                color: "var(--text)",
+                lineHeight: 1.2,
+              }}
+            >
+              {adminName}
+            </div>
+            <div
+              style={{
+                fontSize: "0.58rem",
+                color: "var(--text3)",
+                fontFamily: "var(--mono)",
+              }}
+            >
+              {adminRole}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <style>{`
+        @media (max-width: 768px) {
+          .admin-main { padding-top: ${TOPBAR_H + 12}px !important; }
+        }
+        .admin-main { padding-top: ${TOPBAR_H + 8}px; }
+      `}</style>
+
+      <TopBar />
+
+      {/* ── Mobile ── */}
+      {isMobile && (
+        <>
+          {open && (
+            <div
+              onClick={() => setOpen(false)}
+              style={{
+                position: "fixed",
+                inset: 0,
+                zIndex: 40,
+                background: "rgba(0,0,0,0.55)",
+              }}
+            />
+          )}
+
+          <button
+            onClick={() => setOpen(true)}
+            style={{
+              position: "fixed",
+              top: 9,
+              left: 10,
+              zIndex: 35,
+              width: 36,
+              height: 36,
+              borderRadius: 10,
+              border: "1px solid rgba(255,255,255,0.08)",
+              background: "#0f172a",
+              color: "var(--text2)",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "1.15rem",
+            }}
+          >
+            ☰
+          </button>
+
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              bottom: 0,
+              zIndex: 50,
+              width: 264,
+              background: "#0f172a",
+              borderRight: "1px solid rgba(255,255,255,0.06)",
+              display: "flex",
+              flexDirection: "column",
+              transform: open ? "translateX(0)" : "translateX(-100%)",
+              transition: "transform 0.26s cubic-bezier(0.34,1.56,0.64,1)",
+              boxShadow: open ? "4px 0 30px rgba(0,0,0,0.5)" : "none",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                padding: `0.6rem ${PAD_X} 0`,
+              }}
+            >
+              <button
+                onClick={() => setOpen(false)}
+                style={{
+                  width: 30,
+                  height: 30,
+                  borderRadius: 8,
+                  border: "1px solid var(--border2)",
+                  background: "transparent",
+                  color: "var(--text3)",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "0.85rem",
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            <SidebarContent />
+          </div>
+        </>
+      )}
+
+      {/* ── Desktop sidebar ── */}
+      {!isMobile && (
+        <aside
+          style={{
+            width: 220,
+            flexShrink: 0,
             background: "#0f172a",
             borderRight: "1px solid rgba(255,255,255,0.06)",
             display: "flex",
             flexDirection: "column",
-            transform: open ? "translateX(0)" : "translateX(-100%)",
-            transition: "transform 0.26s cubic-bezier(0.34,1.56,0.64,1)",
-            boxShadow: open ? "4px 0 30px rgba(0,0,0,0.5)" : "none",
+            height: "100vh",
+            position: "sticky",
+            top: 0,
+            overflow: "hidden",
           }}
         >
-          {/* Close button inside sidebar header */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              padding: "0.6rem 0.6rem 0",
-            }}
-          >
-            <button
-              onClick={() => setOpen(false)}
-              style={{
-                width: 30,
-                height: 30,
-                borderRadius: 8,
-                border: "1px solid var(--border2)",
-                background: "transparent",
-                color: "var(--text3)",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "0.85rem",
-              }}
-            >
-              ✕
-            </button>
-          </div>
           <SidebarContent />
-        </div>
-      </>
-    );
-  }
-
-  /* ── Desktop ── */
-  return (
-    <aside
-      style={{
-        width: 210,
-        flexShrink: 0,
-        background: "var(--surface)",
-        borderRight: "1px solid var(--border)",
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh",
-        position: "sticky",
-        top: 0,
-        overflow: "hidden",
-      }}
-    >
-      <SidebarContent />
-    </aside>
+        </aside>
+      )}
+    </>
   );
 }
