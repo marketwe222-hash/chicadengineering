@@ -88,7 +88,7 @@ export function CoursesView({
                 className="card-hover fade-up"
                 style={{
                   background: "var(--surface)",
-                  border: "1px solid var(--border)",
+                  border: `1px solid ${color}44`,
                   borderRadius: 14,
                   overflow: "hidden",
                   animationDelay: `${i * 50}ms`,
