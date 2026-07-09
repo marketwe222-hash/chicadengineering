@@ -152,11 +152,20 @@ export function CourseDetailView({
   onEdit,
   onRefresh,
 }: Props) {
+  const [isMobile, setIsMobile] = useState(false);
   const [course, setCourse] = useState<CourseDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [tab, setTab] = useState<"lessons" | "media">("lessons");
   const [expandedLessonId, setExpandedLessonId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 768px)");
+    setIsMobile(mq.matches);
+    const h = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", h);
+    return () => mq.removeEventListener("change", h);
+  }, []);
 
   // Lesson form
   const [showLessonForm, setShowLessonForm] = useState(false);
@@ -395,34 +404,38 @@ export function CourseDetailView({
       >
         <div
           style={{
-            height: 100,
+            minHeight: isMobile ? 110 : 100,
             background: `linear-gradient(135deg,${color}33,rgba(6,16,30,0.97))`,
             display: "flex",
             alignItems: "center",
-            padding: "0 1.5rem",
-            gap: "1rem",
+            padding: isMobile ? "0.75rem 1rem" : "0 1.5rem",
+            gap: "0.75rem",
+            position: "relative",
           }}
         >
           <CourseLogo
             logoImage={course.logoImage}
             icon={course.icon ?? "📐"}
-            size="xl"
+            size={isMobile ? "md" : "xl"}
             alt={course.name}
           />
-          <div>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <div
               style={{
-                fontSize: "1.1rem",
+                fontSize: isMobile ? "0.85rem" : "1.1rem",
                 fontWeight: 900,
                 color: "var(--text)",
                 letterSpacing: "-0.02em",
+                whiteSpace: isMobile ? "normal" : "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
               }}
             >
               {course.name}
             </div>
             <div
               style={{
-                fontSize: "0.65rem",
+                fontSize: isMobile ? "0.58rem" : "0.65rem",
                 color: "var(--text3)",
                 fontFamily: "var(--mono)",
                 marginTop: 2,
@@ -433,10 +446,13 @@ export function CourseDetailView({
             {course.description && (
               <div
                 style={{
-                  fontSize: "0.7rem",
+                  fontSize: isMobile ? "0.62rem" : "0.7rem",
                   color: "var(--text2)",
                   marginTop: 4,
-                  maxWidth: 400,
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
                 }}
               >
                 {course.description}
@@ -444,97 +460,100 @@ export function CourseDetailView({
             )}
           </div>
 
-          <div
-            style={{
-              marginLeft: "auto",
-              display: "flex",
-              gap: "0.5rem",
-              alignItems: "center",
-              flexWrap: "wrap",
-            }}
-          >
-            <Tag label={course.category} color={color} />
-            <Tag
-              label={course.status}
-              color={course.status === "ACTIVE" ? "#22c55e" : "#f59e0b"}
-            />
-
-            {/* Quick media-type buttons */}
+          {isMobile ? (
             <div
               style={{
+                position: "absolute",
+                top: "0.5rem",
+                right: "0.75rem",
                 display: "flex",
-                gap: "0.35rem",
+                gap: "0.3rem",
                 alignItems: "center",
-                borderLeft: "1px solid var(--border2)",
-                paddingLeft: "0.65rem",
-                marginLeft: "0.15rem",
               }}
             >
-              {MEDIA_TYPES.map(({ type, label }) => (
-                <button
-                  key={type}
-                  title={`Add ${type}`}
-                  onClick={() => {
-                    setTab("media");
-                    setMediaForm((f) => ({
-                      ...f,
-                      type,
-                      title: "",
-                      description: "",
-                      isPublished: false,
-                    }));
-                    setUploadedFile(null);
-                    setShowMediaForm(true);
-                    setShowLessonForm(false);
-                  }}
-                  style={{
-                    padding: "0.32rem 0.65rem",
-                    borderRadius: 7,
-                    border: "1px solid var(--border)",
-                    background: "var(--surface2)",
-                    color: "var(--text2)",
-                    fontSize: "0.68rem",
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {label}
-                </button>
-              ))}
+              <Tag label={course.category} color={color} />
+              <Tag
+                label={course.status}
+                color={course.status === "ACTIVE" ? "#22c55e" : "#f59e0b"}
+              />
+              <button
+                onClick={onEdit}
+                style={{
+                  padding: "0.3rem 0.65rem",
+                  borderRadius: 7,
+                  border: "1px solid var(--border)",
+                  background: "var(--surface2)",
+                  color: "var(--text2)",
+                  fontSize: "0.65rem",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
+              >
+                ✏️ Edit
+              </button>
+              <button
+                onClick={onBack}
+                style={{
+                  padding: "0.3rem 0.65rem",
+                  borderRadius: 7,
+                  border: "1px solid var(--border)",
+                  background: "var(--surface2)",
+                  color: "var(--text2)",
+                  fontSize: "0.65rem",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
+              >
+                ← Back
+              </button>
             </div>
-
-            <button
-              onClick={onEdit}
+          ) : (
+            <div
               style={{
-                padding: "0.4rem 1rem",
-                borderRadius: 7,
-                border: "1px solid var(--border)",
-                background: "var(--surface2)",
-                color: "var(--text2)",
-                fontSize: "0.72rem",
-                fontWeight: 600,
-                cursor: "pointer",
+                marginLeft: "auto",
+                display: "flex",
+                gap: "0.5rem",
+                alignItems: "center",
+                flexWrap: "wrap",
               }}
             >
-              ✏️ Edit
-            </button>
-            <button
-              onClick={onBack}
-              style={{
-                padding: "0.4rem 1rem",
-                borderRadius: 7,
-                border: "1px solid var(--border)",
-                background: "var(--surface2)",
-                color: "var(--text2)",
-                fontSize: "0.72rem",
-                fontWeight: 600,
-                cursor: "pointer",
-              }}
-            >
-              ← Back
-            </button>
-          </div>
+              <Tag label={course.category} color={color} />
+              <Tag
+                label={course.status}
+                color={course.status === "ACTIVE" ? "#22c55e" : "#f59e0b"}
+              />
+              <button
+                onClick={onEdit}
+                style={{
+                  padding: "0.4rem 1rem",
+                  borderRadius: 7,
+                  border: "1px solid var(--border)",
+                  background: "var(--surface2)",
+                  color: "var(--text2)",
+                  fontSize: "0.72rem",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
+              >
+                ✏️ Edit
+              </button>
+              <button
+                onClick={onBack}
+                style={{
+                  padding: "0.4rem 1rem",
+                  borderRadius: 7,
+                  border: "1px solid var(--border)",
+                  background: "var(--surface2)",
+                  color: "var(--text2)",
+                  fontSize: "0.72rem",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
+              >
+                ← Back
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Stats row */}

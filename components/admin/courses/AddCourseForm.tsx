@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { uploadToR2 } from "@/lib/uploadUtils";
+
 import {
   SectionLabel,
   FormField,
@@ -8,7 +9,6 @@ import {
   inputStyle,
   COURSE_CATEGORIES,
   COURSE_ICONS,
-  categoryColor,
 } from "@/components/admin/shared";
 import type { View } from "@/components/admin/dashboard/AdminSidebarNav";
 import type { AdminCourse } from "@/hooks/useAdminDashboard";
@@ -26,7 +26,7 @@ export function AddCourseForm({ setView, onRefresh, editCourse }: Props) {
     name: editCourse?.name ?? "",
     courseCode: editCourse?.courseCode ?? "",
     category: editCourse?.category ?? "CAD",
-    icon: editCourse?.logoImage ?? "📐",
+    icon: editCourse?.icon ?? "📐",
     description: editCourse?.description ?? "",
     registrationFee: String(editCourse?.registrationFee ?? 5000),
     trainingFee: String(editCourse?.trainingFee ?? 70000),
@@ -52,7 +52,7 @@ export function AddCourseForm({ setView, onRefresh, editCourse }: Props) {
       name: editCourse.name ?? "",
       courseCode: editCourse.courseCode ?? "",
       category: editCourse.category ?? "CAD",
-      icon: editCourse.logoImage ?? "📐",
+      icon: editCourse.icon ?? "📐",
       description: editCourse.description ?? "",
       registrationFee: String(editCourse.registrationFee ?? 5000),
       trainingFee: String(editCourse.trainingFee ?? 70000),
@@ -112,8 +112,6 @@ export function AddCourseForm({ setView, onRefresh, editCourse }: Props) {
     }
   };
 
-  const previewColor = categoryColor(form.category);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
@@ -132,7 +130,7 @@ export function AddCourseForm({ setView, onRefresh, editCourse }: Props) {
           name: form.name.trim(),
           courseCode: form.courseCode.trim().toUpperCase(),
           category: form.category,
-          icon: form.logoImage.trim() || "📐",
+          icon: form.icon.trim() || "📐",
           description: form.description.trim() || null,
           registrationFee: Number(form.registrationFee),
           trainingFee: Number(form.trainingFee),
@@ -165,10 +163,9 @@ export function AddCourseForm({ setView, onRefresh, editCourse }: Props) {
   return (
     <div
       style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 300px",
+        display: "flex",
+        flexDirection: "column",
         gap: "1rem",
-        alignItems: "start",
       }}
     >
       {/* ── Form ── */}
@@ -689,204 +686,6 @@ export function AddCourseForm({ setView, onRefresh, editCourse }: Props) {
           </div>
         </div>
       </form>
-
-      {/* ── Live Preview ── */}
-      <div
-        style={{ display: "flex", flexDirection: "column", gap: "0.9rem" }}
-        className="fade-up"
-      >
-        <div
-          style={{
-            background: "var(--surface)",
-            border: "1px solid var(--border)",
-            borderRadius: 14,
-            overflow: "hidden",
-          }}
-        >
-          <div
-            style={{
-              height: 90,
-              background: `linear-gradient(135deg,${previewColor}22,rgba(6,16,30,0.95))`,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              position: "relative",
-              borderBottom: "1px solid var(--border2)",
-            }}
-          >
-            <span style={{ fontSize: "2.6rem" }}>{form.icon || "📐"}</span>
-            <div
-              style={{ position: "absolute", top: "0.55rem", right: "0.6rem" }}
-            >
-              <Tag label={form.category} color={previewColor} />
-            </div>
-            <div
-              style={{ position: "absolute", top: "0.55rem", left: "0.6rem" }}
-            >
-              <Tag
-                label={form.status}
-                color={form.status === "ACTIVE" ? "#22c55e" : "#f59e0b"}
-              />
-            </div>
-          </div>
-          <div style={{ padding: "0.9rem 1.1rem" }}>
-            <h3
-              style={{
-                fontSize: "0.95rem",
-                fontWeight: 800,
-                color: "var(--text)",
-                letterSpacing: "-0.02em",
-                marginBottom: "0.12rem",
-              }}
-            >
-              {form.name || "Course Name"}
-            </h3>
-            <div
-              style={{
-                fontSize: "0.62rem",
-                color: "var(--text3)",
-                marginBottom: "0.6rem",
-                fontFamily: "var(--mono)",
-              }}
-            >
-              {form.courseCode || "COURSE-CODE"}
-            </div>
-            {form.description && (
-              <div
-                style={{
-                  fontSize: "0.7rem",
-                  color: "var(--text2)",
-                  lineHeight: 1.55,
-                  marginBottom: "0.7rem",
-                }}
-              >
-                {form.description}
-              </div>
-            )}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr 1fr",
-                gap: "0.4rem",
-                marginBottom: "0.65rem",
-              }}
-            >
-              {(
-                [
-                  [
-                    isEdit ? String(editCourse?._count?.enrollments ?? 0) : "0",
-                    "Students",
-                    previewColor,
-                  ],
-                  [form.durationMonths || "3", "Months", "#fbbf24"],
-                  [form.maxStudents || "30", "Max", "#a78bfa"],
-                ] as const
-              ).map(([val, lbl, col]) => (
-                <div
-                  key={String(lbl)}
-                  style={{
-                    background: "var(--surface2)",
-                    border: "1px solid var(--border2)",
-                    borderRadius: 8,
-                    padding: "0.45rem 0.35rem",
-                    textAlign: "center",
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: "0.92rem",
-                      fontWeight: 900,
-                      color: String(col),
-                      fontFamily: "var(--mono)",
-                      lineHeight: 1,
-                    }}
-                  >
-                    {val}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: "0.5rem",
-                      color: "var(--text3)",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.07em",
-                      fontWeight: 700,
-                      marginTop: 2,
-                    }}
-                  >
-                    {lbl}
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
-              <Tag
-                label={`Reg: ${Number(form.registrationFee || 0).toLocaleString()} FRS`}
-                color="var(--text3)"
-              />
-              <Tag
-                label={`Fee: ${Number(form.trainingFee || 0).toLocaleString()} FRS`}
-                color="var(--text3)"
-              />
-            </div>
-            {form.instructorName && (
-              <div
-                style={{
-                  marginTop: "0.6rem",
-                  fontSize: "0.68rem",
-                  color: "var(--text3)",
-                }}
-              >
-                👤 {form.instructorName}
-              </div>
-            )}
-            {form.schedule && (
-              <div style={{ fontSize: "0.65rem", color: "var(--text3)" }}>
-                🕐 {form.schedule}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Tips */}
-        <div
-          style={{
-            background: "var(--surface)",
-            border: "1px solid var(--border)",
-            borderRadius: 14,
-            padding: "1.1rem",
-          }}
-        >
-          <SectionLabel>Tips</SectionLabel>
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "0.55rem" }}
-          >
-            {[
-              "Course code must be unique (e.g. AUTOCAD-B11)",
-              "Students enroll after course is Active",
-              "Add lessons after creating the course",
-              "Fees are in CFA Francs (FRS)",
-            ].map((tip) => (
-              <div
-                key={tip}
-                style={{
-                  display: "flex",
-                  gap: "0.45rem",
-                  fontSize: "0.7rem",
-                  color: "var(--text2)",
-                  lineHeight: 1.5,
-                }}
-              >
-                <span
-                  style={{ color: "#22c55e", fontWeight: 700, flexShrink: 0 }}
-                >
-                  ✓
-                </span>
-                {tip}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

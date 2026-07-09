@@ -114,7 +114,6 @@ export default function AdminDashboardPage() {
         className="admin-main"
         style={{
           flex: 1,
-          paddingTop: "1.5rem",
           paddingRight: "1.5rem",
           paddingBottom: "5rem",
           paddingLeft: "1.5rem",

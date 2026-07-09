@@ -1,6 +1,5 @@
-// components/admin/courses/CoursesView.tsx
-
 "use client";
+import { useState, useEffect } from "react";
 import { Tag } from "@/components/admin/shared";
 import { categoryColor, fmtMoney } from "@/components/admin/shared";
 import { CourseLogo } from "@/components/ui/CourseLogo";
@@ -11,8 +10,8 @@ interface Props {
   setView: (v: View) => void;
   courses: AdminCourse[];
   onRefresh: () => void;
-  onEditCourse: (course: AdminCourse) => void; // <-- new
-  onViewCourse: (course: AdminCourse) => void; // <-- new
+  onEditCourse: (course: AdminCourse) => void;
+  onViewCourse: (course: AdminCourse) => void;
 }
 
 export function CoursesView({
@@ -22,6 +21,20 @@ export function CoursesView({
   onEditCourse,
   onViewCourse,
 }: Props) {
+  const [cols, setCols] = useState(3);
+
+  useEffect(() => {
+    const update = () => {
+      const w = window.innerWidth;
+      if (w < 640) setCols(1);
+      else if (w < 1024) setCols(2);
+      else setCols(3);
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
@@ -63,7 +76,7 @@ export function CoursesView({
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(3,1fr)",
+            gridTemplateColumns: `repeat(${cols},1fr)`,
             gap: "0.9rem",
           }}
         >
