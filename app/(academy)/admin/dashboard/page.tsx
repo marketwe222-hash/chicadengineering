@@ -53,7 +53,7 @@ export default function AdminDashboardPage() {
 
   const handleLogout = useCallback(async () => {
     await logout();
-    router.push("/academy/admin/login");
+    router.push("/admin/login");
   }, [logout, router]);
 
   const handleViewChange = (v: View) => {

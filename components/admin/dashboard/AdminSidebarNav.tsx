@@ -159,18 +159,13 @@ export function AdminSidebarNav({
     return (
       <>
         {/* Logo */}
-        <div
-          style={{
-            padding: "1.1rem 1.1rem 0.9rem",
-            borderBottom: "1px solid var(--border2)",
-          }}
-        >
+        <div>
           <Link href="/academy">
             <Image
               src="https://pub-608e7a106efa47bda7aae56ff6f486a3.r2.dev/FinalLogo.png"
               alt="CHICAD"
-              width={100}
-              height={50}
+              width={200}
+              height={100}
             />
           </Link>
         </div>
