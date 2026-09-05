@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import pg from "pg";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 
 const connectionString = `${process.env.DATABASE_URL}`;
 const pool = new pg.Pool({ connectionString });
@@ -382,7 +383,8 @@ async function main() {
   for (let i = 0; i < STUDENTS_DATA.length; i++) {
     const s = STUDENTS_DATA[i];
     const studentId = generateStudentId(currentYear, i + 1);
-    const passwordHash = await hash(s.password);
+    const rawPassword = crypto.randomBytes(4).toString("hex");
+    const passwordHash = await hash(rawPassword);
 
     const user = await prisma.user.create({
       data: {
@@ -416,7 +418,7 @@ async function main() {
       },
     });
 
-    createdStudents.push({ student, user, courseCode: s.courseCode });
+    createdStudents.push({ student, user, courseCode: s.courseCode, rawPassword });
   }
   console.log(`✅ ${createdStudents.length} students created\n`);
 
@@ -645,10 +647,10 @@ async function main() {
   console.log("  ADMIN:");
   console.log("    Email    : admin@chicadacademy.cm");
   console.log("    Password : admin123\n");
-  console.log("  STUDENTS (studentId or email + password: chicad123):");
-  for (const { student } of createdStudents) {
+  console.log("  STUDENTS:");
+  for (const { student, rawPassword } of createdStudents) {
     console.log(
-      `    ${student.studentId}  →  ${student.firstName} ${student.lastName}  (${student.userId})`,
+      `    ${student.studentId}  →  ${student.firstName} ${student.lastName}  (${student.userId}) - Password: ${rawPassword}`,
     );
   }
   console.log("─".repeat(50));

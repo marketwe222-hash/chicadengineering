@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/auth";
 import { publicRegisterSchema } from "@/lib/validators";
@@ -61,7 +62,8 @@ export async function POST(req: NextRequest) {
     }
 
     const studentId = await generateStudentId();
-    const defaultPassword = "chicad123";
+    // Generate a random 8-character password
+    const defaultPassword = crypto.randomBytes(4).toString("hex");
     const passwordHash = await hashPassword(defaultPassword);
 
     // Create user + student + enrollment in one transaction
