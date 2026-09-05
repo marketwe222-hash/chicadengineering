@@ -632,6 +632,8 @@ export default function CourseResourcesView({ course, onBack }: Props) {
             <video
               src={selectedVideo.fileUrl}
               controls
+              controlsList="nodownload"
+              onContextMenu={(e) => e.preventDefault()}
               autoPlay
               style={{
                 width: "100%",

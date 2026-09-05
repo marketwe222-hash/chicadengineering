@@ -98,6 +98,8 @@ export function VideoUpload({
           <video
             src={value.url}
             controls
+            controlsList="nodownload"
+            onContextMenu={(e) => e.preventDefault()}
             style={{
               width: "100%",
               maxHeight: 240,

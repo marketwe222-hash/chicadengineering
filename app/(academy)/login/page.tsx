@@ -184,8 +184,6 @@ export default function StudentLoginPage() {
     setMounted(true);
   }, []);
 
-  if (!mounted) return null;
-
   const validate = () => {
     const newErrors: typeof errors = {};
 

@@ -2531,7 +2531,6 @@ export default function ConstructionPage() {
   useEffect(() => {
     setMounted(true);
   }, []);
-  if (!mounted) return null;
 
   return (
     <>
