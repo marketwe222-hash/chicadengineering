@@ -16,7 +16,9 @@ export interface DashboardCourse {
   name: string;
   category: string;
   icon: string;
+  logoImage?: string | null;
   color: string;
+  status: string;
   currentLessonOrder: number;
   totalLessons: number;
   currentLessonName: string;
