@@ -91,6 +91,33 @@ export function StudentDetailModal({ student: s, onClose, onRefresh }: Props) {
     onRefresh();
   };
 
+  const handleUpdateEnrollmentStatus = async (
+    enrollmentId: string,
+    courseName: string,
+    status: "ACTIVE" | "REJECTED"
+  ) => {
+    const action = status === "ACTIVE" ? "Approve" : "Reject";
+    const confirmed = window.confirm(
+      `${action} enrollment in ${courseName} for ${s.firstName} ${s.lastName}?`
+    );
+    if (!confirmed) return;
+
+    const response = await fetch(`/api/students/${s.id}/enrollments`, {
+      method: "PATCH",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ enrollmentId, status }),
+    });
+
+    if (!response.ok) {
+      const result = await response.json();
+      window.alert(result.error || `Failed to ${action.toLowerCase()} enrollment`);
+      return;
+    }
+
+    onRefresh();
+  };
+
   return (
     <div
       style={{
@@ -675,22 +702,42 @@ export function StudentDetailModal({ student: s, onClose, onRefresh }: Props) {
                   </div>
                 </div>
 
-                <button
-                  onClick={() => handleRemoveEnrollment(e.id, e.course.name)}
-                  style={{
-                    padding: "0.55rem 0.85rem",
-                    borderRadius: 10,
-                    border: "1px solid rgba(239,68,68,0.4)",
-                    background: "rgba(239,68,68,0.12)",
-                    color: "#ef4444",
-                    fontSize: "0.78rem",
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    minWidth: 118,
-                  }}
-                >
-                  Remove course
-                </button>
+                <div style={{ display: "flex", gap: "0.5rem", flexDirection: "column" }}>
+                  {e.status === "PENDING" && (
+                    <button
+                      onClick={() => handleUpdateEnrollmentStatus(e.id, e.course.name, "ACTIVE")}
+                      style={{
+                        padding: "0.55rem 0.85rem",
+                        borderRadius: 10,
+                        border: "1px solid rgba(34,197,94,0.4)",
+                        background: "rgba(34,197,94,0.12)",
+                        color: "#22c55e",
+                        fontSize: "0.78rem",
+                        fontWeight: 700,
+                        cursor: "pointer",
+                        minWidth: 118,
+                      }}
+                    >
+                      Approve
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleRemoveEnrollment(e.id, e.course.name)}
+                    style={{
+                      padding: "0.55rem 0.85rem",
+                      borderRadius: 10,
+                      border: "1px solid rgba(239,68,68,0.4)",
+                      background: "rgba(239,68,68,0.12)",
+                      color: "#ef4444",
+                      fontSize: "0.78rem",
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      minWidth: 118,
+                    }}
+                  >
+                    Remove course
+                  </button>
+                </div>
               </div>
             ))}
           </div>

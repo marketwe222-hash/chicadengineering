@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
               enrollments: {
                 create: {
                   courseId,
-                  status: "ACTIVE",
+                  status: "PENDING",
                 },
               },
             },

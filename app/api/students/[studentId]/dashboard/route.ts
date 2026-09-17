@@ -22,7 +22,7 @@ export async function GET(
     where: { id: studentId },
     include: {
       enrollments: {
-        where: { status: "ACTIVE" },
+        where: { status: { in: ["ACTIVE", "PENDING"] } },
         include: {
           course: {
             include: {
@@ -55,7 +55,6 @@ export async function GET(
 
   // Build enriched courses
   const courses = student.enrollments
-    .filter((e) => e.status === "ACTIVE")
     .map((enrollment) => {
       const lessons = enrollment.course.lessons;
 
@@ -77,6 +76,7 @@ export async function GET(
         icon: enrollment.course.icon ?? "📐",
         logoImage: enrollment.course.logoImage ?? null,
         color: categoryColor(enrollment.course.category),
+        status: enrollment.status,
         currentLessonOrder: currentLesson
           ? currentLesson.order + 1
           : completedCount,

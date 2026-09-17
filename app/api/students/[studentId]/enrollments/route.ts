@@ -48,11 +48,14 @@ export async function POST(req: NextRequest, { params }: Params) {
       );
     }
 
+    const isAdmin = user.role === "ADMIN" || user.role === "SUPER_ADMIN";
+    const initialStatus = isAdmin ? "ACTIVE" : "PENDING";
+
     const enrollment = await prisma.enrollment.create({
       data: {
         student: { connect: { id: studentId } },
         course: { connect: { id: courseId } },
-        status: "ACTIVE",
+        status: initialStatus,
         enrolledAt: new Date(),
       },
       include: {
@@ -73,12 +76,61 @@ export async function POST(req: NextRequest, { params }: Params) {
   }
 }
 
+export async function PATCH(req: NextRequest, { params }: Params) {
+  try {
+    const { studentId } = await params;
+    const user = await requireAuth();
+
+    if (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const body = await req.json();
+    const { enrollmentId, status } = body;
+
+    if (!enrollmentId || !status) {
+      return NextResponse.json(
+        { error: "enrollmentId and status are required" },
+        { status: 400 },
+      );
+    }
+
+    const enrollment = await prisma.enrollment.findUnique({
+      where: { id: enrollmentId },
+    });
+
+    if (!enrollment || enrollment.studentId !== studentId) {
+      return NextResponse.json(
+        { error: "Enrollment not found" },
+        { status: 404 },
+      );
+    }
+
+    const updatedEnrollment = await prisma.enrollment.update({
+      where: { id: enrollmentId },
+      data: { status },
+      include: { course: true },
+    });
+
+    return NextResponse.json({
+      message: "Enrollment updated successfully",
+      data: { enrollment: updatedEnrollment },
+    });
+  } catch (error) {
+    console.error("[UPDATE_ENROLLMENT]", error);
+    return NextResponse.json(
+      { error: "Unable to update enrollment" },
+      { status: 500 },
+    );
+  }
+}
+
 export async function DELETE(req: NextRequest, { params }: Params) {
   try {
     const { studentId } = await params;
     const user = await requireAuth();
 
-    if (user.role !== "ADMIN" && user.student?.id !== studentId) {
+    if (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN" && user.student?.id !== studentId) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
