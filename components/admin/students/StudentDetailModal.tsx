@@ -480,13 +480,19 @@ export function StudentDetailModal({ student: s, onClose, onRefresh }: Props) {
 
               <button
                 onClick={async () => {
+                  const isWithdrawn = s.status === "WITHDRAWN";
+                  const actionName = isWithdrawn ? "Reactivate" : "Withdraw";
+                  const targetStatus = isWithdrawn ? "ACTIVE" : "WITHDRAWN";
+
                   const confirmed = window.confirm(
-                    `Withdraw ${s.firstName} ${s.lastName}? The student record will be kept but marked as withdrawn.`,
+                    `${actionName} ${s.firstName} ${s.lastName}?`
                   );
                   if (!confirmed) return;
 
                   await fetch(`/api/students/${s.id}`, {
                     method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ status: targetStatus }),
                     credentials: "include",
                   });
 
@@ -497,8 +503,8 @@ export function StudentDetailModal({ student: s, onClose, onRefresh }: Props) {
                   padding: "0.5rem 0.7rem",
                   borderRadius: 8,
                   border: "none",
-                  background: "rgba(245,158,11,0.1)",
-                  color: "#fbbf24",
+                  background: s.status === "WITHDRAWN" ? "rgba(34,197,94,0.12)" : "rgba(245,158,11,0.1)",
+                  color: s.status === "WITHDRAWN" ? "#22c55e" : "#fbbf24",
                   fontSize: "0.75rem",
                   fontWeight: 700,
                   cursor: "pointer",
@@ -508,7 +514,7 @@ export function StudentDetailModal({ student: s, onClose, onRefresh }: Props) {
                   gap: "0.45rem",
                 }}
               >
-                ↩️ Withdraw Student
+                {s.status === "WITHDRAWN" ? "✅ Reactivate Student" : "↩️ Withdraw Student"}
               </button>
 
               <button

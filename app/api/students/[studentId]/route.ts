@@ -160,20 +160,30 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
   }
 }
 
-// ── PUT /api/students/:studentId/withdraw ──────────────────────
-// This marks the student as withdrawn without deleting
-export async function PUT(_req: NextRequest, { params }: Params) {
+// ── PUT /api/students/:studentId ──────────────────────
+// This updates the student status (e.g. withdraw or activate)
+export async function PUT(req: NextRequest, { params }: Params) {
   try {
     await requireAdmin();
     const { studentId } = await params;
+    let targetStatus = "WITHDRAWN";
+
+    try {
+      const body = await req.json();
+      if (body.status === "ACTIVE" || body.status === "WITHDRAWN") {
+        targetStatus = body.status;
+      }
+    } catch (e) {
+      // Body might be empty, default to WITHDRAWN for backward compatibility
+    }
 
     const student = await prisma.student.update({
       where: { id: studentId },
-      data: { status: "WITHDRAWN" },
+      data: { status: targetStatus as any },
     });
 
     return NextResponse.json({
-      message: "Student withdrawn successfully",
+      message: `Student status updated to ${targetStatus} successfully`,
       data: student,
     });
   } catch (err: unknown) {
@@ -184,7 +194,7 @@ export async function PUT(_req: NextRequest, { params }: Params) {
       return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
 
-    console.error("[WITHDRAW_STUDENT]", err);
+    console.error("[UPDATE_STUDENT_STATUS]", err);
     return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
 }
