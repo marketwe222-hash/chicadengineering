@@ -90,7 +90,7 @@ export default function StudentSidebarNav({
       <div
         style={{
           borderBottom: "1px solid var(--sidebar-border)",
-          height: 100,
+          height: 72,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -100,10 +100,10 @@ export default function StudentSidebarNav({
           <Image
             src={BRAND_LOGO_URL}
             alt="CHICAD Academy"
-            width={190}
-            height={90}
-            sizes="190px"
-            style={{ width: "190px", height: "auto", objectFit: "contain" }}
+            width={130}
+            height={64}
+            sizes="130px"
+            style={{ width: "130px", height: "auto", objectFit: "contain" }}
           />
         </Link>
       </div>

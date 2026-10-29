@@ -204,7 +204,7 @@ export function AdminSidebarNav({
         <div
           style={{
             borderBottom: "1px solid var(--border2)",
-            height: 88,
+            height: 72,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -215,10 +215,10 @@ export function AdminSidebarNav({
             <Image
               src={BRAND_LOGO_URL}
               alt="CHICAD"
-              width={190}
-              height={90}
-              sizes="190px"
-              style={{ width: "190px", height: "auto", objectFit: "contain" }}
+              width={130}
+              height={64}
+              sizes="130px"
+              style={{ width: "130px", height: "auto", objectFit: "contain" }}
             />
           </Link>
         </div>

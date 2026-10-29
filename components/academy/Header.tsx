@@ -154,12 +154,12 @@ export default function Header({ onSignIn }: HeaderProps) {
   const logoSrc = BRAND_LOGO_URL;
 
   const logoHeight = isXs
-    ? "2.1rem"
+    ? "1.8rem"
     : isMobile
-      ? "2.4rem"
+      ? "2rem"
       : isCompact
-        ? "9rem"
-        : "13rem";
+        ? "5rem"
+        : "6rem";
 
   const navHeight = isXs ? "3.4rem" : isMobile ? "4.2rem" : "4.8rem";
   const navFontSize = isCompact ? "0.82rem" : "0.88rem";
@@ -262,15 +262,7 @@ export default function Header({ onSignIn }: HeaderProps) {
             width={200}
             height={200}
             priority
-            sizes={
-              isXs
-                ? "84px"
-                : isMobile
-                  ? "120px"
-                  : isCompact
-                    ? "144px"
-                    : "208px"
-            }
+            sizes={isXs ? "72px" : isMobile ? "96px" : isCompact ? "120px" : "144px"}
             style={{ width: "auto", height: logoHeight, objectFit: "contain" }}
           />
         </Link>

@@ -350,9 +350,10 @@ export default function AdminLoginPage() {
               <Image
                 src={BRAND_LOGO_URL}
                 alt="CHICAD"
-                width={120}
-                height={60}
-                style={{ height: "auto" }}
+                width={88}
+                height={44}
+                sizes="88px"
+                style={{ width: "88px", height: "auto" }}
                 priority
               />
             </div>

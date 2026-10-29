@@ -47,23 +47,23 @@ function LogoButton() {
 
   // Sizes per breakpoint
   if (breakpoints.xs) {
-    logoWidth = 70;
-    logoHeight = 70;
+    logoWidth = 56;
+    logoHeight = 56;
   } else if (breakpoints.sm) {
-    logoWidth = 85;
-    logoHeight = 85;
+    logoWidth = 68;
+    logoHeight = 68;
   } else if (breakpoints.md) {
+    logoWidth = 80;
+    logoHeight = 80;
+  } else if (breakpoints.lg) {
     logoWidth = 100;
     logoHeight = 100;
-  } else if (breakpoints.lg) {
+  } else if (breakpoints.xl) {
+    logoWidth = 120;
+    logoHeight = 120;
+  } else if (breakpoints.xxl) {
     logoWidth = 140;
     logoHeight = 140;
-  } else if (breakpoints.xl) {
-    logoWidth = 180;
-    logoHeight = 180;
-  } else if (breakpoints.xxl) {
-    logoWidth = 220;
-    logoHeight = 220;
   }
 
   return (
@@ -73,8 +73,8 @@ function LogoButton() {
       onMouseLeave={() => setHovered(false)}
       style={{
         position: "fixed",
-        top: "0vh",
-        left: "1.5vh",
+        top: "1rem",
+        left: "1.25rem",
         zIndex: 50,
         display: "flex",
         gap: "0.65rem",
@@ -92,7 +92,7 @@ function LogoButton() {
         width={logoWidth}
         height={logoHeight}
         priority
-        sizes="(max-width: 480px) 70px, (max-width: 640px) 85px, (max-width: 768px) 100px, (max-width: 1024px) 140px, (max-width: 1440px) 180px, 220px"
+        sizes="(max-width: 480px) 56px, (max-width: 640px) 68px, (max-width: 768px) 80px, (max-width: 1024px) 100px, (max-width: 1440px) 110px, 110px"
         style={{
           width: `${logoWidth}px`,
           height: `${logoHeight}px`,

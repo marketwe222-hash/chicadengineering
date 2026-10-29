@@ -36,12 +36,12 @@ function LogoButton() {
   };
 
   const logoSrc = BRAND_LOGO_URL;
-  let logoWidth = 180;
+  let logoWidth = 120;
 
   if (breakpoints.xs || breakpoints.sm || breakpoints.md) {
-    if (breakpoints.xs) logoWidth = 70;
-    else if (breakpoints.sm) logoWidth = 85;
-    else logoWidth = 100;
+    if (breakpoints.xs) logoWidth = 48;
+    else if (breakpoints.sm) logoWidth = 58;
+    else logoWidth = 68;
   }
 
   return (
@@ -69,7 +69,7 @@ function LogoButton() {
         width={logoWidth}
         height={logoWidth}
         priority
-        sizes="(max-width: 480px) 70px, (max-width: 640px) 85px, (max-width: 768px) 100px, 180px"
+        sizes="(max-width: 480px) 48px, (max-width: 640px) 58px, (max-width: 768px) 68px, 120px"
         style={{
           width: `${logoWidth}px`,
           height: "auto",
