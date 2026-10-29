@@ -23,16 +23,20 @@ interface DashboardCourse {
 
 interface CoursesViewProps {
   courses: DashboardCourse[];
+  materialsRestricted: boolean;
 }
 
-export default function CoursesView({ courses }: CoursesViewProps) {
+export default function CoursesView({
+  courses,
+  materialsRestricted,
+}: CoursesViewProps) {
   // When set, show the resource browser for that course
   const [resourceCourse, setResourceCourse] = useState<DashboardCourse | null>(
     null,
   );
 
   // ── Resource view ──────────────────────────────────────────────────────
-  if (resourceCourse) {
+  if (resourceCourse && !materialsRestricted) {
     return (
       <CourseResourcesView
         course={{
@@ -122,7 +126,7 @@ export default function CoursesView({ courses }: CoursesViewProps) {
               </div>
 
               {/* Resources shortcut — top-right of banner */}
-              {c.status !== "PENDING" && (
+              {!materialsRestricted && c.status !== "PENDING" && (
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -181,8 +185,9 @@ export default function CoursesView({ courses }: CoursesViewProps) {
                   marginBottom: "0.75rem",
                 }}
               >
-                Lesson {c.currentLessonOrder} of {c.totalLessons} · Currently:{" "}
-                <em style={{ color: c.color }}>{c.currentLessonName}</em>
+                {materialsRestricted
+                  ? "Course materials are unavailable while your account is withdrawn."
+                  : `Lesson ${c.currentLessonOrder} of ${c.totalLessons} · Currently: ${c.currentLessonName}`}
               </p>
 
               <ProgressBar value={c.progress} color={c.color} />
@@ -200,20 +205,36 @@ export default function CoursesView({ courses }: CoursesViewProps) {
                 >
                   {c.progress}% complete
                 </span>
-                <span
-                  style={{
-                    fontSize: "0.62rem",
-                    color: "var(--text-muted)",
-                    fontFamily: "var(--font-mono)",
-                  }}
-                >
-                  {c.currentLessonDuration}
-                </span>
+                {!materialsRestricted && (
+                  <span
+                    style={{
+                      fontSize: "0.62rem",
+                      color: "var(--text-muted)",
+                      fontFamily: "var(--font-mono)",
+                    }}
+                  >
+                    {c.currentLessonDuration}
+                  </span>
+                )}
               </div>
 
               {/* Action row */}
               <div style={{ display: "flex", gap: "0.5rem" }}>
-                {c.status === "PENDING" ? (
+                {materialsRestricted ? (
+                  <div
+                    style={{
+                      flex: 1,
+                      padding: "0.58rem",
+                      borderRadius: 9,
+                      border: "1px solid var(--glass-border)",
+                      color: "var(--text-muted)",
+                      fontSize: "0.72rem",
+                      textAlign: "center",
+                    }}
+                  >
+                    🔒 Course materials unavailable
+                  </div>
+                ) : c.status === "PENDING" ? (
                   <button
                     className="btn-primary"
                     disabled

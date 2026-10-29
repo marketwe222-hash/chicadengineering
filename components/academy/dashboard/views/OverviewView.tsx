@@ -5,6 +5,7 @@ import ProgressBar from "@/components/ui/ProgressBar";
 import Tag from "@/components/ui/Tag";
 import { CourseLogo } from "@/components/ui/CourseLogo";
 import type { View } from "@/components/academy/dashboard/StudentSidebarNav";
+import CourseMaterialsRestrictedNotice from "@/components/academy/dashboard/views/CourseMaterialsRestrictedNotice";
 
 interface OverviewCourse {
   name: string;
@@ -41,9 +42,14 @@ interface DashboardData {
 interface OverviewViewProps {
   data: DashboardData;
   setView: (v: View) => void;
+  materialsRestricted: boolean;
 }
 
-export default function OverviewView({ data, setView }: OverviewViewProps) {
+export default function OverviewView({
+  data,
+  setView,
+  materialsRestricted,
+}: OverviewViewProps) {
   const activeCourse = data.courses[0];
 
   const stats = [
@@ -278,10 +284,14 @@ export default function OverviewView({ data, setView }: OverviewViewProps) {
               marginBottom: "0.65rem",
             }}
           >
-            Resume · Continue Learning
+            {materialsRestricted
+              ? "Course Materials"
+              : "Resume · Continue Learning"}
           </p>
 
-          {activeCourse ? (
+          {materialsRestricted ? (
+            <CourseMaterialsRestrictedNotice />
+          ) : activeCourse ? (
             <div className="glass" style={{ overflow: "hidden" }}>
               {/* Course banner */}
               <div
@@ -441,8 +451,9 @@ export default function OverviewView({ data, setView }: OverviewViewProps) {
           </div>
 
           {/* Up next */}
-          <div>
-            <div
+          {!materialsRestricted && (
+            <div>
+              <div
               style={{
                 display: "flex",
                 justifyContent: "space-between",
@@ -572,8 +583,9 @@ export default function OverviewView({ data, setView }: OverviewViewProps) {
                   🎉 All lessons completed!
                 </div>
               )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

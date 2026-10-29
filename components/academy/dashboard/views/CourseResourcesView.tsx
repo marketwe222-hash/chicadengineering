@@ -65,8 +65,11 @@ export default function CourseResourcesView({ course, onBack }: Props) {
     setLoading(true);
     setError("");
     fetch(`/api/courses/${course.id}/media`, { credentials: "include" })
-      .then((r) => {
-        if (!r.ok) throw new Error("Failed to load resources");
+      .then(async (r) => {
+        if (!r.ok) {
+          const body = await r.json().catch(() => null);
+          throw new Error(body?.error ?? "Failed to load resources");
+        }
         return r.json();
       })
       .then((d: CourseMedia[]) => {

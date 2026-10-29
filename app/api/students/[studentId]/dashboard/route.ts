@@ -48,6 +48,9 @@ export async function GET(
   if (!student)
     return NextResponse.json({ error: "Not found" }, { status: 404 });
 
+  const materialsRestricted =
+    user.role === "STUDENT" && isOwnData && student.status === "WITHDRAWN";
+
   // ✅ Build ONCE here, outside the .map()
   const completedIds = new Set(
     student.lessonProgress.filter((p) => p.completed).map((p) => p.lessonId),
@@ -81,20 +84,24 @@ export async function GET(
           ? currentLesson.order + 1
           : completedCount,
         totalLessons: lessons.length,
-        currentLessonName: currentLesson?.title ?? "—",
-        currentLessonDuration: currentLesson?.duration
+        currentLessonName: materialsRestricted
+          ? "Course materials unavailable"
+          : currentLesson?.title ?? "—",
+        currentLessonDuration: !materialsRestricted && currentLesson?.duration
           ? `${currentLesson.duration} min`
           : "—",
         progress,
-        lessons: lessons.map((l) => ({
-          id: l.id,
-          course: enrollment.course.name,
-          courseColor: categoryColor(enrollment.course.category),
-          name: l.title,
-          duration: l.duration ? `${l.duration} min` : "—",
-          done: completedIds.has(l.id), // ✅ use the Set, not l.completed
-          current: currentLesson?.id === l.id,
-        })),
+        lessons: materialsRestricted
+          ? []
+          : lessons.map((l) => ({
+              id: l.id,
+              course: enrollment.course.name,
+              courseColor: categoryColor(enrollment.course.category),
+              name: l.title,
+              duration: l.duration ? `${l.duration} min` : "—",
+              done: completedIds.has(l.id), // ✅ use the Set, not l.completed
+              current: currentLesson?.id === l.id,
+            })),
       };
     });
 
@@ -107,16 +114,20 @@ export async function GET(
   const overallProgress =
     totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
 
-  return NextResponse.json({
-    overallProgress,
-    coursesEnrolled: courses.length,
-    lessonsCompleted: completedLessons,
-    totalLessons,
-    certificatesEarned: student.certificates.length,
-    courses,
-    // Flatten all lessons across courses for the Lessons view
-    allLessons: courses.flatMap((c) => c.lessons),
-  });
+  return NextResponse.json(
+    {
+      overallProgress,
+      coursesEnrolled: courses.length,
+      lessonsCompleted: completedLessons,
+      totalLessons,
+      certificatesEarned: student.certificates.length,
+      materialsRestricted,
+      courses,
+      // Flatten all lessons across courses for the Lessons view
+      allLessons: courses.flatMap((c) => c.lessons),
+    },
+    { headers: { "Cache-Control": "private, no-store" } },
+  );
 }
 
 // Map category → color (mirrors your mock data)

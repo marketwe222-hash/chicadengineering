@@ -102,11 +102,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // ── Block suspended or withdrawn students ──────────────
-    if (
-      user.student &&
-      ["SUSPENDED", "WITHDRAWN"].includes(user.student.status)
-    ) {
+    // Suspended students cannot sign in. Withdrawn students can still use
+    // their account, but course materials are restricted by their APIs.
+    if (user.student?.status === "SUSPENDED") {
       return NextResponse.json(
         {
           error: "Account restricted",
@@ -188,13 +186,15 @@ export async function POST(req: NextRequest) {
                     icon: e.course.icon ?? null,
                     logoImage: e.course.logoImage ?? null,
                     durationMonths: e.course.durationMonths,
-                    lessons: e.course.lessons.map((l) => ({
-                      id: l.id,
-                      title: l.title,
-                      order: l.order,
-                      duration: l.duration ?? null,
-                      status: l.status,
-                    })),
+                    lessons: (user.student?.status === "WITHDRAWN"
+                      ? []
+                      : e.course.lessons).map((l) => ({
+                        id: l.id,
+                        title: l.title,
+                        order: l.order,
+                        duration: l.duration ?? null,
+                        status: l.status,
+                      })),
                   },
                 })),
 

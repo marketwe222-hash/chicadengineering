@@ -28,6 +28,7 @@ export interface DashboardCourse {
 }
 
 export interface DashboardData {
+  materialsRestricted: boolean;
   overallProgress: number;
   coursesEnrolled: number;
   lessonsCompleted: number;

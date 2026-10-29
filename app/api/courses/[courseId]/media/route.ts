@@ -2,6 +2,10 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import {
+  getCourseAdminAccess,
+  getCourseMaterialAccess,
+} from "@/lib/courseMaterialAccess";
 
 export async function GET(
   request: NextRequest,
@@ -9,11 +13,18 @@ export async function GET(
 ) {
   const { courseId } = await params;
   try {
+    const access = await getCourseMaterialAccess();
+    if (!access.ok) return access.response;
+
+    const isAdmin =
+      access.user.role === "ADMIN" || access.user.role === "SUPER_ADMIN";
     const media = await prisma.courseMedia.findMany({
-      where: { courseId },
+      where: { courseId, ...(!isAdmin && { isPublished: true }) },
       orderBy: { order: "asc" },
     });
-    return NextResponse.json(media);
+    return NextResponse.json(media, {
+      headers: { "Cache-Control": "private, no-store" },
+    });
   } catch {
     return NextResponse.json(
       { error: "Internal server error" },
@@ -28,6 +39,9 @@ export async function POST(
 ) {
   const { courseId } = await params;
   try {
+    const access = await getCourseAdminAccess();
+    if (!access.ok) return access.response;
+
     const body = await request.json();
 
     if (!body.title?.trim()) {

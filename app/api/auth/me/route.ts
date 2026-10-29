@@ -68,13 +68,15 @@ export async function GET() {
                     icon: e.course.icon ?? null,
                     logoImage: e.course.logoImage ?? null,
                     durationMonths: e.course.durationMonths,
-                    lessons: e.course.lessons.map((l) => ({
-                      id: l.id,
-                      title: l.title,
-                      order: l.order,
-                      duration: l.duration ?? null,
-                      status: l.status,
-                    })),
+                    lessons: (user.student?.status === "WITHDRAWN"
+                      ? []
+                      : e.course.lessons).map((l) => ({
+                        id: l.id,
+                        title: l.title,
+                        order: l.order,
+                        duration: l.duration ?? null,
+                        status: l.status,
+                      })),
                   },
                 })),
 

@@ -13,6 +13,7 @@ import CertificatesView from "@/components/academy/dashboard/views/CertificatesV
 import ResourcesView from "@/components/academy/dashboard/views/ResourcesView";
 import ProfileView from "@/components/academy/dashboard/views/ProfileView";
 import EnrollView from "@/components/academy/dashboard/views/EnrollView";
+import CourseMaterialsRestrictedNotice from "@/components/academy/dashboard/views/CourseMaterialsRestrictedNotice";
 
 const PAGE_META: Record<View, { title: string; sub: string }> = {
   overview: { title: "Overview", sub: "Your learning at a glance" },
@@ -251,9 +252,18 @@ export default function StudentLayout() {
           }}
         >
           {view === "overview" && (
-            <OverviewView data={data} setView={setView} />
+            <OverviewView
+              data={data}
+              setView={setView}
+              materialsRestricted={data.materialsRestricted}
+            />
           )}
-          {view === "courses" && <CoursesView courses={data.courses} />}
+          {view === "courses" && (
+            <CoursesView
+              courses={data.courses}
+              materialsRestricted={data.materialsRestricted}
+            />
+          )}
           {view === "enroll" && (
             <EnrollView
               studentId={student?.id ?? ""}
@@ -264,9 +274,19 @@ export default function StudentLayout() {
               }}
             />
           )}
-          {view === "lessons" && <LessonsView lessons={data.allLessons} />}
+          {view === "lessons" &&
+            (data.materialsRestricted ? (
+              <CourseMaterialsRestrictedNotice />
+            ) : (
+              <LessonsView lessons={data.allLessons} />
+            ))}
           {view === "certificates" && <div>Certificates</div>}
-          {view === "resources" && <ResourcesView />}
+          {view === "resources" &&
+            (data.materialsRestricted ? (
+              <CourseMaterialsRestrictedNotice />
+            ) : (
+              <ResourcesView />
+            ))}
           {view === "profile" && <ProfileView />}
         </main>
       </div>

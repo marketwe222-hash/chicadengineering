@@ -2,6 +2,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getCourseAdminAccess } from "@/lib/courseMaterialAccess";
 
 export async function PATCH(
   request: NextRequest,
@@ -10,6 +11,9 @@ export async function PATCH(
   const { courseId, mediaId } = await params;
 
   try {
+    const access = await getCourseAdminAccess();
+    if (!access.ok) return access.response;
+
     const body = await request.json();
 
     const media = await prisma.courseMedia.findUnique({
@@ -52,6 +56,9 @@ export async function DELETE(
   const { courseId, mediaId } = await params;
 
   try {
+    const access = await getCourseAdminAccess();
+    if (!access.ok) return access.response;
+
     const media = await prisma.courseMedia.findUnique({
       where: { id: mediaId },
       select: { courseId: true },
