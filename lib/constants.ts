@@ -2,8 +2,7 @@ export const APP_NAME = "Chicad Engineering";
 export const APP_SHORT = "CE";
 export const APP_DESCRIPTION =
   "Premier academy and construction company portal";
-export const BRAND_LOGO_URL =
-  "https://pub-608e7a106efa47bda7aae56ff6f486a3.r2.dev/FinalLogo.png";
+export const BRAND_LOGO_URL = "/FinalLogo.webp";
 
 export const ROUTES = {
   HOME: "/",

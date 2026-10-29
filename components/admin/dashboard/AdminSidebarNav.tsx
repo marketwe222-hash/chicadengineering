@@ -26,7 +26,7 @@ interface Props {
 }
 
 const PAD_X = "1.1rem";
-const TOPBAR_H = 56;
+const TOPBAR_H = 52;
 
 export function AdminSidebarNav({
   view,
@@ -204,14 +204,21 @@ export function AdminSidebarNav({
         <div
           style={{
             borderBottom: "1px solid var(--border2)",
+            height: 88,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "0 1rem",
           }}
         >
-          <Link href="/academy" style={{ display: "inline-block" }}>
+          <Link href="/academy" style={{ display: "block", lineHeight: 0 }}>
             <Image
               src={BRAND_LOGO_URL}
               alt="CHICAD"
-              width={100}
-              height={100}
+              width={190}
+              height={90}
+              sizes="190px"
+              style={{ width: "190px", height: "auto", objectFit: "contain" }}
             />
           </Link>
         </div>
@@ -286,12 +293,12 @@ export function AdminSidebarNav({
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: isMobile ? "0 1rem 0 3.5rem" : "0 1.5rem 0 1rem",
+          padding: isMobile ? "0 1rem 0 3.5rem" : "0 1.25rem",
         }}
       >
         <div
           style={{
-            fontSize: "0.95rem",
+            fontSize: "0.9rem",
             fontWeight: 800,
             color: "var(--text)",
             letterSpacing: "-0.02em",

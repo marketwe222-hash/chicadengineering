@@ -100,9 +100,10 @@ export default function StudentSidebarNav({
           <Image
             src={BRAND_LOGO_URL}
             alt="CHICAD Academy"
-            width={200}
-            height={100}
-            sizes="200px"
+            width={190}
+            height={90}
+            sizes="190px"
+            style={{ width: "190px", height: "auto", objectFit: "contain" }}
           />
         </Link>
       </div>
