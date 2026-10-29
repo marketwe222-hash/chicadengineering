@@ -2,6 +2,7 @@
 
 import { useState, ChangeEvent, CSSProperties } from "react";
 import Image from "next/image";
+import { BRAND_LOGO_URL } from "@/lib/constants";
 import Link from "next/link";
 import { useToastContext } from "@/context/ToastContext";
 import { useAuthContext } from "@/context/AuthContext";
@@ -347,7 +348,7 @@ export default function AdminLoginPage() {
               }}
             >
               <Image
-                src="https://pub-608e7a106efa47bda7aae56ff6f486a3.r2.dev/FinalLogo.png"
+                src={BRAND_LOGO_URL}
                 alt="CHICAD"
                 width={120}
                 height={60}

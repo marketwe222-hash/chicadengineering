@@ -4,11 +4,11 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "@/hooks/useTheme";
 import Image from "next/image";
+import { BRAND_LOGO_URL } from "@/lib/constants";
 
 /* ─── Logo Button ─────────────────────────────────────────── */
 function LogoButton() {
   const router = useRouter();
-  const { theme } = useTheme();
 
   const [hovered, setHovered] = useState(false);
   const [screenWidth, setScreenWidth] = useState(1920);
@@ -41,20 +41,9 @@ function LogoButton() {
      Logo Selection + Sizes
   ───────────────────────────────────────────── */
 
-  let logoSrc =
-    theme === "light"
-      ? "https://pub-608e7a106efa47bda7aae56ff6f486a3.r2.dev/FinalLogo.png"
-      : "/images/logo.png";
+  const logoSrc = BRAND_LOGO_URL;
   let logoWidth = 200;
   let logoHeight = 200;
-
-  // Mobile logos
-  if (breakpoints.xs || breakpoints.sm || breakpoints.md) {
-    logoSrc =
-      theme === "light"
-        ? "/images/logosmalllight.png"
-        : "https://pub-608e7a106efa47bda7aae56ff6f486a3.r2.dev/FinalLogo.png";
-  }
 
   // Sizes per breakpoint
   if (breakpoints.xs) {
@@ -103,6 +92,7 @@ function LogoButton() {
         width={logoWidth}
         height={logoHeight}
         priority
+        sizes="(max-width: 480px) 70px, (max-width: 640px) 85px, (max-width: 768px) 100px, (max-width: 1024px) 140px, (max-width: 1440px) 180px, 220px"
         style={{
           width: `${logoWidth}px`,
           height: `${logoHeight}px`,

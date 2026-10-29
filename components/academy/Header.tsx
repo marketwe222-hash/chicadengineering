@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useTheme } from "@/hooks/useTheme";
 import { useAuth } from "@/hooks/useAuth";
+import { BRAND_LOGO_URL } from "@/lib/constants";
 
 /* ────────────────────────────────────────────────────────── */
 /* Breakpoints                                               */
@@ -102,7 +103,6 @@ export default function Header({ onSignIn }: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { user, isAuthenticated, logout } = useAuth();
-  const { theme } = useTheme();
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
@@ -151,13 +151,7 @@ export default function Header({ onSignIn }: HeaderProps) {
   }, []);
 
   /* Logo */
-  const logoSrc = isMobile
-    ? theme === "light"
-      ? "https://pub-608e7a106efa47bda7aae56ff6f486a3.r2.dev/FinalLogo.png"
-      : "/images/logosmalllight.png"
-    : theme === "light"
-      ? "https://pub-608e7a106efa47bda7aae56ff6f486a3.r2.dev/FinalLogo.png"
-      : "/images/logo.png";
+  const logoSrc = BRAND_LOGO_URL;
 
   const logoHeight = isXs
     ? "2.1rem"
@@ -268,6 +262,15 @@ export default function Header({ onSignIn }: HeaderProps) {
             width={200}
             height={200}
             priority
+            sizes={
+              isXs
+                ? "84px"
+                : isMobile
+                  ? "120px"
+                  : isCompact
+                    ? "144px"
+                    : "208px"
+            }
             style={{ width: "auto", height: logoHeight, objectFit: "contain" }}
           />
         </Link>

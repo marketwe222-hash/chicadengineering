@@ -7,13 +7,13 @@ import Image from "next/image";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/useToast";
 import { useTheme } from "@/hooks/useTheme";
+import { BRAND_LOGO_URL } from "@/lib/constants";
 
 /* ─────────────────────────────────────────────
    Responsive Logo
 ───────────────────────────────────────────── */
 function LogoButton() {
   const router = useRouter();
-  const { theme } = useTheme();
 
   const [hovered, setHovered] = useState(false);
   const [screenWidth, setScreenWidth] = useState(1920);
@@ -35,18 +35,10 @@ function LogoButton() {
     md: screenWidth > 640 && screenWidth <= 768,
   };
 
-  let logoSrc =
-    theme === "light"
-      ? "https://pub-608e7a106efa47bda7aae56ff6f486a3.r2.dev/FinalLogo.png"
-      : "/images/logo.png";
+  const logoSrc = BRAND_LOGO_URL;
   let logoWidth = 180;
 
   if (breakpoints.xs || breakpoints.sm || breakpoints.md) {
-    logoSrc =
-      theme === "light"
-        ? "/images/logosmalllight.png"
-        : "https://pub-608e7a106efa47bda7aae56ff6f486a3.r2.dev/FinalLogo.png";
-
     if (breakpoints.xs) logoWidth = 70;
     else if (breakpoints.sm) logoWidth = 85;
     else logoWidth = 100;
@@ -77,6 +69,7 @@ function LogoButton() {
         width={logoWidth}
         height={logoWidth}
         priority
+        sizes="(max-width: 480px) 70px, (max-width: 640px) 85px, (max-width: 768px) 100px, 180px"
         style={{
           width: `${logoWidth}px`,
           height: "auto",

@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { SectionLabel } from "@/components/admin/shared";
+import { BRAND_LOGO_URL } from "@/lib/constants";
 
 export type View =
   | "overview"
@@ -207,7 +208,7 @@ export function AdminSidebarNav({
         >
           <Link href="/academy" style={{ display: "inline-block" }}>
             <Image
-              src="https://pub-608e7a106efa47bda7aae56ff6f486a3.r2.dev/FinalLogo.png"
+              src={BRAND_LOGO_URL}
               alt="CHICAD"
               width={100}
               height={100}
